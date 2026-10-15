@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#f6f7fb">
+  <meta name="theme-color" content="#10121a">
   <meta name="description" content="Персональное приложение для практики английского: уроки, слова, разговоры и прогресс.">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -11,23 +11,23 @@
   <title>Englishly — твой английский</title>
   <style>
     :root {
-      color-scheme: light;
-      --bg: #f6f7fb;
-      --surface: rgba(255,255,255,.88);
-      --card: #fff;
-      --text: #171923;
-      --muted: #777c8d;
-      --line: #e8eaf1;
-      --accent: #5957e8;
-      --accent-dark: #4140c8;
-      --accent-soft: #eeedff;
-      --mint: #dff8ed;
-      --mint-ink: #197353;
-      --yellow: #fff4ce;
-      --yellow-ink: #9b6900;
-      --pink: #ffe8ed;
-      --pink-ink: #b23d59;
-      --shadow: 0 16px 42px rgba(35, 39, 75, .07);
+      color-scheme: dark;
+      --bg: #0d0f16;
+      --surface: rgba(23,26,37,.92);
+      --card: #171a24;
+      --text: #f1f3fc;
+      --muted: #a0a7bb;
+      --line: #2d3242;
+      --accent: #9694ff;
+      --accent-dark: #c1bfff;
+      --accent-soft: #292844;
+      --mint: #18382f;
+      --mint-ink: #8ae1bf;
+      --yellow: #3a301b;
+      --yellow-ink: #f5ce77;
+      --pink: #3a222d;
+      --pink-ink: #ff9db4;
+      --shadow: 0 16px 42px rgba(0, 0, 0, .24);
       --radius: 24px;
     }
     * { box-sizing: border-box; }
@@ -220,6 +220,92 @@
       .top-stats .pill { padding:8px 9px;font-size:12px; }
     }
     @media (max-width:390px) { .brand-tag { display:none; } .brand-mark { width:38px;height:38px; } .top-stats { gap:5px; } .pill { gap:4px; } .word-side { grid-template-columns:1fr; } .quiz-shell { padding-left:17px;padding-right:17px; } }
+  
+    /* Englishly dark mode, micro-interactions and motion */
+    body { background:var(--bg); color:var(--text); }
+    .pill,.goal-card,.quick-card,.streak-card,.lesson-card,.search-wrap,.flashcard,.mini-info,.word-row,.stat-card,.chart-card,.achievement-card,.result-points,.empty-state,.icon-button,.answer-option,.small-select {
+      background:var(--card) !important; color:var(--text); border-color:var(--line) !important;
+    }
+    .bottom-nav { background:rgba(17,19,28,.92);border-color:var(--line); }
+    div[style*="background:#f7f7fc"],div[style*="background:#f6f6fc"],div[style*="background:#fafaff"],div[style*="background:#f7f6ff"] { background:#202331 !important;color:var(--muted) !important;border-color:var(--line) !important; }
+    .lesson-icon[style] { background:#26243e !important;color:#c3c1ff !important; }
+    .lesson-state { background:#282c3a;color:var(--muted); }
+    .lesson-state.done { background:#18382f;color:#8ae1bf; }
+    .word-row .known-dot { background:#4a5064; }
+    .word-row .known-dot.yes { background:#39c99b; }
+    .progress-fill { background:var(--accent); }
+    .flash-actions { display:flex;gap:9px;width:100%;margin-top:20px; }
+    .flash-actions .btn { flex:1;min-width:0; }
+
+    .nav-item { color:#8f96ad; }
+    .nav-item.active { color:var(--accent);background:var(--accent-soft); }
+    .btn-ghost { background:#252938;color:var(--text); }
+    .btn-outline { background:#171a24;color:var(--text);border-color:var(--line); }
+    .btn-primary { background:var(--accent);color:#11121c; }
+    .btn-primary:disabled { color:#72758b; }
+    .btn-white { background:#fff;color:#4542b9; }
+    .filter-chip { background:var(--card);color:var(--muted);border-color:var(--line); }
+    .filter-chip.active { background:var(--accent);color:#11121c;border-color:var(--accent); }
+    .level-chip { background:var(--accent-soft);color:var(--accent-dark); }
+    .icon-box,.icon-box[style] { background:var(--accent-soft) !important;color:var(--accent) !important; }
+    .progress-track,.quiz-bar,.lesson-progress,.chart-bar { background:#282c3a; }
+    .day-dot { background:#282c3a;color:#a4aac0; }
+    .day-dot.active { background:var(--accent);color:#10111a; }
+    .flashcard { background:linear-gradient(145deg,#1a1d29,#141722) !important; }
+    .question-en { background:#252342;color:var(--text); }
+    .answer-option { background:#171a24;border-color:#32374a !important; }
+    .answer-option.selected { border-color:var(--accent) !important;background:#272641 !important; }
+    .answer-option.correct { border-color:#36b88a !important;background:#17372f !important; }
+    .answer-option.wrong { border-color:#df728a !important;background:#39212b !important; }
+    .answer-letter { border-color:var(--line); }
+    .feedback.good { background:#17372f;color:#9ce7ca; }
+    .feedback.bad { background:#39212b;color:#ffafc0; }
+    .result-points { background:#171a24;border-color:var(--line); }
+    .achievement { background:#1b1e2a;border-color:#303448; }
+    .empty-state { color:var(--muted); }
+    .flash-translation { color:#b7b5ff; }
+    .flash-example { color:var(--muted); }
+    .settings-row { border-color:var(--line); }
+    .search-wrap input,.small-select,textarea,input { color:var(--text); }
+    .search-wrap input::placeholder,textarea::placeholder { color:#7d849b; }
+    .word-badge { background:#292844;color:#c3c1ff; }
+    .streak-emoji { background:#3a301b; }
+    .quiz-shell { animation:pageIn .26s ease both; }
+    .app-shell main { animation:pageIn .28s ease both; }
+    button { transition:transform .16s cubic-bezier(.2,.8,.2,1),background-color .18s ease,border-color .18s ease,filter .18s ease,box-shadow .18s ease; }
+    button:active { transform:scale(.975); }
+    .btn:active,.quick-card:active,.lesson-card:active,.word-row:active,.answer-option:active { transform:scale(.985); }
+    .quick-card:hover,.lesson-card:hover,.word-row:hover { border-color:#555274 !important; }
+    .flashcard { touch-action:pan-y; user-select:none; }
+    .flashcard.swipe-next { animation:slideInRight .28s cubic-bezier(.2,.75,.25,1) both; }
+    .flashcard.swipe-prev { animation:slideInLeft .28s cubic-bezier(.2,.75,.25,1) both; }
+    .flashcard .flash-word { animation:popIn .24s ease both; }
+    .quiz-content { animation:questionIn .25s ease both; }
+    .answer-list .answer-option { animation:optionIn .24s ease both; }
+    .answer-list .answer-option:nth-child(2) { animation-delay:.025s; }
+    .answer-list .answer-option:nth-child(3) { animation-delay:.05s; }
+    .answer-list .answer-option:nth-child(4) { animation-delay:.075s; }
+    .mode-card { border:1px solid var(--line);background:var(--card);border-radius:22px;padding:20px;margin:12px 0; }
+    .practice-prompt { border:1px solid var(--line);background:#1a1d29;border-radius:20px;padding:20px;margin:20px 0;font-size:20px;line-height:1.45;font-weight:760; }
+    .practice-field { width:100%;min-height:100px;resize:vertical;background:#11141d;border:1px solid #34394d;border-radius:15px;padding:14px;color:var(--text);font:inherit;font-size:16px;line-height:1.5; }
+    .word-bank { display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 18px; }
+    .word-token { border:1px solid #41445d;border-radius:11px;padding:9px 12px;background:#26243e;color:#d9d8ff;font-weight:700;min-height:40px; }
+    .word-nav-controls { display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:13px; }
+    .gesture-note { color:var(--muted);font-size:11px;margin-top:8px; }
+    .practice-score { display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--muted);font-size:12px; }
+    .mode-shortcuts { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px; }
+    .mode-shortcut { background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;text-align:left;color:var(--text);display:flex;gap:12px;align-items:center;min-height:88px; }
+    .mode-shortcut strong { display:block;font-size:14px; }
+    .mode-shortcut span { display:block;font-size:12px;color:var(--muted);margin-top:5px;line-height:1.4; }
+    @keyframes pageIn { from { opacity:0;transform:translateY(7px); } to { opacity:1;transform:translateY(0); } }
+    @keyframes questionIn { from { opacity:0;transform:translateX(12px); } to { opacity:1;transform:translateX(0); } }
+    @keyframes optionIn { from { opacity:0;transform:translateY(5px); } to { opacity:1;transform:translateY(0); } }
+    @keyframes popIn { 0% { opacity:0;transform:scale(.96); } 100% { opacity:1;transform:scale(1); } }
+    @keyframes slideInRight { from { opacity:.3;transform:translateX(28px) rotateY(-3deg); } to { opacity:1;transform:translateX(0) rotateY(0); } }
+    @keyframes slideInLeft { from { opacity:.3;transform:translateX(-28px) rotateY(3deg); } to { opacity:1;transform:translateX(0) rotateY(0); } }
+    @media (max-width:660px) { .mode-shortcuts { grid-template-columns:1fr; } }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms !important;animation-iteration-count:1 !important;scroll-behavior:auto !important;transition-duration:.01ms !important; } }
+
   </style>
 </head>
 <body>
@@ -323,13 +409,128 @@ const vocab = [
   {id:'overwhelmed',en:'overwhelmed',ru:'перегруженный; ошеломлённый',pron:'/ˌəʊ.vəˈwelmd/',ex:'I feel overwhelmed with all this work.',topic:'Полезное',lesson:'work'},
   {id:'reliable',en:'reliable',ru:'надёжный',pron:'/rɪˈlaɪ.ə.bəl/',ex:'She’s a reliable person to work with.',topic:'Полезное',lesson:'work'},
   {id:'eventually',en:'eventually',ru:'в конце концов; со временем',pron:'/ɪˈven.tʃu.ə.li/',ex:'Eventually, everything worked out.',topic:'Полезное',lesson:'conversation'}
+  ,{id:'improve',en:'improve',ru:'улучшать; совершенствовать',pron:'/ɪmˈpruːv/',ex:'I want to improve my English every day.',topic:'Развитие',lesson:'conversation'}
+  ,{id:'remember',en:'remember',ru:'помнить; вспоминать',pron:'/rɪˈmem.bər/',ex:'I can remember the word when I see it.',topic:'Развитие',lesson:'conversation'}
+  ,{id:'forget',en:'forget',ru:'забывать',pron:'/fəˈɡet/',ex:'I sometimes forget simple words.',topic:'Развитие',lesson:'conversation'}
+  ,{id:'confident',en:'confident',ru:'уверенный в себе',pron:'/ˈkɒn.fɪ.dənt/',ex:'I feel more confident when I practise.',topic:'Развитие',lesson:'conversation'}
+  ,{id:'practice',en:'practice',ru:'практика; практиковаться',pron:'/ˈpræk.tɪs/',ex:'A little practice every day makes a difference.',topic:'Развитие',lesson:'conversation'}
+  ,{id:'express',en:'express yourself',ru:'выражать свои мысли',pron:'/ɪkˈspres jɔːˈself/',ex:'It can be hard to express yourself in another language.',topic:'Развитие',lesson:'conversation'}
+  ,{id:'mean',en:'mean',ru:'иметь в виду; означать',pron:'/miːn/',ex:'What do you mean by that?',topic:'Разговор',lesson:'conversation'}
+  ,{id:'sounds',en:'sounds good',ru:'звучит хорошо; договорились',pron:'/saʊndz ɡʊd/',ex:'Friday evening? Sounds good to me.',topic:'Разговор',lesson:'conversation'}
+  ,{id:'depends',en:'it depends',ru:'это зависит',pron:'/ɪt dɪˈpendz/',ex:'It depends on the weather.',topic:'Разговор',lesson:'conversation'}
+  ,{id:'rather',en:'would rather',ru:'предпочёл бы',pron:'/wʊd ˈrɑː.ðər/',ex:'I would rather stay at home tonight.',topic:'Разговор',lesson:'conversation'}
+  ,{id:'suppose',en:'I suppose',ru:'полагаю; думаю',pron:'/aɪ səˈpəʊz/',ex:'I suppose we should leave soon.',topic:'Разговор',lesson:'conversation'}
+  ,{id:'meanwhile',en:'meanwhile',ru:'тем временем',pron:'/ˈmiːn.waɪl/',ex:'I’ll cook dinner. Meanwhile, you can set the table.',topic:'Разговор',lesson:'conversation'}
+  ,{id:'probably',en:'probably',ru:'вероятно; наверное',pron:'/ˈprɒb.ə.bli/',ex:'I’ll probably finish it tomorrow.',topic:'Разговор',lesson:'conversation'}
+  ,{id:'especially',en:'especially',ru:'особенно',pron:'/ɪˈspeʃ.əl.i/',ex:'I enjoy travelling, especially in spring.',topic:'Полезное',lesson:'conversation'}
+  ,{id:'instead',en:'instead',ru:'вместо этого',pron:'/ɪnˈsted/',ex:'Let’s walk instead of taking a taxi.',topic:'Полезное',lesson:'conversation'}
+  ,{id:'although',en:'although',ru:'хотя',pron:'/ɔːlˈðəʊ/',ex:'Although it was late, we kept talking.',topic:'Полезное',lesson:'grammar'}
+  ,{id:'unless',en:'unless',ru:'если не; пока не',pron:'/ənˈles/',ex:'I won’t go unless you come with me.',topic:'Грамматика',lesson:'grammar'}
+  ,{id:'probablynot',en:'probably not',ru:'скорее всего, нет',pron:'/ˈprɒb.ə.bli nɒt/',ex:'Will it rain? Probably not.',topic:'Разговор',lesson:'conversation'}
+  ,{id:'alreadydone',en:'be done with',ru:'закончить с чем-либо',pron:'/bi dʌn wɪð/',ex:'I’m done with my homework.',topic:'Работа',lesson:'work'}
+  ,{id:'dealwith',en:'deal with',ru:'справляться; иметь дело',pron:'/diːl wɪð/',ex:'I need to deal with a few emails first.',topic:'Работа',lesson:'work'}
+  ,{id:'sortout',en:'sort out',ru:'уладить; разобраться',pron:'/sɔːt aʊt/',ex:'We’ll sort out the problem together.',topic:'Фразовые глаголы',lesson:'phrasal'}
+  ,{id:'findout',en:'find out',ru:'выяснить; узнать',pron:'/faɪnd aʊt/',ex:'I need to find out what happened.',topic:'Фразовые глаголы',lesson:'phrasal'}
+  ,{id:'carryon',en:'carry on',ru:'продолжать',pron:'/ˈkær.i ɒn/',ex:'Carry on practising even when it feels difficult.',topic:'Фразовые глаголы',lesson:'phrasal'}
+  ,{id:'workout',en:'work out',ru:'получиться; разобраться; тренироваться',pron:'/wɜːk aʊt/',ex:'I hope everything works out.',topic:'Фразовые глаголы',lesson:'phrasal'}
+  ,{id:'calmdown',en:'calm down',ru:'успокоиться',pron:'/kɑːm daʊn/',ex:'Take a breath and calm down.',topic:'Фразовые глаголы',lesson:'phrasal'}
+  ,{id:'pick up',en:'pick up',ru:'подобрать; забрать; усвоить',pron:'/pɪk ʌp/',ex:'I picked up a few new phrases from the show.',topic:'Фразовые глаголы',lesson:'phrasal'}
+  ,{id:'turnout',en:'turn out',ru:'оказаться; выясниться',pron:'/tɜːn aʊt/',ex:'The test turned out to be easier than I expected.',topic:'Фразовые глаголы',lesson:'phrasal'}
+  ,{id:'lookfor',en:'look for',ru:'искать',pron:'/lʊk fɔːr/',ex:'I’m looking for my keys.',topic:'Фразовые глаголы',lesson:'phrasal'}
+  ,{id:'lookinto',en:'look into',ru:'изучить; разобраться в вопросе',pron:'/lʊk ˈɪn.tuː/',ex:'I’ll look into it and let you know.',topic:'Фразовые глаголы',lesson:'phrasal'}
+  ,{id:'takepart',en:'take part',ru:'принимать участие',pron:'/teɪk pɑːt/',ex:'Would you like to take part in the project?',topic:'Работа',lesson:'work'}
+  ,{id:'attend',en:'attend',ru:'посещать; присутствовать',pron:'/əˈtend/',ex:'I have to attend a meeting at ten.',topic:'Работа',lesson:'work'}
+  ,{id:'schedule',en:'schedule',ru:'расписание; планировать',pron:'/ˈʃed.juːl/',ex:'My schedule is quite busy this week.',topic:'Работа',lesson:'work'}
+  ,{id:'available',en:'available',ru:'доступный; свободный',pron:'/əˈveɪ.lə.bəl/',ex:'Are you available tomorrow afternoon?',topic:'Работа',lesson:'work'}
+  ,{id:'avoid',en:'avoid',ru:'избегать',pron:'/əˈvɔɪd/',ex:'Try to avoid translating every word.',topic:'Полезное',lesson:'conversation'}
+  ,{id:'manage',en:'manage to',ru:'суметь; ухитриться',pron:'/ˈmæn.ɪdʒ tuː/',ex:'I managed to finish the task on time.',topic:'Полезное',lesson:'work'}
+  ,{id:'afford',en:'afford',ru:'позволить себе (финансово/по времени)',pron:'/əˈfɔːd/',ex:'I can’t afford to waste any more time.',topic:'Полезное',lesson:'work'}
+  ,{id:'require',en:'require',ru:'требовать; нуждаться в',pron:'/rɪˈkwaɪər/',ex:'This task requires a little patience.',topic:'Полезное',lesson:'work'}
+  ,{id:'support',en:'support',ru:'поддерживать; поддержка',pron:'/səˈpɔːt/',ex:'My friends support me when I practise.',topic:'Полезное',lesson:'conversation'}
+  ,{id:'suggest',en:'suggest',ru:'предлагать',pron:'/səˈdʒest/',ex:'What would you suggest doing?',topic:'Разговор',lesson:'conversation'}
+  ,{id:'recommend',en:'recommend',ru:'рекомендовать',pron:'/ˌrek.əˈmend/',ex:'Can you recommend a good film?',topic:'Разговор',lesson:'conversation'}
+  ,{id:'realize',en:'realize',ru:'осознать; понять',pron:'/ˈrɪə.laɪz/',ex:'I didn’t realize it was so late.',topic:'Полезное',lesson:'conversation'}
+  ,{id:'notice',en:'notice',ru:'заметить; обращать внимание',pron:'/ˈnəʊ.tɪs/',ex:'Did you notice the difference?',topic:'Полезное',lesson:'conversation'}
+  ,{id:'expect',en:'expect',ru:'ожидать',pron:'/ɪkˈspekt/',ex:'I didn’t expect the test to be so hard.',topic:'Полезное',lesson:'conversation'}
+  ,{id:'prefer',en:'prefer',ru:'предпочитать',pron:'/prɪˈfɜːr/',ex:'I prefer learning with examples.',topic:'Разговор',lesson:'conversation'}
+  ,{id:'quite',en:'quite',ru:'довольно; вполне',pron:'/kwaɪt/',ex:'The new words are quite useful.',topic:'Полезное',lesson:'conversation'}
+  ,{id:'hardly',en:'hardly',ru:'едва; почти не',pron:'/ˈhɑːd.li/',ex:'I hardly had time to eat.',topic:'Полезное',lesson:'conversation'}
+  ,{id:'eventually2',en:'in the end',ru:'в итоге; в конце концов',pron:'/ɪn ði end/',ex:'In the end, we decided to stay.',topic:'Разговор',lesson:'conversation'}
+  ,{id:'atleast',en:'at least',ru:'по крайней мере',pron:'/ət liːst/',ex:'Try to learn at least five words a day.',topic:'Полезное',lesson:'conversation'}
+  ,{id:'ontime',en:'on time',ru:'вовремя',pron:'/ɒn taɪm/',ex:'I always try to arrive on time.',topic:'Работа',lesson:'work'}
+  ,{id:'inadvance',en:'in advance',ru:'заранее',pron:'/ɪn ədˈvɑːns/',ex:'It’s cheaper if you book in advance.',topic:'Путешествия',lesson:'travel'}
+  ,{id:'straightaway',en:'straight away',ru:'сразу же',pron:'/streɪt əˈweɪ/',ex:'I’ll send you the details straight away.',topic:'Разговор',lesson:'conversation'}
+  ,{id:'recently2',en:'lately',ru:'в последнее время',pron:'/ˈleɪt.li/',ex:'I’ve been listening to podcasts lately.',topic:'Полезное',lesson:'conversation'}
+  ,{id:'involved',en:'involved',ru:'вовлечённый; сложный',pron:'/ɪnˈvɒlvd/',ex:'She is involved in several projects.',topic:'Работа',lesson:'work'}
+  ,{id:'straightforward',en:'straightforward',ru:'простой и понятный; прямой',pron:'/ˌstreɪtˈfɔː.wəd/',ex:'The instructions are straightforward.',topic:'Полезное',lesson:'conversation'}
+  ,{id:'convenient',en:'convenient',ru:'удобный',pron:'/kənˈviː.ni.ənt/',ex:'Is ten o’clock convenient for you?',topic:'Разговор',lesson:'conversation'}
+  ,{id:'crowd',en:'crowd',ru:'толпа',pron:'/kraʊd/',ex:'A large crowd gathered outside.',topic:'Путешествия',lesson:'travel'}
+  ,{id:'booking',en:'booking',ru:'бронирование',pron:'/ˈbʊk.ɪŋ/',ex:'I have a booking under the name Smith.',topic:'Путешествия',lesson:'travel'}
+  ,{id:'refund',en:'refund',ru:'возврат денег',pron:'/ˈriː.fʌnd/',ex:'Can I get a refund for this ticket?',topic:'Путешествия',lesson:'travel'}
+  ,{id:'delayed',en:'delayed',ru:'задержанный; задерживается',pron:'/dɪˈleɪd/',ex:'Our flight has been delayed by an hour.',topic:'Путешествия',lesson:'travel'}
+  ,{id:'luggage',en:'luggage',ru:'багаж',pron:'/ˈlʌɡ.ɪdʒ/',ex:'My luggage didn’t arrive.',topic:'Путешествия',lesson:'travel'}
+  ,{id:'aisle',en:'aisle',ru:'проход между рядами',pron:'/aɪl/',ex:'Could I have an aisle seat, please?',topic:'Путешествия',lesson:'travel'}
+  ,{id:'nearby',en:'nearby',ru:'поблизости',pron:'/ˌnɪəˈbaɪ/',ex:'Is there a supermarket nearby?',topic:'Путешествия',lesson:'travel'}
+  ,{id:'refund2',en:'exchange',ru:'обменивать; обмен',pron:'/ɪksˈtʃeɪndʒ/',ex:'Can I exchange this shirt for a larger one?',topic:'Покупки',lesson:'conversation'}
+  ,{id:'receipt',en:'receipt',ru:'чек',pron:'/rɪˈsiːt/',ex:'Would you like a receipt?',topic:'Покупки',lesson:'conversation'}
+  ,{id:'worth',en:'worth',ru:'стоящий; заслуживающий',pron:'/wɜːθ/',ex:'This book is worth reading.',topic:'Полезное',lesson:'conversation'}
+  ,{id:'effective',en:'effective',ru:'эффективный',pron:'/ɪˈfek.tɪv/',ex:'Short daily sessions are more effective for me.',topic:'Развитие',lesson:'conversation'}
+  ,{id:'effort',en:'effort',ru:'усилие',pron:'/ˈef.ət/',ex:'Learning a language takes time and effort.',topic:'Развитие',lesson:'conversation'}
+  ,{id:'progress',en:'progress',ru:'прогресс; продвигаться',pron:'/ˈprəʊ.ɡres/',ex:'I can see real progress in my speaking.',topic:'Развитие',lesson:'conversation'}
+  ,{id:'mistake',en:'mistake',ru:'ошибка',pron:'/mɪˈsteɪk/',ex:'Don’t be afraid of making mistakes.',topic:'Развитие',lesson:'conversation'}
+  ,{id:'accurate',en:'accurate',ru:'точный; правильный',pron:'/ˈæk.jə.rət/',ex:'Try to give an accurate answer.',topic:'Развитие',lesson:'conversation'}
+  ,{id:'fluent',en:'fluent',ru:'свободно говорящий',pron:'/ˈfluː.ənt/',ex:'I want to become more fluent in English.',topic:'Развитие',lesson:'conversation'}
+  ,{id:'struggle',en:'struggle',ru:'испытывать трудности',pron:'/ˈstrʌɡ.əl/',ex:'I struggle to remember new words.',topic:'Развитие',lesson:'conversation'}
+  ,{id:'figure',en:'figure',ru:'цифра; фигура; понимать (в выражениях)',pron:'/ˈfɪɡ.ər/',ex:'I can’t figure out the answer yet.',topic:'Полезное',lesson:'phrasal'}
+  ,{id:'insteadof',en:'instead of',ru:'вместо',pron:'/ɪnˈsted əv/',ex:'Try speaking instead of translating in your head.',topic:'Полезное',lesson:'conversation'}
+  ,{id:'aslongas',en:'as long as',ru:'при условии что; пока',pron:'/əz lɒŋ əz/',ex:'You can improve as long as you keep practising.',topic:'Полезное',lesson:'grammar'}
+  ,{id:'evenif',en:'even if',ru:'даже если',pron:'/ˈiː.vən ɪf/',ex:'Keep going even if you make mistakes.',topic:'Полезное',lesson:'grammar'}
+  ,{id:'atfirst',en:'at first',ru:'сначала',pron:'/ət fɜːst/',ex:'At first, speaking felt uncomfortable.',topic:'Полезное',lesson:'conversation'}
+  ,{id:'afterwards',en:'afterwards',ru:'после этого',pron:'/ˈɑːf.tə.wədz/',ex:'We had dinner and went for a walk afterwards.',topic:'Полезное',lesson:'conversation'}
+
 ];
 const phraseOfDay = {en:'Small steps every day add up to big changes.',ru:'Маленькие шаги каждый день приводят к большим переменам.',tip:'add up to = в сумме приводить к чему-то'};
+
+const sentenceBank = [
+  {ru:'Я обычно встаю в семь.',en:'I usually get up at seven.',alts:['I usually get up at 7.'],hint:'usually = обычно; get up = вставать'},
+  {ru:'Я пытаюсь улучшить свой английский.',en:'I am trying to improve my English.',alts:["I'm trying to improve my English."],hint:'try to = пытаться; improve = улучшать'},
+  {ru:'Мне трудно вспоминать нужные слова.',en:'I find it difficult to remember the right words.',alts:['I find it hard to remember the right words.'],hint:'I find it difficult to… = мне трудно…'},
+  {ru:'Я пока не решил.',en:'I have not decided yet.',alts:["I haven't decided yet."],hint:'yet часто стоит в конце отрицания'},
+  {ru:'Можешь повторить это помедленнее?',en:'Could you repeat that more slowly?',alts:['Can you repeat that more slowly?'],hint:'Could you…? = вежливая просьба'},
+  {ru:'Я забыл, как это называется.',en:'I have forgotten what it is called.',alts:["I've forgotten what it's called."],hint:'what it is called = как это называется'},
+  {ru:'В последнее время я был очень занят.',en:'I have been very busy lately.',alts:["I've been very busy lately."],hint:'lately = в последнее время'},
+  {ru:'Если честно, я не уверен.',en:'To be honest, I am not sure.',alts:["To be honest, I'm not sure."],hint:'to be honest = честно говоря'},
+  {ru:'Мне нужно немного времени, чтобы подумать.',en:'I need a little time to think.',alts:['I need some time to think.'],hint:'need time to… = нужно время, чтобы…'},
+  {ru:'Я привык вставать рано.',en:'I am used to getting up early.',alts:["I'm used to getting up early."],hint:'be used to + глагол с -ing'},
+  {ru:'Я случайно встретил старого друга.',en:'I ran into an old friend.',alts:['I bumped into an old friend.'],hint:'run into someone = случайно встретить'},
+  {ru:'Не откладывай это на завтра.',en:'Do not put it off until tomorrow.',alts:["Don't put it off until tomorrow."],hint:'put off = откладывать'},
+  {ru:'Сколько времени это займёт?',en:'How long will it take?',alts:['How much time will it take?'],hint:'How long…? = как долго…?'},
+  {ru:'Я вернусь к тебе с ответом позже.',en:'I will get back to you later.',alts:["I'll get back to you later."],hint:'get back to someone = вернуться с ответом'},
+  {ru:'Сегодня мне не хочется никуда выходить.',en:'I do not feel like going out today.',alts:["I don't feel like going out today."],hint:'feel like + глагол с -ing = хотеться что-то делать'},
+  {ru:'Я давно не смотрел этот фильм.',en:'I have not watched this film in a long time.',alts:["I haven't watched this movie in a long time.","I haven't seen this film in a long time.","I haven't seen this movie in a long time."],hint:'in a long time = давно; movie тоже значит фильм'},
+  {ru:'Это зависит от ситуации.',en:'It depends on the situation.',alts:['That depends on the situation.'],hint:'depend on = зависеть от'},
+  {ru:'Я уже закончил свою работу.',en:'I have already finished my work.',alts:["I've already finished my work."],hint:'already = уже'},
+  {ru:'Я пытаюсь разобраться, как работает это приложение.',en:'I am trying to figure out how this app works.',alts:["I'm trying to figure out how this app works."],hint:'figure out = разобраться; how this app works — порядок слов в косвенном вопросе'},
+  {ru:'Мне сложно выразить свою мысль по-английски.',en:'I find it hard to express myself in English.',alts:['It is hard for me to express myself in English.'],hint:'express myself = выражать свои мысли'},
+  {ru:'Давай обсудим это позже.',en:'Let us discuss it later.',alts:["Let's discuss it later.","Let's talk about it later."],hint:'Let’s… = давай…'},
+  {ru:'Мне всё ещё нужно немного практики.',en:'I still need a bit of practice.',alts:['I still need some practice.'],hint:'still = всё ещё; a bit of = немного'},
+  {ru:'Я бы предпочёл остаться дома.',en:'I would rather stay at home.',alts:["I'd rather stay at home.","I would prefer to stay at home."],hint:'would rather + начальная форма глагола'},
+  {ru:'Чем больше я практикуюсь, тем увереннее себя чувствую.',en:'The more I practise, the more confident I feel.',alts:['The more I practice, the more confident I feel.'],hint:'The more…, the more… = чем больше…, тем больше…'},
+  {ru:'Я не уверен, что правильно понял.',en:'I am not sure I understood correctly.',alts:["I'm not sure I understood correctly."],hint:'I’m not sure… = я не уверен…; correctly = правильно'},
+  {ru:'Мне нужно привыкнуть говорить вслух.',en:'I need to get used to speaking out loud.',alts:['I need to get used to speaking aloud.'],hint:'get used to + -ing = привыкнуть к…'},
+  {ru:'Я думал, что это будет проще.',en:'I thought it would be easier.',alts:[],hint:'I thought… = я думал…; would be = будет в прошлом'},
+  {ru:'Не переживай из-за ошибок.',en:'Do not worry about making mistakes.',alts:["Don't worry about making mistakes."],hint:'worry about + -ing = переживать из-за…'},
+  {ru:'Я постепенно начинаю понимать английскую речь.',en:'I am gradually starting to understand spoken English.',alts:["I'm gradually starting to understand spoken English."],hint:'gradually = постепенно; spoken English = устная речь'},
+  {ru:'Давай попробуем ещё раз.',en:'Let us try again.',alts:["Let's try again."],hint:'try again = попробовать снова'}
+];
+
 const TODAY = () => new Date().toLocaleDateString('en-CA');
 const defaultState = () => ({tab:'home',xp:0,streak:0,lastStudyDate:null,completedLessons:[],knownWords:[],repeatWords:[],dailyXp:{},correct:0,answered:0,goal:20,wordFilter:'all',wordSearch:'',currentWord:0,wordFlipped:false,settingsOpen:false});
 let state = loadState();
 let quiz = null;
+let practice = null;
 let toastTimer = null;
+let wordDirection = 1;
 function loadState(){ try { const s=JSON.parse(localStorage.getItem('englishly-state')||'null'); return {...defaultState(),...(s||{})}; } catch { return defaultState(); } }
 function saveState(){ const keep={...state,tab:undefined,settingsOpen:false}; try{localStorage.setItem('englishly-state',JSON.stringify(keep));}catch{} }
 function esc(str){return String(str).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -352,7 +553,7 @@ function renderHome(){const done=state.completedLessons.length;const pct=Math.mi
   <div class="hero-grid"><section class="hero-card"><div class="hero-label">${icon('target',14)} ТВОЯ СЛЕДУЮЩАЯ ЦЕЛЬ</div><h2>${done===lessons.length?'Ты прошёл все уроки!':'Ещё один урок — и ты на шаг ближе.'}</h2><p>${done===lessons.length?'Повтори любимую тему или закрепи слова.':'Короткие задания, полезные фразы и объяснения на русском.'}</p><div class="hero-bottom"><button class="btn btn-white" data-action="lesson" data-id="${(lessons.find(l=>!state.completedLessons.includes(l.id))||lessons[0]).id}">${done===lessons.length?'Повторить урок':'Начать урок'} ${icon('arrow',16)}</button><span class="hero-progress">${done} из ${lessons.length} тем</span></div></section>
   <section class="goal-card"><div class="card-heading"><div><div style="font-size:12px;color:var(--muted);font-weight:700">ЕЖЕДНЕВНАЯ ЦЕЛЬ</div><div class="goal-number">${daily}<span> / ${state.goal} XP</span></div></div><div class="icon-box">${icon('target',20)}</div></div><div><div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div><div class="goal-foot"><span>${pct>=100?'Цель выполнена — супер!':'Осталось '+(state.goal-daily)+' XP'}</span><span>${pct}%</span></div></div></section></div>
   <div class="section-head"><h2>Быстрая практика</h2><button class="text-button" data-action="tab" data-tab="lessons">Все уроки ${icon('arrow',13)}</button></div>
-  <div class="quick-grid"><button class="quick-card" data-action="tab" data-tab="words"><div class="icon-box" style="background:var(--mint);color:var(--mint-ink)">${icon('cards',20)}</div><div><div class="quick-title">Карточки слов</div><p>${dueWords().length} слов ждут повторения</p></div></button><button class="quick-card" data-action="lesson" data-id="conversation"><div class="icon-box" style="background:var(--yellow);color:var(--yellow-ink)">${icon('message',20)}</div><div><div class="quick-title">Живой английский</div><p>Фразы для реальных разговоров</p></div></button><button class="quick-card" data-action="lesson" data-id="media"><div class="icon-box" style="background:var(--pink);color:var(--pink-ink)">${icon('headphones',20)}</div><div><div class="quick-title">Слушай и понимай</div><p>Слова из видео и интернета</p></div></button></div>
+  <div class="quick-grid"><button class="quick-card" data-action="tab" data-tab="words"><div class="icon-box" style="background:var(--mint);color:var(--mint-ink)">${icon('cards',20)}</div><div><div class="quick-title">Карточки слов</div><p>${dueWords().length} слов ждут повторения</p></div></button><button class="quick-card" data-action="lesson" data-id="conversation"><div class="icon-box" style="background:var(--yellow);color:var(--yellow-ink)">${icon('message',20)}</div><div><div class="quick-title">Живой английский</div><p>Фразы для реальных разговоров</p></div></button><button class="quick-card" data-action="lesson" data-id="media"><div class="icon-box" style="background:var(--pink);color:var(--pink-ink)">${icon('headphones',20)}</div><div><div class="quick-title">Слушай и понимай</div><p>Слова из видео и интернета</p></div></button><button class="quick-card" data-action="start-practice" data-mode="ru-en"><div class="icon-box">${icon('arrow',20)}</div><div><div class="quick-title">Русский → English</div><p>Вспоминай слова без подсказки перевода</p></div></button><button class="quick-card" data-action="start-practice" data-mode="sentence"><div class="icon-box">${icon('message',20)}</div><div><div class="quick-title">Составить предложение</div><p>Тренируйся формулировать мысли самому</p></div></button></div>
   <section class="streak-card"><div class="streak-left"><div class="streak-emoji">🔥</div><div><h3>${state.streak} ${state.streak===1?'день подряд':'дн. подряд'}</h3><p class="subtext" style="font-size:12px;margin-top:4px">${state.lastStudyDate===TODAY()?'Ты уже занимался сегодня. Так держать!':'Заглядывай каждый день, чтобы сохранить серию.'}</p></div></div><div class="streak-days">${dayLabels.map((d,i)=>`<div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div class="day-dot ${(i===jsDay&&state.lastStudyDate===TODAY())?'active':(state.dailyXp[dateOffset(i-jsDay)]>0?'active':'')} ${(i===jsDay)?'today':''}">${(i===jsDay&&state.lastStudyDate===TODAY())?icon('check',12):d[0]}</div><span style="font-size:10px;color:var(--muted)">${d}</span></div>`).join('')}</div></section>
   <div class="section-head"><h2>Твой план обучения</h2><button class="text-button" data-action="tab" data-tab="progress">Прогресс</button></div><div class="lesson-list">${lessons.slice(0,4).map(lessonCard).join('')}</div>
   <section class="chart-card" style="margin-top:16px"><div class="card-heading"><div><h3>Фраза на сегодня</h3><p class="subtext" style="margin-top:5px">Запомни её целиком — так звучит естественный английский.</p></div><button class="icon-button" data-action="speak" data-text="${esc(phraseOfDay.en)}" aria-label="Прослушать">${icon('speaker')}</button></div><div style="font-size:19px;font-weight:750;line-height:1.4;margin-top:18px">${phraseOfDay.en}</div><div style="color:var(--muted);font-size:13px;margin-top:8px">${phraseOfDay.ru}</div><div style="background:#f6f6fc;border-radius:12px;padding:11px 12px;color:#65697c;font-size:12px;margin-top:13px">💡 ${phraseOfDay.tip}</div></section>`;}
@@ -360,18 +561,76 @@ function dateOffset(offset){const d=new Date();d.setDate(d.getDate()+offset);ret
 function renderLessons(){return `<div class="page-title-row"><div><div class="eyebrow">ОБУЧЕНИЕ</div><h1>Выбирай тему</h1><p>Все уроки доступны сразу. Проходи в своём темпе.</p></div><div class="level-chip">${state.completedLessons.length}/${lessons.length} пройдено</div></div><div class="lesson-list">${lessons.map(lessonCard).join('')}</div><section class="chart-card"><div class="card-heading"><div><h3>Как лучше заниматься?</h3><p class="subtext" style="margin-top:5px">15 минут в день — хороший старт.</p></div><div class="icon-box" style="background:var(--mint);color:var(--mint-ink)">${icon('clock')}</div></div><p style="font-size:13px;color:var(--muted);margin:16px 0 0">1. Пройди один короткий урок. 2. Повтори 5–10 слов. 3. Произнеси вслух пару примеров. Возвращайся к сложным фразам на следующий день.</p></section>`;}
 function selectedWords(){let list=[...vocab];if(state.wordFilter==='repeat')list=list.filter(v=>state.repeatWords.includes(v.id)||!state.knownWords.includes(v.id));if(state.wordFilter==='known')list=list.filter(v=>state.knownWords.includes(v.id));if(state.wordSearch.trim()){const q=state.wordSearch.toLowerCase();list=list.filter(v=>(v.en+' '+v.ru+' '+v.ex+' '+v.topic).toLowerCase().includes(q));}return list;}
 function renderWords(){const list=selectedWords();if(state.currentWord>=list.length)state.currentWord=0;const item=list[state.currentWord];return `<div class="page-title-row"><div><div class="eyebrow">СЛОВАРЬ</div><h1>Слова в копилку</h1><p>Лучше запоминать слова в контексте, а не по одному.</p></div><div class="level-chip">${state.knownWords.length}/${vocab.length} знаю</div></div>
-  <div class="search-wrap">${icon('search')}<input id="wordSearch" type="search" placeholder="Найти слово или перевод…" value="${esc(state.wordSearch)}" autocomplete="off"></div><div class="filter-row"><button class="filter-chip ${state.wordFilter==='all'?'active':''}" data-action="word-filter" data-filter="all">Все слова · ${vocab.length}</button><button class="filter-chip ${state.wordFilter==='repeat'?'active':''}" data-action="word-filter" data-filter="repeat">Повторить · ${dueWords().length}</button><button class="filter-chip ${state.wordFilter==='known'?'active':''}" data-action="word-filter" data-filter="known">Знаю · ${state.knownWords.length}</button></div>
-  ${item?`<div class="word-study"><section class="flashcard"><div class="flash-top"><span>КАРТОЧКА ${state.currentWord+1} / ${list.length}</span><span class="word-badge">${item.topic}</span></div><div class="flash-word">${item.en}</div><div class="flash-pron">${item.pron}</div>${state.wordFlipped?`<div class="flash-translation">${item.ru}</div><p class="flash-example">“${item.ex}”</p><button class="icon-button" style="margin-top:13px" data-action="speak" data-text="${esc(item.ex)}" aria-label="Прослушать пример">${icon('speaker')}</button>`:`<button class="btn btn-ghost" style="margin-top:24px" data-action="flip-word">Показать перевод</button><p class="flash-example">Вспомни значение, прежде чем перевернуть карточку.</p>`}<div class="flash-actions"><button class="btn btn-outline" data-action="word-repeat" data-id="${item.id}">↻ Повторить</button><button class="btn btn-primary" data-action="word-known" data-id="${item.id}">${icon('check',15)} Знаю</button></div><button class="text-button" style="margin-top:11px" data-action="next-word">Следующее слово ${icon('arrow',13)}</button></section><div class="word-side"><section class="mini-info"><div class="icon-box" style="background:var(--mint);color:var(--mint-ink)">${icon('check')}</div><div class="mini-stat">${state.knownWords.length}</div><h3>Уже знаю</h3><p>Отмечай знакомые слова, чтобы видеть свой прогресс.</p></section><section class="mini-info"><div class="icon-box" style="background:var(--yellow);color:var(--yellow-ink)">${icon('cards')}</div><div class="mini-stat">${dueWords().length}</div><h3>На повторение</h3><p>Сложные слова можно повторять столько раз, сколько нужно.</p></section></div></div>`:`<div class="empty-state"><div class="big">🎉</div><h3>${state.wordFilter==='known'?'Ты пока не отметил знакомые слова':'Ничего не найдено'}</h3><p>${state.wordFilter==='known'?'Открой карточку и нажми «Знаю».':'Попробуй другой запрос или выбери другой фильтр.'}</p><button class="btn btn-primary" data-action="word-filter" data-filter="all">Показать все слова</button></div>`}
+  <div class="mode-shortcuts"><button class="mode-shortcut" data-action="start-practice" data-mode="ru-en"><div class="icon-box">${icon('arrow',20)}</div><div><strong>Перевод слов</strong><span>Русский → английский · 10 вопросов</span></div></button><button class="mode-shortcut" data-action="start-practice" data-mode="sentence"><div class="icon-box">${icon('message',20)}</div><div><strong>Составление предложений</strong><span>Пиши сам, при необходимости включай подсказки</span></div></button></div><div class="search-wrap" style="margin-top:15px">${icon('search')}<input id="wordSearch" type="search" placeholder="Найти слово или перевод…" value="${esc(state.wordSearch)}" autocomplete="off"></div><div class="filter-row"><button class="filter-chip ${state.wordFilter==='all'?'active':''}" data-action="word-filter" data-filter="all">Все слова · ${vocab.length}</button><button class="filter-chip ${state.wordFilter==='repeat'?'active':''}" data-action="word-filter" data-filter="repeat">Повторить · ${dueWords().length}</button><button class="filter-chip ${state.wordFilter==='known'?'active':''}" data-action="word-filter" data-filter="known">Знаю · ${state.knownWords.length}</button></div>
+  ${item?`<div class="word-study"><section class="flashcard ${wordDirection<0?'swipe-prev':'swipe-next'}"><div class="flash-top"><span>КАРТОЧКА ${state.currentWord+1} / ${list.length}</span><span class="word-badge">${item.topic}</span></div><div class="flash-word">${item.en}</div><div class="flash-pron">${item.pron}</div>${state.wordFlipped?`<div class="flash-translation">${item.ru}</div><p class="flash-example">“${item.ex}”</p><button class="icon-button" style="margin-top:13px" data-action="speak" data-text="${esc(item.ex)}" aria-label="Прослушать пример">${icon('speaker')}</button>`:`<button class="btn btn-ghost" style="margin-top:24px" data-action="flip-word">Показать перевод</button><p class="flash-example">Вспомни значение, прежде чем перевернуть карточку.</p>`}<div class="flash-actions"><button class="btn btn-outline" data-action="word-repeat" data-id="${item.id}">↻ Повторить</button><button class="btn btn-primary" data-action="word-known" data-id="${item.id}">${icon('check',15)} Знаю</button></div><div class="word-nav-controls"><button class="btn btn-ghost" data-action="prev-word">${icon('arrow',14)} Назад</button><button class="btn btn-outline" data-action="next-word">Дальше ${icon('arrow',14)}</button></div><p class="gesture-note">💡 Можно свайпнуть карточку влево или вправо</p></section><div class="word-side"><section class="mini-info"><div class="icon-box" style="background:var(--mint);color:var(--mint-ink)">${icon('check')}</div><div class="mini-stat">${state.knownWords.length}</div><h3>Уже знаю</h3><p>Отмечай знакомые слова, чтобы видеть свой прогресс.</p></section><section class="mini-info"><div class="icon-box" style="background:var(--yellow);color:var(--yellow-ink)">${icon('cards')}</div><div class="mini-stat">${dueWords().length}</div><h3>На повторение</h3><p>Сложные слова можно повторять столько раз, сколько нужно.</p></section></div></div>`:`<div class="empty-state"><div class="big">🎉</div><h3>${state.wordFilter==='known'?'Ты пока не отметил знакомые слова':'Ничего не найдено'}</h3><p>${state.wordFilter==='known'?'Открой карточку и нажми «Знаю».':'Попробуй другой запрос или выбери другой фильтр.'}</p><button class="btn btn-primary" data-action="word-filter" data-filter="all">Показать все слова</button></div>`}
   <div class="section-head"><h2>Список слов</h2><span style="font-size:12px;color:var(--muted)">${list.length} шт.</span></div><div class="word-list">${list.map(v=>`<button class="word-row" data-action="select-word" data-id="${v.id}"><div class="known-dot ${state.knownWords.includes(v.id)?'yes':''}"></div><div class="word-row-main"><strong>${v.en}</strong><span>${v.ru}</span></div>${icon('arrow',14)}</button>`).join('')}</div>`;}
 function renderProgress(){const n=state.completedLessons.length;const earned=state.xp;const accuracy=percent();const week=Array.from({length:7},(_,i)=>{const off=i-6;return {date:dateOffset(off),label:['Вс','Пн','Вт','Ср','Чт','Пт','Сб'][new Date(dateOffset(off)+'T12:00:00').getDay()],xp:state.dailyXp[dateOffset(off)]||0};});const max=Math.max(10,...week.map(d=>d.xp));const badges=[{emoji:'🌱',name:'Первый шаг',desc:'Заработай первые 5 XP',ok:earned>=5},{emoji:'🔥',name:'Серия 3 дня',desc:'Занимайся 3 дня подряд',ok:state.streak>=3},{emoji:'📚',name:'Любознательный',desc:'Пройди 3 урока',ok:n>=3},{emoji:'🧠',name:'Словарик',desc:'Отметь 10 слов как знакомые',ok:state.knownWords.length>=10},{emoji:'🎯',name:'Точность',desc:'Ответь верно на 20 вопросов',ok:state.correct>=20},{emoji:'🏆',name:'Всё пройдено',desc:'Заверши все уроки',ok:n===lessons.length}];return `<div class="page-title-row"><div><div class="eyebrow">ТВОИ РЕЗУЛЬТАТЫ</div><h1>Ты растёшь 🌱</h1><p>Каждое занятие — маленькая победа.</p></div><div class="level-chip">Уровень B1</div></div><div class="stats-grid"><section class="stat-card"><div class="icon-box">${icon('flame')}</div><div class="stat-value">${state.streak}</div><div class="stat-label">Дней подряд</div></section><section class="stat-card"><div class="icon-box" style="background:var(--yellow);color:var(--yellow-ink)">${icon('trophy')}</div><div class="stat-value">${earned}</div><div class="stat-label">Всего XP</div></section><section class="stat-card"><div class="icon-box" style="background:var(--mint);color:var(--mint-ink)">${icon('book')}</div><div class="stat-value">${n}<span style="font-size:14px;color:var(--muted)">/${lessons.length}</span></div><div class="stat-label">Уроков пройдено</div></section><section class="stat-card"><div class="icon-box" style="background:var(--pink);color:var(--pink-ink)">${icon('target')}</div><div class="stat-value">${accuracy}%</div><div class="stat-label">Точность ответов</div></section></div>
   <section class="chart-card"><div class="card-heading"><div><h3>Активность за 7 дней</h3><p class="subtext" style="margin-top:5px">XP, заработанные в каждом дне</p></div><div style="font-weight:800;font-size:14px">${week.reduce((s,d)=>s+d.xp,0)} XP</div></div><div class="week-chart">${week.map(d=>`<div class="chart-column"><div class="chart-bar-wrap"><div class="chart-bar ${d.xp?'has-value':''}" style="height:${Math.max(5,Math.round(d.xp/max*100))}%"></div></div><div class="chart-day">${d.label}</div></div>`).join('')}</div></section>
   <section class="achievement-card"><div class="card-heading"><div><h3>Достижения</h3><p class="subtext" style="margin-top:5px">${badges.filter(b=>b.ok).length} из ${badges.length} открыто</p></div><div class="icon-box" style="background:var(--yellow);color:var(--yellow-ink)">${icon('trophy')}</div></div><div class="achievement-grid">${badges.map(b=>`<div class="achievement ${b.ok?'':'locked'}"><div class="medal">${b.emoji}</div><strong>${b.name}</strong><span>${b.desc}</span></div>`).join('')}</div></section>
   <section class="chart-card"><div class="card-heading"><div><h3>Цель на каждый день</h3><p class="subtext" style="margin-top:5px">Выбери комфортный темп занятий.</p></div><div class="icon-box">${icon('target')}</div></div><div class="settings-row"><span>Ежедневная цель</span><select id="goalSelect" class="small-select"><option value="10" ${state.goal===10?'selected':''}>10 XP · Легко</option><option value="20" ${state.goal===20?'selected':''}>20 XP · Обычно</option><option value="30" ${state.goal===30?'selected':''}>30 XP · Интенсивно</option><option value="50" ${state.goal===50?'selected':''}>50 XP · Марафон</option></select></div><div class="settings-row"><span>Уровень английского</span><strong style="font-size:13px">B1 · Средний</strong></div><button class="btn btn-outline btn-full" style="margin-top:14px" data-action="reset">Сбросить весь прогресс</button><p class="footer-note">Прогресс хранится в памяти этого браузера на этом устройстве. Если очистить данные Safari, статистика может сброситься.</p></section>`;}
+
+function shuffleArray(items){const a=[...items];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function startPractice(mode){
+  if(mode==='ru-en'){
+    const chosen=shuffleArray(vocab).slice(0,10);
+    const questions=chosen.map(word=>{const wrong=shuffleArray(vocab.filter(v=>v.id!==word.id)).slice(0,3);const options=shuffleArray([word,...wrong]);return {word,options,correctIndex:options.findIndex(v=>v.id===word.id)};});
+    practice={type:mode,questions,index:0,selected:null,checked:false,correct:0,xpBefore:state.xp,finished:false};
+  } else {
+    const questions=shuffleArray(sentenceBank).slice(0,10).map(q=>({...q,bank:shuffleArray(q.en.replace(/[.!?]/g,'').split(/\s+/))}));
+    practice={type:'sentence',questions,index:0,selected:null,checked:false,correct:0,xpBefore:state.xp,finished:false,draft:'',hintVisible:false,usedHint:false};
+  }
+  quiz=null;saveState();render();window.scrollTo({top:0,behavior:'smooth'});
+}
+function answerPractice(i){if(!practice||practice.checked||practice.finished)return;practice.selected=i;practice.checked=true;state.answered++;if(i===practice.questions[practice.index].correctIndex){practice.correct++;state.correct++;addXp(5);}else saveState();render();}
+function checkSentence(){if(!practice||practice.checked||practice.finished)return;const q=practice.questions[practice.index];const normal=x=>String(x||'').toLowerCase().trim().replace(/[’‘]/g,"'").replace(/[^a-z0-9' ]/g,'').replace(/\s+/g,' ');const accepted=[q.en,...(q.alts||[])].map(normal);practice.isCorrect=accepted.includes(normal(practice.draft));practice.checked=true;state.answered++;if(practice.isCorrect){practice.correct++;state.correct++;addXp(8);showToast('Отлично! +8 XP');}else saveState();render();}
+function addSentenceToken(token){if(!practice||practice.type!=='sentence'||practice.checked)return;const area=document.getElementById('sentenceDraft');const start=area?area.selectionStart:practice.draft.length;const end=area?area.selectionEnd:start;const before=practice.draft.slice(0,start),after=practice.draft.slice(end);const needsSpace=before.length>0&&!/\s$/.test(before);practice.draft=before+(needsSpace?' ':'')+token+after;practice.usedHint=true;render();const next=document.getElementById('sentenceDraft');if(next){next.focus();const pos=practice.draft.length;next.setSelectionRange(pos,pos);}}
+function nextPractice(){if(!practice)return;if(practice.index<practice.questions.length-1){practice.index++;practice.selected=null;practice.checked=false;practice.draft='';practice.hintVisible=false;practice.usedHint=false;practice.isCorrect=false;render();window.scrollTo({top:0,behavior:'smooth'});}else{practice.finished=true;streakUpdate();saveState();render();}}
+function closePractice(){practice=null;saveState();render();}
+function renderPractice(){
+  const p=practice;const total=p.questions.length;const earned=state.xp-(p.xpBefore||0);
+  if(p.finished){const pct=Math.round(p.correct/total*100);return `<div class="quiz-shell"><div class="quiz-top"><button class="icon-button" data-action="close-practice" aria-label="Закрыть">${icon('close')}</button><div style="font-weight:800;font-size:14px">Практика завершена</div></div><div class="result-content"><div class="result-emoji">${pct>=90?'🏆':pct>=60?'🎉':'💪'}</div><h1>${pct>=90?'Супер результат!':pct>=60?'Хорошая работа!':'Продолжай тренироваться!'}</h1><p class="result-score">${p.type==='ru-en'?'Перевод слов с русского на английский':'Составление предложений'} · ${p.correct} из ${total} правильно</p><div class="result-points"><div><strong>+${earned}</strong><span>XP получено</span></div><div><strong>${pct}%</strong><span>Точность</span></div></div><p style="color:var(--muted);font-size:14px;max-width:340px;margin:0 auto 26px">${p.type==='sentence'?'Главная цель — вспоминать фразу самому. Подсказки можно использовать, пока не станет легче.':'Пробуй переводить с русского на английский каждый день — так слова начнут быстрее вспоминаться.'}</p><button class="btn btn-primary btn-full" data-action="close-practice">Продолжить ${icon('arrow',16)}</button><button class="btn btn-ghost btn-full" style="margin-top:9px" data-action="start-practice" data-mode="${p.type}">Повторить ещё раз</button></div></div>`;}
+  const q=p.questions[p.index];
+  if(p.type==='ru-en'){
+    return `<div class="quiz-shell"><div class="quiz-top"><button class="icon-button" data-action="close-practice" aria-label="Выйти из практики">${icon('close')}</button><div class="quiz-bar"><span style="width:${Math.round((p.index+(p.checked?1:0))/total*100)}%"></span></div><div class="quiz-counter">${p.index+1}/${total}</div></div><div class="quiz-content"><div class="quiz-tag">🧠 АКТИВНОЕ ВСПОМИНАНИЕ</div><h1 class="quiz-question">Как будет по-английски?</h1><p class="quiz-hint">Сначала вспомни слово сам, затем выбери ответ.</p><div class="practice-prompt">${esc(q.word.ru)}<div style="font-size:12px;color:var(--muted);font-weight:550;margin-top:8px">${q.word.topic}</div></div><div class="answer-list">${q.options.map((v,i)=>{let cls='';if(p.checked&&i===q.correctIndex)cls='correct';else if(p.checked&&i===p.selected)cls='wrong';return `<button class="answer-option ${cls}" data-action="practice-answer" data-index="${i}" ${p.checked?'disabled':''}><span class="answer-letter">${String.fromCharCode(65+i)}</span><span>${esc(v.en)}</span>${p.checked&&i===q.correctIndex?`<span style="margin-left:auto;color:#57d6a8">${icon('check',17)}</span>`:''}</button>`;}).join('')}</div>${p.checked?`<div class="feedback ${p.selected===q.correctIndex?'good':'bad'}"><strong>${p.selected===q.correctIndex?'Верно! Отлично 👏':'Правильный ответ:'}</strong><div style="margin-top:5px">${esc(q.word.en)} — ${esc(q.word.ru)}<br><span style="opacity:.86">${esc(q.word.ex)}</span></div><button class="text-button" data-action="speak" data-text="${esc(q.word.ex)}">${icon('speaker',13)} Послушать пример</button></div>`:''}</div><div class="quiz-footer">${p.checked?`<button class="btn btn-primary btn-full" data-action="practice-next">${p.index===total-1?'Завершить':'Следующее слово'} ${icon('arrow',16)}</button>`:`<p class="gesture-note">За правильный ответ — 5 XP.</p>`}</div></div>`;
+  }
+  return `<div class="quiz-shell"><div class="quiz-top"><button class="icon-button" data-action="close-practice" aria-label="Выйти из практики">${icon('close')}</button><div class="quiz-bar"><span style="width:${Math.round((p.index+(p.checked?1:0))/total*100)}%"></span></div><div class="quiz-counter">${p.index+1}/${total}</div></div><div class="quiz-content"><div class="quiz-tag">✍️ СОСТАВЛЕНИЕ ПРЕДЛОЖЕНИЙ</div><h1 class="quiz-question">Скажи это по-английски</h1><p class="quiz-hint">Постарайся написать всё сам. Если застрянешь — открой подсказку со словами.</p><div class="practice-prompt">${esc(q.ru)}</div><label for="sentenceDraft" style="display:block;font-weight:750;font-size:13px;margin:0 0 8px">Твой вариант на английском</label><textarea id="sentenceDraft" class="practice-field" placeholder="Начни писать предложение здесь…" ${p.checked?'readonly':''}>${esc(p.draft)}</textarea><div class="card-heading" style="margin-top:13px"><button class="btn btn-ghost" data-action="toggle-hint" ${p.checked?'disabled':''}>${p.hintVisible?'Скрыть подсказку':'Подсказка: показать слова'}</button><button class="btn btn-outline" data-action="clear-draft" ${p.checked?'disabled':''}>Очистить</button></div>${p.hintVisible&&!p.checked?`<p class="subtext" style="margin:13px 0 4px">Слова в случайном порядке — нажимай, чтобы вставить в текст:</p><div class="word-bank">${q.bank.map((token,i)=>`<button class="word-token" data-action="sentence-token" data-token="${esc(token)}">${esc(token)}</button>`).join('')}</div><p class="gesture-note">${esc(q.hint||'Используй слова как подсказку и собери фразу самостоятельно.')}</p>`:''}${p.checked?`<div class="feedback ${p.isCorrect?'good':'bad'}"><strong>${p.isCorrect?'Правильно! Отличная работа 🎉':'Хорошая попытка — сравни с естественным вариантом.'}</strong><div style="margin-top:6px"><strong>Вариант:</strong> ${esc(q.en)}</div>${q.hint?`<div style="margin-top:5px;opacity:.9">💡 ${esc(q.hint)}</div>`:''}</div>`:''}</div><div class="quiz-footer">${p.checked?`<button class="btn btn-primary btn-full" data-action="practice-next">${p.index===total-1?'Завершить практику':'Следующее предложение'} ${icon('arrow',16)}</button>`:`<button class="btn btn-primary btn-full" data-action="check-sentence">Проверить мой вариант ${icon('arrow',16)}</button><p class="gesture-note">Правильный ответ приносит 8 XP. Варианты с тем же смыслом могут отличаться.</p>`}</div></div>`;
+}
+
 function renderQuiz(){const l=quiz.lesson;if(quiz.finished){const r=quiz.result;const total=r.total;const perfect=r.correct===total;return `<div class="quiz-shell"><div class="quiz-top"><button class="icon-button" data-action="close-quiz" aria-label="Закрыть">${icon('close')}</button><div style="font-weight:800;font-size:14px">Урок завершён</div></div><div class="result-content"><div class="result-emoji">${perfect?'🏆':r.correct>=3?'🎉':'💪'}</div><h1>${perfect?'Идеально!':r.correct>=3?'Отличная работа!':'Хорошая практика!'}</h1><p class="result-score">${l.title} · ты ответил правильно на ${r.correct} из ${total} вопросов.</p><div class="result-points"><div><strong>+${quiz.xpEarned}</strong><span>XP получено</span></div><div><strong>${Math.round(r.correct/total*100)}%</strong><span>Точность</span></div></div><p style="color:var(--muted);font-size:14px;max-width:340px;margin:0 auto 26px">${perfect?'Все ответы верные — так держать!':`Повтори ошибки и попробуй ещё раз. Ошибки — это часть обучения.`} Твой прогресс сохранён на устройстве.</p><button class="btn btn-primary btn-full" data-action="close-quiz">Продолжить ${icon('arrow',16)}</button><button class="btn btn-ghost btn-full" style="margin-top:9px" data-action="lesson" data-id="${l.id}">Пройти ещё раз</button></div></div>`;}
 const q=l.questions[quiz.index],letters=['A','B','C','D'];return `<div class="quiz-shell"><div class="quiz-top"><button class="icon-button" data-action="close-quiz" aria-label="Выйти из урока">${icon('close')}</button><div class="quiz-bar"><span style="width:${Math.round((quiz.index+(quiz.checked?1:0))/l.questions.length*100)}%"></span></div><div class="quiz-counter">${quiz.index+1}/${l.questions.length}</div></div><div class="quiz-content"><div class="quiz-tag">${l.emoji} ${l.tag} · ${l.title}</div><h1 class="quiz-question">${q.q}</h1><p class="quiz-hint">Выбери лучший вариант ответа.</p><div class="question-en">${q.en}<button class="icon-button" data-action="speak" data-text="${esc(q.en)}" aria-label="Прослушать фразу" style="float:right;margin-left:8px;width:34px;height:34px">${icon('speaker',16)}</button></div><div class="answer-list">${q.options.map((o,i)=>{let cls='';if(quiz.checked&&i===q.a)cls='correct';else if(quiz.checked&&i===quiz.selected)cls='wrong';else if(!quiz.checked&&i===quiz.selected)cls='selected';return `<button class="answer-option ${cls}" data-action="answer" data-index="${i}" ${quiz.checked?'disabled':''}><span class="answer-letter">${letters[i]}</span><span>${o}</span>${quiz.checked&&i===q.a?`<span style="margin-left:auto;color:#18815b">${icon('check',17)}</span>`:''}</button>`;}).join('')}</div>${quiz.checked?`<div class="feedback ${quiz.selected===q.a?'good':'bad'}"><strong>${quiz.selected===q.a?'Верно! Отлично 👏':'Почти! Запомни этот вариант.'}</strong><div style="margin-top:5px">${q.why}</div></div>`:''}<div style="margin-top:18px;background:#f7f7fc;padding:14px;border-radius:14px;font-size:12px;color:var(--muted)"><strong style="color:var(--text)">Подсказка</strong><br>${l.tip}</div></div><div class="quiz-footer">${quiz.checked?`<button class="btn btn-primary btn-full" data-action="next-question">${quiz.index===l.questions.length-1?'Завершить урок':'Дальше'} ${icon('arrow',16)}</button>`:`<button class="btn btn-primary btn-full" disabled style="opacity:.42;cursor:not-allowed">Выбери ответ</button>`}</div></div>`;}
-function render(){const root=document.getElementById('app');if(quiz){root.innerHTML=renderQuiz();return;}const title=state.tab==='home'?'Сегодня':state.tab==='lessons'?'Уроки':state.tab==='words'?'Слова':'Прогресс';const tabContent=state.tab==='home'?renderHome():state.tab==='lessons'?renderLessons():state.tab==='words'?renderWords():renderProgress();root.innerHTML=`<div class="app-shell"><header class="topbar"><div class="brand"><div class="brand-mark">${icon('logo',23)}</div><div><div class="brand-name">englishly<span style="color:var(--accent)">.</span></div><div class="brand-tag">Английский в твоём ритме</div></div></div><div class="top-stats"><div class="pill"><span class="fire">🔥</span> ${state.streak}</div><div class="pill">${icon('trophy',14)} ${state.xp} XP</div></div></header><main>${tabContent}</main><nav class="bottom-nav" aria-label="Главная навигация"><div class="nav-inner"><button class="nav-item ${state.tab==='home'?'active':''}" data-action="tab" data-tab="home">${icon('home',21)}<span>Сегодня</span></button><button class="nav-item ${state.tab==='lessons'?'active':''}" data-action="tab" data-tab="lessons">${icon('book',21)}<span>Уроки</span></button><button class="nav-item ${state.tab==='words'?'active':''}" data-action="tab" data-tab="words">${icon('cards',21)}<span>Слова</span></button><button class="nav-item ${state.tab==='progress'?'active':''}" data-action="tab" data-tab="progress">${icon('chart',21)}<span>Прогресс</span></button></div></nav></div>`;wireInputs();}
-function wireInputs(){const search=document.getElementById('wordSearch');if(search){search.addEventListener('input',e=>{const pos=e.target.selectionStart;state.wordSearch=e.target.value;state.currentWord=0;state.wordFlipped=false;const keepFocus=true;const root=document.getElementById('app');const main=root.querySelector('main');main.innerHTML=renderWords();const next=document.getElementById('wordSearch');next.focus();next.setSelectionRange(pos,pos);wireInputs();saveState();});}const goal=document.getElementById('goalSelect');if(goal)goal.addEventListener('change',e=>{state.goal=Number(e.target.value);saveState();render();showToast('Ежедневная цель обновлена');});}
-document.addEventListener('click',e=>{const btn=e.target.closest('[data-action]');if(!btn)return;const act=btn.dataset.action;switch(act){case'tab':navTab(btn.dataset.tab);break;case'lesson':startLesson(btn.dataset.id);break;case'answer':chooseAnswer(Number(btn.dataset.index));break;case'next-question':nextQuestion();break;case'close-quiz':closeQuiz();break;case'speak':speak(btn.dataset.text||'');break;case'word-filter':state.wordFilter=btn.dataset.filter;state.currentWord=0;state.wordFlipped=false;saveState();render();break;case'flip-word':state.wordFlipped=true;render();break;case'next-word':{const list=selectedWords();if(list.length){state.currentWord=(state.currentWord+1)%list.length;state.wordFlipped=false;render();}break;}case'select-word':{const list=selectedWords();const ix=list.findIndex(v=>v.id===btn.dataset.id);if(ix>=0){state.currentWord=ix;state.wordFlipped=true;render();window.scrollTo({top:0,behavior:'smooth'});}break;}case'word-known':{const id=btn.dataset.id;if(!state.knownWords.includes(id)){state.knownWords.push(id);state.repeatWords=state.repeatWords.filter(x=>x!==id);addXp(2);showToast('Слово добавлено в «Знаю» · +2 XP');}else showToast('Это слово уже отмечено');state.wordFlipped=false;saveState();render();break;}case'word-repeat':{const id=btn.dataset.id;state.repeatWords=Array.from(new Set([...state.repeatWords,id]));state.knownWords=state.knownWords.filter(x=>x!==id);state.wordFlipped=false;saveState();showToast('Добавлено на повторение');render();break;}case'reset':if(confirm('Точно сбросить весь прогресс? Это действие нельзя отменить.')){state=defaultState();quiz=null;saveState();render();showToast('Прогресс сброшен');}break;}});
+function render(){const root=document.getElementById('app');if(quiz){root.innerHTML=renderQuiz();return;}if(practice){root.innerHTML=renderPractice();wireInputs();return;}const tabContent=state.tab==='home'?renderHome():state.tab==='lessons'?renderLessons():state.tab==='words'?renderWords():renderProgress();root.innerHTML=`<div class="app-shell"><header class="topbar"><div class="brand"><div class="brand-mark">${icon('logo',23)}</div><div><div class="brand-name">englishly<span style="color:var(--accent)">.</span></div><div class="brand-tag">Английский в твоём ритме</div></div></div><div class="top-stats"><div class="pill"><span class="fire">🔥</span> ${state.streak}</div><div class="pill">${icon('trophy',14)} ${state.xp} XP</div></div></header><main>${tabContent}</main><nav class="bottom-nav" aria-label="Главная навигация"><div class="nav-inner"><button class="nav-item ${state.tab==='home'?'active':''}" data-action="tab" data-tab="home">${icon('home',21)}<span>Сегодня</span></button><button class="nav-item ${state.tab==='lessons'?'active':''}" data-action="tab" data-tab="lessons">${icon('book',21)}<span>Уроки</span></button><button class="nav-item ${state.tab==='words'?'active':''}" data-action="tab" data-tab="words">${icon('cards',21)}<span>Слова</span></button><button class="nav-item ${state.tab==='progress'?'active':''}" data-action="tab" data-tab="progress">${icon('chart',21)}<span>Прогресс</span></button></div></nav></div>`;wireInputs();wordDirection=1;}
+function wireInputs(){
+  const search=document.getElementById('wordSearch');
+  if(search){search.addEventListener('input',e=>{const pos=e.target.selectionStart;state.wordSearch=e.target.value;state.currentWord=0;state.wordFlipped=false;const root=document.getElementById('app');const main=root.querySelector('main');main.innerHTML=renderWords();const next=document.getElementById('wordSearch');if(next){next.focus();next.setSelectionRange(pos,pos);}wireInputs();saveState();});}
+  const goal=document.getElementById('goalSelect');if(goal)goal.addEventListener('change',e=>{state.goal=Number(e.target.value);saveState();render();showToast('Ежедневная цель обновлена');});
+  const draft=document.getElementById('sentenceDraft');if(draft)draft.addEventListener('input',e=>{if(practice&&!practice.checked)practice.draft=e.target.value;});
+  const card=document.querySelector('.flashcard');if(card){let sx=0,sy=0;card.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY;});card.addEventListener('pointerup',e=>{const dx=e.clientX-sx,dy=e.clientY-sy;if(Math.abs(dx)>58&&Math.abs(dx)>Math.abs(dy)*1.25){changeWord(dx<0?1:-1);}});}
+}
+function changeWord(dir){const list=selectedWords();if(!list.length)return;state.currentWord=(state.currentWord+dir+list.length)%list.length;state.wordFlipped=false;wordDirection=dir;saveState();render();}
+document.addEventListener('click',e=>{const btn=e.target.closest('[data-action]');if(!btn)return;const act=btn.dataset.action;switch(act){
+case'tab':quiz=null;practice=null;navTab(btn.dataset.tab);break;
+case'lesson':practice=null;startLesson(btn.dataset.id);break;
+case'answer':chooseAnswer(Number(btn.dataset.index));break;
+case'next-question':nextQuestion();break;
+case'close-quiz':closeQuiz();break;
+case'speak':speak(btn.dataset.text||'');break;
+case'word-filter':state.wordFilter=btn.dataset.filter;state.currentWord=0;state.wordFlipped=false;saveState();render();break;
+case'flip-word':state.wordFlipped=true;render();break;
+case'next-word':changeWord(1);break;
+case'prev-word':changeWord(-1);break;
+case'select-word':{const list=selectedWords();const ix=list.findIndex(v=>v.id===btn.dataset.id);if(ix>=0){state.currentWord=ix;state.wordFlipped=true;wordDirection=1;render();window.scrollTo({top:0,behavior:'smooth'});}break;}
+case'word-known':{const id=btn.dataset.id;if(!state.knownWords.includes(id)){state.knownWords.push(id);state.repeatWords=state.repeatWords.filter(x=>x!==id);addXp(2);showToast('Слово добавлено в «Знаю» · +2 XP');}else showToast('Это слово уже отмечено');state.wordFlipped=false;saveState();render();break;}
+case'word-repeat':{const id=btn.dataset.id;state.repeatWords=Array.from(new Set([...state.repeatWords,id]));state.knownWords=state.knownWords.filter(x=>x!==id);state.wordFlipped=false;saveState();showToast('Добавлено на повторение');render();break;}
+case'start-practice':startPractice(btn.dataset.mode);break;
+case'practice-answer':answerPractice(Number(btn.dataset.index));break;
+case'practice-next':nextPractice();break;
+case'close-practice':closePractice();break;
+case'check-sentence':checkSentence();break;
+case'toggle-hint':if(practice&&!practice.checked){practice.hintVisible=!practice.hintVisible;render();}break;
+case'clear-draft':if(practice&&!practice.checked){practice.draft='';render();document.getElementById('sentenceDraft')?.focus();}break;
+case'sentence-token':addSentenceToken(btn.dataset.token);break;
+case'reset':if(confirm('Точно сбросить весь прогресс? Это действие нельзя отменить.')){state=defaultState();quiz=null;practice=null;saveState();render();showToast('Прогресс сброшен');}break;
+}});
 if('serviceWorker'in navigator && location.protocol!=='file:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
 render();
 </script>
