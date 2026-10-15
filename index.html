@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f6f7fb">
+  <meta name="description" content="Персональное приложение для практики английского: уроки, слова, разговоры и прогресс.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <title>Englishly — твой английский</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7fb;
+      --surface: rgba(255,255,255,.88);
+      --card: #fff;
+      --text: #171923;
+      --muted: #777c8d;
+      --line: #e8eaf1;
+      --accent: #5957e8;
+      --accent-dark: #4140c8;
+      --accent-soft: #eeedff;
+      --mint: #dff8ed;
+      --mint-ink: #197353;
+      --yellow: #fff4ce;
+      --yellow-ink: #9b6900;
+      --pink: #ffe8ed;
+      --pink-ink: #b23d59;
+      --shadow: 0 16px 42px rgba(35, 39, 75, .07);
+      --radius: 24px;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-tap-highlight-color: transparent; }
+    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+    button, input { font:inherit; }
+    button { cursor:pointer; }
+    button:focus-visible, input:focus-visible { outline:3px solid #aaa8ff; outline-offset:3px; }
+    .app-shell { min-height:100vh; padding-bottom:calc(92px + env(safe-area-inset-bottom)); }
+    .topbar { max-width:1040px; margin:0 auto; padding:calc(16px + env(safe-area-inset-top)) 22px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .brand { display:flex; gap:11px; align-items:center; min-width:0; }
+    .brand-mark { width:42px;height:42px;border-radius:15px;background:var(--accent);color:white;display:grid;place-items:center;box-shadow:0 7px 15px rgba(89,87,232,.22);flex:none; }
+    .brand-mark svg { width:23px;height:23px; }
+    .brand-name { font-weight:780; letter-spacing:-.7px; font-size:19px; }
+    .brand-tag { color:var(--muted); font-size:12px; margin-top:2px; }
+    .top-stats { display:flex; gap:8px; align-items:center; }
+    .pill { display:flex;align-items:center;gap:6px;padding:9px 11px;border-radius:14px;background:#fff;border:1px solid var(--line);font-size:13px;font-weight:700;white-space:nowrap; }
+    .pill .fire { color:#f08b34; }
+    main { max-width:1040px; margin:0 auto; padding:4px 22px 24px; }
+    .greeting { display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin:12px 0 23px; }
+    .eyebrow { color:var(--accent);font-weight:750;letter-spacing:1.1px;text-transform:uppercase;font-size:10px;margin-bottom:9px; }
+    h1 { font-size:clamp(28px,6vw,39px);letter-spacing:-1.6px;line-height:1.08;margin:0;font-weight:800; }
+    h2 { font-size:21px;letter-spacing:-.6px;margin:0; }
+    h3 { font-size:16px;letter-spacing:-.25px;margin:0; }
+    p { line-height:1.5; }
+    .subtext { color:var(--muted);font-size:14px;margin:9px 0 0; }
+    .level-chip { flex:none;background:var(--accent-soft);color:var(--accent-dark);padding:9px 12px;border-radius:12px;font-size:12px;font-weight:750; }
+    .hero-grid { display:grid;grid-template-columns:1.25fr .75fr;gap:16px; }
+    .hero-card { position:relative;overflow:hidden;border-radius:28px;padding:25px;background:linear-gradient(135deg,#625ff1 0%,#7774ef 68%,#9795fa 100%);color:#fff;min-height:250px;box-shadow:0 18px 36px rgba(89,87,232,.2); }
+    .hero-card:after { content:""; position:absolute; width:210px;height:210px;right:-57px;bottom:-88px;border:1px solid rgba(255,255,255,.22);border-radius:50%;box-shadow:0 0 0 24px rgba(255,255,255,.055),0 0 0 50px rgba(255,255,255,.045); }
+    .hero-label { display:inline-flex;gap:7px;align-items:center;background:rgba(255,255,255,.16);padding:7px 10px;border-radius:11px;font-size:11px;font-weight:700; }
+    .hero-card h2 { margin:18px 0 9px;font-size:25px;max-width:300px;line-height:1.15;letter-spacing:-.8px; }
+    .hero-card p { margin:0;color:rgba(255,255,255,.84);font-size:13px;max-width:320px; }
+    .hero-bottom { display:flex;align-items:center;gap:12px;margin-top:22px;position:relative;z-index:1; }
+    .btn { border:0;border-radius:15px;padding:13px 16px;font-weight:750;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s ease,filter .12s ease; }
+    .btn:active { transform:scale(.98); }
+    .btn-primary { background:var(--accent);color:white; }
+    .btn-primary:hover { filter:brightness(.97); }
+    .btn-white { background:#fff;color:var(--accent-dark); }
+    .btn-ghost { background:#f2f2f8;color:#393b4a; }
+    .btn-outline { border:1px solid var(--line);background:#fff;color:var(--text); }
+    .btn-full { width:100%; }
+    .hero-progress { font-size:12px;color:rgba(255,255,255,.86); }
+    .goal-card { padding:23px;background:var(--card);border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:space-between;min-height:250px; }
+    .card-heading { display:flex;align-items:center;justify-content:space-between;gap:10px; }
+    .icon-box { width:38px;height:38px;border-radius:13px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none; }
+    .icon-box svg { width:19px;height:19px; }
+    .goal-number { font-size:33px;font-weight:800;letter-spacing:-1.3px;margin-top:20px; }
+    .goal-number span { font-size:14px;color:var(--muted);font-weight:600;letter-spacing:0; }
+    .progress-track { height:8px;background:#eeeeF5;border-radius:99px;overflow:hidden;margin-top:13px; }
+    .progress-fill { height:100%;background:var(--accent);border-radius:99px;transition:width .25s ease; }
+    .goal-foot { display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-top:9px; }
+    .section-head { display:flex;align-items:center;justify-content:space-between;gap:12px;margin:29px 0 14px; }
+    .text-button { border:0;background:transparent;color:var(--accent);font-weight:750;font-size:13px;padding:7px 0; }
+    .quick-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:12px; }
+    .quick-card { background:var(--card);border:1px solid var(--line);border-radius:21px;padding:17px;display:flex;align-items:flex-start;gap:12px;text-align:left;color:var(--text);min-height:105px;transition:transform .13s ease,box-shadow .13s ease; }
+    .quick-card:hover { transform:translateY(-2px);box-shadow:var(--shadow); }
+    .quick-card p { color:var(--muted);font-size:12px;margin:6px 0 0;line-height:1.4; }
+    .quick-title { font-size:14px;font-weight:750; }
+    .quick-card .icon-box { width:36px;height:36px; }
+    .streak-card { margin-top:16px;background:#fff;border:1px solid var(--line);padding:19px 20px;border-radius:23px;display:flex;align-items:center;justify-content:space-between;gap:16px; }
+    .streak-left { display:flex;align-items:center;gap:13px; }
+    .streak-emoji { width:46px;height:46px;border-radius:16px;background:var(--yellow);display:grid;place-items:center;font-size:23px; }
+    .streak-days { display:flex;gap:7px;align-items:center; }
+    .day-dot { width:25px;height:25px;border-radius:50%;background:#f0f1f7;color:#a0a3b2;display:grid;place-items:center;font-size:10px;font-weight:750; }
+    .day-dot.active { background:var(--accent);color:#fff; }
+    .day-dot.today { box-shadow:0 0 0 3px var(--accent-soft); }
+    .lesson-list { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px; }
+    .lesson-card { display:flex;align-items:center;gap:14px;padding:17px;border:1px solid var(--line);background:#fff;border-radius:21px;text-align:left;color:var(--text);min-width:0; }
+    .lesson-card:hover { box-shadow:var(--shadow); }
+    .lesson-icon { width:49px;height:49px;border-radius:17px;display:grid;place-items:center;font-size:23px;flex:none; }
+    .lesson-meta { min-width:0;flex:1; }
+    .lesson-meta h3 { font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+    .lesson-meta p { color:var(--muted);font-size:12px;margin:6px 0 0; }
+    .lesson-state { width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#f3f3f8;color:#85889a;flex:none; }
+    .lesson-state.done { background:var(--mint);color:var(--mint-ink); }
+    .lesson-progress { margin-top:10px;height:4px;background:#f0f0f5;border-radius:99px;overflow:hidden; }
+    .lesson-progress span { display:block;height:100%;background:var(--accent);border-radius:99px; }
+    .page-title-row { display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:15px 0 22px; }
+    .page-title-row p { color:var(--muted);font-size:14px;margin:8px 0 0; }
+    .filter-row { display:flex;gap:8px;overflow:auto;padding-bottom:5px;margin-bottom:15px;scrollbar-width:none; }
+    .filter-row::-webkit-scrollbar { display:none; }
+    .filter-chip { border:1px solid var(--line);background:#fff;color:var(--muted);padding:9px 13px;border-radius:12px;font-weight:700;font-size:12px;white-space:nowrap; }
+    .filter-chip.active { background:var(--accent);color:white;border-color:var(--accent); }
+    .search-wrap { display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:15px;padding:0 13px;margin-bottom:14px; }
+    .search-wrap svg { width:18px;color:var(--muted);flex:none; }
+    .search-wrap input { border:0;outline:0;background:transparent;height:47px;width:100%;min-width:0;color:var(--text);font-size:14px; }
+    .word-study { display:grid;grid-template-columns:1fr .9fr;gap:16px;align-items:stretch; }
+    .flashcard { background:linear-gradient(145deg,#fff,#fafaff);border:1px solid var(--line);border-radius:28px;padding:26px;min-height:285px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;box-shadow:var(--shadow); }
+    .flash-top { position:absolute;top:18px;left:20px;right:20px;display:flex;align-items:center;justify-content:space-between;color:var(--muted);font-size:11px;font-weight:700; }
+    .word-badge { background:var(--accent-soft);color:var(--accent-dark);border-radius:10px;padding:6px 9px; }
+    .flash-word { font-size:clamp(30px,7vw,42px);font-weight:800;letter-spacing:-1.5px;margin-top:13px; }
+    .flash-pron { color:var(--muted);font-size:13px;margin-top:6px; }
+    .flash-translation { font-size:21px;font-weight:750;margin-top:21px; }
+    .flash-example { font-size:13px;color:var(--muted);margin:9px 0 0;max-width:360px; }
+    .flash-actions { display:flex;gap:9px;width:100%;margin-top:22px; }
+    .flash-actions .btn { flex:1;padding:12px 8px;font-size:13px; }
+    .word-side { display:flex;flex-direction:column;gap:12px; }
+    .mini-info { background:#fff;border:1px solid var(--line);border-radius:22px;padding:19px; }
+    .mini-info p { font-size:13px;color:var(--muted);margin:8px 0 0; }
+    .mini-stat { font-size:28px;letter-spacing:-1px;font-weight:800;margin-top:15px; }
+    .word-list { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:20px; }
+    .word-row { background:#fff;border:1px solid var(--line);border-radius:17px;padding:13px 14px;display:flex;align-items:center;gap:10px;text-align:left;color:var(--text);min-width:0; }
+    .word-row-main { min-width:0;flex:1; }
+    .word-row strong { display:block;font-size:14px; }
+    .word-row span { display:block;font-size:12px;color:var(--muted);margin-top:4px; }
+    .word-row .known-dot { width:9px;height:9px;border-radius:50%;background:#d6d8e4;flex:none; }
+    .word-row .known-dot.yes { background:#2eb887; }
+    .stats-grid { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px; }
+    .stat-card { background:#fff;border:1px solid var(--line);border-radius:21px;padding:18px; }
+    .stat-label { color:var(--muted);font-size:12px;margin-top:12px; }
+    .stat-value { font-size:28px;font-weight:800;letter-spacing:-1px;margin-top:5px; }
+    .chart-card,.achievement-card { background:#fff;border:1px solid var(--line);border-radius:23px;padding:21px;margin-top:15px; }
+    .week-chart { display:flex;align-items:flex-end;justify-content:space-between;gap:10px;height:132px;margin-top:20px;padding:0 4px; }
+    .chart-column { display:flex;align-items:center;flex-direction:column;justify-content:flex-end;gap:9px;height:100%;flex:1; }
+    .chart-bar-wrap { height:94px;width:100%;display:flex;align-items:flex-end;justify-content:center; }
+    .chart-bar { width:min(28px,70%);min-height:5px;background:#e5e4ff;border-radius:9px 9px 4px 4px; }
+    .chart-bar.has-value { background:var(--accent); }
+    .chart-day { color:var(--muted);font-size:11px;font-weight:700; }
+    .achievement-grid { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:15px; }
+    .achievement { background:#fafaff;border:1px solid #eeeefa;border-radius:17px;padding:15px 10px;text-align:center; }
+    .achievement.locked { opacity:.45;filter:grayscale(1); }
+    .achievement .medal { font-size:25px; }
+    .achievement strong { display:block;font-size:12px;margin-top:9px; }
+    .achievement span { display:block;font-size:10px;color:var(--muted);margin-top:5px;line-height:1.35; }
+    .bottom-nav { position:fixed;z-index:20;bottom:0;left:0;right:0;padding:9px 12px calc(9px + env(safe-area-inset-bottom));background:rgba(255,255,255,.91);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border-top:1px solid rgba(222,224,234,.85);display:flex;justify-content:center; }
+    .nav-inner { width:min(620px,100%);display:grid;grid-template-columns:repeat(4,1fr);gap:5px; }
+    .nav-item { border:0;background:transparent;color:#9699a9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border-radius:14px;padding:8px 4px 5px;font-size:10px;font-weight:700; }
+    .nav-item svg { width:21px;height:21px;stroke-width:1.9; }
+    .nav-item.active { color:var(--accent);background:var(--accent-soft); }
+    .quiz-shell { min-height:100vh;max-width:760px;margin:0 auto;padding:calc(20px + env(safe-area-inset-top)) 22px calc(25px + env(safe-area-inset-bottom));display:flex;flex-direction:column; }
+    .quiz-top { display:flex;align-items:center;gap:13px; }
+    .icon-button { width:39px;height:39px;border-radius:13px;border:1px solid var(--line);background:#fff;color:#6f7382;display:grid;place-items:center;flex:none; }
+    .icon-button svg { width:18px;height:18px; }
+    .quiz-bar { flex:1;height:8px;border-radius:99px;background:#e9eaf2;overflow:hidden; }
+    .quiz-bar span { display:block;height:100%;background:#54c6a0;border-radius:99px;transition:width .2s ease; }
+    .quiz-counter { font-size:12px;font-weight:750;color:var(--muted);white-space:nowrap; }
+    .quiz-content { margin:auto 0; padding:40px 0 30px; }
+    .quiz-tag { color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:1.2px;font-size:10px; }
+    .quiz-question { font-size:clamp(26px,6vw,35px);line-height:1.18;letter-spacing:-1.1px;margin:14px 0 13px;font-weight:800; }
+    .quiz-hint { color:var(--muted);font-size:14px;margin:0 0 23px; }
+    .question-en { background:#f1f0ff;border-radius:16px;padding:17px;margin:20px 0;font-size:19px;font-weight:700;line-height:1.45; }
+    .answer-list { display:flex;flex-direction:column;gap:10px; }
+    .answer-option { display:flex;align-items:center;gap:13px;text-align:left;background:#fff;border:1.5px solid #e7e8f0;border-radius:16px;padding:15px 14px;color:var(--text);font-size:15px;font-weight:650;min-height:57px; }
+    .answer-letter { width:28px;height:28px;border:1px solid #e5e6ee;border-radius:9px;color:var(--muted);display:grid;place-items:center;font-size:11px;font-weight:800;flex:none; }
+    .answer-option.selected { border-color:var(--accent);background:#f7f6ff; }
+    .answer-option.correct { border-color:#39b88b;background:#f1fcf7; }
+    .answer-option.wrong { border-color:#e8758b;background:#fff5f7; }
+    .answer-option.correct .answer-letter { background:#d7f6e9;border-color:#a8e7cd;color:#187650; }
+    .feedback { margin-top:15px;padding:14px 15px;border-radius:15px;font-size:13px;line-height:1.45; }
+    .feedback.good { background:#e8faf2;color:#176e4d; }
+    .feedback.bad { background:#fff0f3;color:#a2334e; }
+    .quiz-footer { margin-top:auto; }
+    .quiz-footer .btn { min-height:51px; }
+    .result-content { text-align:center;margin:auto 0;padding:45px 0; }
+    .result-emoji { font-size:56px; }
+    .result-content h1 { margin-top:18px; }
+    .result-score { font-size:14px;color:var(--muted);margin:12px 0 25px; }
+    .result-points { margin:0 auto 25px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:18px;max-width:290px;display:flex;justify-content:space-around; }
+    .result-points strong { display:block;font-size:22px; }
+    .result-points span { color:var(--muted);font-size:11px; }
+    .empty-state { text-align:center;padding:36px 20px;background:#fff;border:1px solid var(--line);border-radius:22px;color:var(--muted); }
+    .empty-state .big { font-size:35px;margin-bottom:10px; }
+    .toast { position:fixed;z-index:50;left:50%;bottom:calc(95px + env(safe-area-inset-bottom));transform:translate(-50%,15px);background:#202130;color:#fff;padding:11px 15px;border-radius:13px;font-size:12px;font-weight:650;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:all .2s ease;max-width:calc(100% - 40px);text-align:center; }
+    .toast.show { opacity:1;transform:translate(-50%,0); }
+    .settings-row { display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 0;border-bottom:1px solid var(--line);font-size:14px; }
+    .settings-row:last-child { border-bottom:0; }
+    .small-select { border:1px solid var(--line);border-radius:11px;padding:9px;background:#fff;color:var(--text); }
+    .footer-note { color:var(--muted);font-size:11px;line-height:1.5;margin:20px 0 0;text-align:center; }
+    @media (min-width:800px) { .topbar { padding-top:24px; } .app-shell { padding-bottom:110px; } .bottom-nav { bottom:18px;left:50%;right:auto;transform:translateX(-50%);width:min(620px,calc(100% - 40px));border:1px solid var(--line);border-radius:22px;box-shadow:0 10px 35px rgba(35,39,75,.1);padding:9px 12px; } body { padding-bottom:18px; } }
+    @media (max-width:660px) {
+      .topbar { padding-left:17px;padding-right:17px; }
+      main { padding-left:17px;padding-right:17px; }
+      .hero-grid { grid-template-columns:1fr; }
+      .hero-card { min-height:240px; }
+      .goal-card { min-height:200px; }
+      .quick-grid { grid-template-columns:1fr; }
+      .quick-card { min-height:80px;align-items:center; }
+      .quick-card .icon-box { width:42px;height:42px; }
+      .streak-card { align-items:flex-start;flex-direction:column; }
+      .streak-days { width:100%;justify-content:space-between; }
+      .lesson-list { grid-template-columns:1fr; }
+      .word-study { grid-template-columns:1fr; }
+      .word-side { display:grid;grid-template-columns:1fr 1fr; }
+      .word-list { grid-template-columns:1fr; }
+      .stats-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .page-title-row { align-items:flex-start; }
+      .achievement-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+      .achievement { padding:12px 6px; }
+      .top-stats .pill { padding:8px 9px;font-size:12px; }
+    }
+    @media (max-width:390px) { .brand-tag { display:none; } .brand-mark { width:38px;height:38px; } .top-stats { gap:5px; } .pill { gap:4px; } .word-side { grid-template-columns:1fr; } .quiz-shell { padding-left:17px;padding-right:17px; } }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script>
+const ICONS = {
+  logo:'<path d="M5 5.5A2.5 2.5 0 0 1 7.5 3H19v17H7.5A2.5 2.5 0 0 0 5 22V5.5Z"/><path d="M5 17a2.5 2.5 0 0 1 2.5-2.5H19M9 7h6M9 10h6"/>',
+  home:'<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/>',
+  book:'<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22Z"/><path d="M4 6v14M8 7h8M8 11h8"/>',
+  cards:'<rect x="5" y="4" width="13" height="16" rx="2"/><path d="M9 2h10a2 2 0 0 1 2 2v13M8 9h7M8 13h5"/>',
+  chart:'<path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 6-7"/>',
+  flame:'<path d="M12 22c4.2 0 7-2.8 7-7 0-3.2-1.8-5.5-4.7-8.8.1 2.3-1 3.8-2.1 4.5C12 7.2 9.8 4.8 7.2 3 8 7 5 9.6 5 14.5 5 19 7.8 22 12 22Z"/><path d="M12 22c-2.2-1.1-3-2.6-2.7-4.7.2-1.1 1-2.2 2.2-3.4.2 1.4 1.1 2 1.8 2.4 1 1.7.5 4.2-1.3 5.7Z"/>',
+  arrow:'<path d="M5 12h14M12 5l7 7-7 7"/>',
+  check:'<path d="m5 12 4 4L19 6"/>',
+  speaker:'<path d="M11 5 6 9H3v6h3l5 4Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
+  close:'<path d="m18 6-12 12M6 6l12 12"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+  headphones:'<path d="M3 14v-3a9 9 0 0 1 18 0v3"/><path d="M5 14h2v6H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2ZM19 14h-2v6h2a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2Z"/>',
+  message:'<path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 8.7 3.9a8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8Z"/>',
+  trophy:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0Z"/><path d="M7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4"/>',
+  bookmark:'<path d="M6 4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17l-6-4-6 4Z"/>',
+};
+const icon = (name, size=20) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]||ICONS.book}</svg>`;
+const lessons = [
+  {id:'conversation',title:'Живое общение',subtitle:'Звучать естественнее',tag:'Speaking',emoji:'💬',color:'#eeedff',ink:'#5957e8',minutes:6,tip:'В разговоре короткие естественные фразы часто звучат лучше, чем дословный перевод с русского.',words:['actually','by the way','I guess','to be honest'],questions:[
+    {q:'Выбери естественное продолжение',en:'I’m looking forward ___ you.',options:['to see','to seeing','see','for seeing'],a:1,why:'После look forward to используется существительное или глагол с -ing: “looking forward to seeing you”.'},
+    {q:'Как мягко выразить своё мнение?',en:'___, this is a really good idea.',options:['In my opinion','At my opinion','For my opinion','On my opinion'],a:0,why:'Правильно: “In my opinion” — «по моему мнению».'},
+    {q:'Что значит “by the way”?',en:'By the way, have you met Alex?',options:['В любом случае','Кстати','С другой стороны','Сразу же'],a:1,why:'“By the way” используют, чтобы добавить новую мысль: «кстати».'},
+    {q:'Заполни пропуск',en:'I ___ what you mean.',options:['see','watch','look','view'],a:0,why:'“I see what you mean” — естественный способ сказать «я понимаю, что ты имеешь в виду».'},
+    {q:'Выбери ответ на “How have you been?”',en:'Someone you haven’t seen for months asks: “How have you been?”',options:['I’m fine yesterday.','Pretty good, thanks! And you?','I have 20 years.','Yes, I have.'],a:1,why:'Вопрос о том, как у тебя дела в последнее время. Естественно ответить “Pretty good, thanks! And you?”.'}
+  ]},
+  {id:'travel',title:'Путешествия',subtitle:'Без стресса за границей',tag:'Travel',emoji:'✈️',color:'#e1f5ff',ink:'#1677a9',minutes:5,tip:'Вежливые просьбы с “Could you…?” и “Would you mind…?” звучат мягче, чем прямые команды.',words:['boarding pass','layover','to get around','crowded'],questions:[
+    {q:'Как вежливо спросить дорогу?',en:'___ how to get to the nearest station?',options:['Can you tell me','You tell me','Are you tell me','Could you telling me'],a:0,why:'“Can you tell me how to get to…?” — вежливый и естественный вопрос о дороге.'},
+    {q:'Что такое “layover”?',en:'Our layover in Helsinki is three hours.',options:['Потерянный багаж','Пересадка с ожиданием','Посадочный талон','Задержка на дороге'],a:1,why:'Layover — период ожидания между рейсами во время пересадки.'},
+    {q:'Выбери правильную фразу',en:'I’d like to ___ a table for two.',options:['book','order','reserve to','make a booking on'],a:0,why:'“Book a table” — забронировать столик. “Reserve a table” тоже правильно.'},
+    {q:'Как сказать «Здесь многолюдно»?',en:'It’s really ___ here today.',options:['crowd','crowded','crowding','crowds'],a:1,why:'Crowded — прилагательное «переполненный, многолюдный».'},
+    {q:'Что значит “get around” в путешествии?',en:'It’s easy to get around the city by tram.',options:['Уехать навсегда','Ориентироваться и передвигаться','Забронировать отель','Пройти регистрацию'],a:1,why:'Get around означает передвигаться по городу или местности.'}
+  ]},
+  {id:'grammar',title:'Грамматика без боли',subtitle:'Present Perfect и Past Simple',tag:'Grammar',emoji:'🧩',color:'#fff0d8',ink:'#9a5d00',minutes:7,tip:'Past Simple — завершённое действие в конкретное время. Present Perfect — опыт или результат, связанный с настоящим; точное время не главное.',words:['already','yet','ever','recently'],questions:[
+    {q:'Выбери правильное время',en:'I ___ this film twice. It’s amazing.',options:['saw','have seen','am seeing','see'],a:1,why:'Present Perfect подчёркивает опыт к настоящему моменту. Конкретного времени нет.'},
+    {q:'Найди правильное предложение',en:'We ___ to London last summer.',options:['have gone','go','went','have been going'],a:2,why:'“Last summer” — конкретное завершённое время, поэтому нужен Past Simple: went.'},
+    {q:'Как правильно спросить «Ты уже закончил?»',en:'___ you finished yet?',options:['Did','Have','Were','Do'],a:1,why:'С yet в значении «уже/ещё» часто используют Present Perfect: “Have you finished yet?”'},
+    {q:'Выбери верный вариант',en:'She has ___ arrived, so we can leave.',options:['yet','ever','just','last'],a:2,why:'Just с Present Perfect означает «только что»: “She has just arrived”.'},
+    {q:'Какое предложение о прошлом опыте?',en:'I ___ sushi before.',options:['never tried','have never tried','never try','did never tried'],a:1,why:'“I have never tried…” — о жизненном опыте до настоящего момента.'}
+  ]},
+  {id:'phrasal',title:'Фразовые глаголы',subtitle:'Английский как в жизни',tag:'Vocabulary',emoji:'⚡',color:'#e1faed',ink:'#197353',minutes:6,tip:'Фразовые глаголы часто нельзя переводить дословно. Запоминай их вместе с коротким примером.',words:['figure out','put off','run into','give up'],questions:[
+    {q:'Что значит “figure out”?',en:'I can’t figure out how this app works.',options:['Отказаться','Понять или разобраться','Отложить','Случайно встретить'],a:1,why:'Figure out — понять, выяснить или найти решение.'},
+    {q:'Заполни пропуск',en:'We had to ___ the meeting until Friday.',options:['put off','give up','look after','run into'],a:0,why:'Put off — отложить на более позднее время.'},
+    {q:'Что значит “run into someone”?',en:'I ran into my old teacher yesterday.',options:['Побежать за кем-то','Случайно встретить','Поссориться','Позвонить'],a:1,why:'Run into someone — случайно встретить кого-то.'},
+    {q:'Выбери смысл “give up”',en:'Don’t give up — you’re getting better!',options:['Продолжать','Сдаваться','Просыпаться','Возвращаться'],a:1,why:'Give up — сдаваться или бросать попытки.'},
+    {q:'Как сказать «присмотреть за котом»?',en:'Could you ___ my cat this weekend?',options:['look up','look after','look into','look out'],a:1,why:'Look after — заботиться о ком-то или присматривать за кем-то.'}
+  ]},
+  {id:'work',title:'Работа и учёба',subtitle:'Уверенно общаться',tag:'Work',emoji:'💼',color:'#ffe8ed',ink:'#b23d59',minutes:6,tip:'В деловом английском полезны нейтральные фразы: “Could we go over…?”, “I’ll get back to you” и “That works for me”.',words:['deadline','feedback','to catch up','to get back to'],questions:[
+    {q:'Что значит “deadline”?',en:'The deadline for the project is Monday.',options:['Начало встречи','Крайний срок','Перерыв','Обратная связь'],a:1,why:'Deadline — крайний срок, к которому работу нужно закончить.'},
+    {q:'Как сказать «Я отвечу тебе позже»?',en:'I’ll ___ you by the end of the day.',options:['return to','get back to','come again','answer back to'],a:1,why:'“I’ll get back to you” — распространённая фраза: «я вернусь с ответом».'},
+    {q:'Выбери естественное выражение',en:'Could we ___ the main points again?',options:['go over','go under','go away','go along'],a:0,why:'Go over — повторно просмотреть или обсудить пункты.'},
+    {q:'Что такое “feedback”?',en:'Thanks for your feedback on my presentation.',options:['Дедлайн','Расписание','Обратная связь','Зарплата'],a:2,why:'Feedback — комментарии и оценка, которые помогают что-то улучшить.'},
+    {q:'Как подтвердить, что время тебе подходит?',en:'Let’s meet at 3. — ___',options:['It works for me.','I work it.','It works me.','I am agree.'],a:0,why:'“It works for me” значит «мне подходит».'}
+  ]},
+  {id:'media',title:'Видео и интернет',subtitle:'Понимать повседневный английский',tag:'Real life',emoji:'🎧',color:'#e9efff',ink:'#3e5bb6',minutes:5,tip:'В неформальном английском часто встречаются сокращения и связки: “kinda” = kind of, “gonna” = going to. В официальных текстах лучше писать полностью.',words:['to scroll','to binge-watch','relatable','mind-blowing'],questions:[
+    {q:'Что значит “scroll”?',en:'I kept scrolling through videos for an hour.',options:['Листать ленту','Скачать файл','Записать экран','Отключить звук'],a:0,why:'Scroll — прокручивать страницу или ленту на экране.'},
+    {q:'Что такое “binge-watch”?',en:'We binge-watched the whole series.',options:['Посмотреть одну минуту','Посмотреть много серий подряд','Пересмотреть трейлер','Обсудить сериал'],a:1,why:'Binge-watch — смотреть много серий подряд, часто за один присест.'},
+    {q:'Что означает “relatable”?',en:'That character is so relatable.',options:['Сложный','Скучный','Понятный и близкий по опыту','Нереальный'],a:2,why:'Relatable — персонаж или ситуация, в которых легко узнать себя.'},
+    {q:'Какой смысл у “mind-blowing”?',en:'The ending was absolutely mind-blowing.',options:['Очень предсказуемый','Потрясающий, ошеломляющий','Слегка скучный','Трудный для чтения'],a:1,why:'Mind-blowing описывает что-то настолько удивительное, что впечатляет.'},
+    {q:'Как неформально сказать “going to”?',en:'I’m gonna watch one more episode.',options:['gotta','gonna','wanna to','goin'],a:1,why:'Gonna — разговорное сокращение going to. В формальном письме используй going to.'}
+  ]}
+];
+const vocab = [
+  {id:'actually',en:'actually',ru:'на самом деле; вообще-то',pron:'/ˈæk.tʃu.ə.li/',ex:'Actually, I’ve already seen that film.',topic:'Разговор',lesson:'conversation'},
+  {id:'byway',en:'by the way',ru:'кстати',pron:'/baɪ ðə weɪ/',ex:'By the way, your presentation was great.',topic:'Разговор',lesson:'conversation'},
+  {id:'guess',en:'I guess',ru:'думаю; полагаю',pron:'/aɪ ɡes/',ex:'I guess we could try something new.',topic:'Разговор',lesson:'conversation'},
+  {id:'honest',en:'to be honest',ru:'честно говоря',pron:'/tə bi ˈɒn.ɪst/',ex:'To be honest, I’m a little tired.',topic:'Разговор',lesson:'conversation'},
+  {id:'lookforward',en:'look forward to',ru:'с нетерпением ждать',pron:'/lʊk ˈfɔː.wəd tuː/',ex:'I look forward to hearing from you.',topic:'Разговор',lesson:'conversation'},
+  {id:'boarding',en:'boarding pass',ru:'посадочный талон',pron:'/ˈbɔː.dɪŋ pɑːs/',ex:'Have your boarding pass ready.',topic:'Путешествия',lesson:'travel'},
+  {id:'layover',en:'layover',ru:'пересадка с ожиданием',pron:'/ˈleɪˌəʊ.vər/',ex:'We have a two-hour layover.',topic:'Путешествия',lesson:'travel'},
+  {id:'getaround',en:'get around',ru:'передвигаться; добираться',pron:'/ɡet əˈraʊnd/',ex:'You can get around by bus.',topic:'Путешествия',lesson:'travel'},
+  {id:'crowded',en:'crowded',ru:'многолюдный; переполненный',pron:'/ˈkraʊ.dɪd/',ex:'The train is usually crowded.',topic:'Путешествия',lesson:'travel'},
+  {id:'book',en:'to book',ru:'бронировать',pron:'/bʊk/',ex:'I’d like to book a room for two nights.',topic:'Путешествия',lesson:'travel'},
+  {id:'already',en:'already',ru:'уже',pron:'/ɔːlˈred.i/',ex:'I’ve already finished my homework.',topic:'Грамматика',lesson:'grammar'},
+  {id:'yet',en:'yet',ru:'уже; ещё (в вопросах и отрицаниях)',pron:'/jet/',ex:'Have you called her yet?',topic:'Грамматика',lesson:'grammar'},
+  {id:'ever',en:'ever',ru:'когда-либо',pron:'/ˈev.ər/',ex:'Have you ever tried Korean food?',topic:'Грамматика',lesson:'grammar'},
+  {id:'recently',en:'recently',ru:'недавно',pron:'/ˈriː.sənt.li/',ex:'I’ve been really busy recently.',topic:'Грамматика',lesson:'grammar'},
+  {id:'figureout',en:'figure out',ru:'разобраться; понять',pron:'/ˈfɪɡ.ər aʊt/',ex:'Let me figure out what went wrong.',topic:'Фразовые глаголы',lesson:'phrasal'},
+  {id:'putoff',en:'put off',ru:'откладывать',pron:'/pʊt ɒf/',ex:'Don’t put off things until tomorrow.',topic:'Фразовые глаголы',lesson:'phrasal'},
+  {id:'runinto',en:'run into',ru:'случайно встретить',pron:'/rʌn ˈɪn.tuː/',ex:'I ran into Sam at the supermarket.',topic:'Фразовые глаголы',lesson:'phrasal'},
+  {id:'giveup',en:'give up',ru:'сдаваться; бросать',pron:'/ɡɪv ʌp/',ex:'Keep going and don’t give up.',topic:'Фразовые глаголы',lesson:'phrasal'},
+  {id:'lookafter',en:'look after',ru:'присматривать; заботиться',pron:'/lʊk ˈɑːf.tər/',ex:'Can you look after my plants?',topic:'Фразовые глаголы',lesson:'phrasal'},
+  {id:'deadline',en:'deadline',ru:'крайний срок',pron:'/ˈded.laɪn/',ex:'I need to finish this before the deadline.',topic:'Работа',lesson:'work'},
+  {id:'feedback',en:'feedback',ru:'обратная связь',pron:'/ˈfiːd.bæk/',ex:'Could you give me some feedback?',topic:'Работа',lesson:'work'},
+  {id:'catchup',en:'catch up',ru:'наверстать; пообщаться после перерыва',pron:'/kætʃ ʌp/',ex:'Let’s catch up over coffee.',topic:'Работа',lesson:'work'},
+  {id:'getback',en:'get back to',ru:'вернуться с ответом',pron:'/ɡet bæk tuː/',ex:'I’ll get back to you tomorrow.',topic:'Работа',lesson:'work'},
+  {id:'goover',en:'go over',ru:'повторно просмотреть; обсудить',pron:'/ɡəʊ ˈəʊ.vər/',ex:'Let’s go over the plan once again.',topic:'Работа',lesson:'work'},
+  {id:'scroll',en:'scroll',ru:'прокручивать ленту',pron:'/skrəʊl/',ex:'I scroll through the news every morning.',topic:'Интернет',lesson:'media'},
+  {id:'binge',en:'binge-watch',ru:'смотреть серии подряд',pron:'/ˈbɪndʒ wɒtʃ/',ex:'We binge-watched the show last night.',topic:'Интернет',lesson:'media'},
+  {id:'relatable',en:'relatable',ru:'близкий и понятный по опыту',pron:'/rɪˈleɪ.tə.bəl/',ex:'The story feels honest and relatable.',topic:'Интернет',lesson:'media'},
+  {id:'mindblowing',en:'mind-blowing',ru:'потрясающий; ошеломляющий',pron:'/ˈmaɪndˌbləʊ.ɪŋ/',ex:'The special effects were mind-blowing.',topic:'Интернет',lesson:'media'},
+  {id:'subtle',en:'subtle',ru:'тонкий; едва заметный',pron:'/ˈsʌt.əl/',ex:'There’s a subtle difference between them.',topic:'Полезное',lesson:'conversation'},
+  {id:'overwhelmed',en:'overwhelmed',ru:'перегруженный; ошеломлённый',pron:'/ˌəʊ.vəˈwelmd/',ex:'I feel overwhelmed with all this work.',topic:'Полезное',lesson:'work'},
+  {id:'reliable',en:'reliable',ru:'надёжный',pron:'/rɪˈlaɪ.ə.bəl/',ex:'She’s a reliable person to work with.',topic:'Полезное',lesson:'work'},
+  {id:'eventually',en:'eventually',ru:'в конце концов; со временем',pron:'/ɪˈven.tʃu.ə.li/',ex:'Eventually, everything worked out.',topic:'Полезное',lesson:'conversation'}
+];
+const phraseOfDay = {en:'Small steps every day add up to big changes.',ru:'Маленькие шаги каждый день приводят к большим переменам.',tip:'add up to = в сумме приводить к чему-то'};
+const TODAY = () => new Date().toLocaleDateString('en-CA');
+const defaultState = () => ({tab:'home',xp:0,streak:0,lastStudyDate:null,completedLessons:[],knownWords:[],repeatWords:[],dailyXp:{},correct:0,answered:0,goal:20,wordFilter:'all',wordSearch:'',currentWord:0,wordFlipped:false,settingsOpen:false});
+let state = loadState();
+let quiz = null;
+let toastTimer = null;
+function loadState(){ try { const s=JSON.parse(localStorage.getItem('englishly-state')||'null'); return {...defaultState(),...(s||{})}; } catch { return defaultState(); } }
+function saveState(){ const keep={...state,tab:undefined,settingsOpen:false}; try{localStorage.setItem('englishly-state',JSON.stringify(keep));}catch{} }
+function esc(str){return String(str).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function todayXp(){return state.dailyXp[TODAY()]||0;}
+function streakUpdate(){const today=TODAY();if(state.lastStudyDate===today)return;const y=new Date();y.setDate(y.getDate()-1);const yesterday=y.toLocaleDateString('en-CA');state.streak=state.lastStudyDate===yesterday?state.streak+1:1;state.lastStudyDate=today;}
+function addXp(n){state.xp+=n;state.dailyXp[TODAY()]=(state.dailyXp[TODAY()]||0)+n;saveState();}
+function showToast(msg){const el=document.getElementById('toast');if(!el)return;el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2200);}
+function speak(text,lang='en-US'){if(!('speechSynthesis'in window)){showToast('Озвучивание не поддерживается этим браузером');return;}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang=lang;u.rate=.88;const voices=speechSynthesis.getVoices();const v=voices.find(x=>x.lang.toLowerCase().startsWith('en-us'))||voices.find(x=>x.lang.toLowerCase().startsWith('en'));if(v)u.voice=v;speechSynthesis.speak(u);}
+function navTab(tab){state.tab=tab;state.settingsOpen=false;saveState();render();window.scrollTo({top:0,behavior:'smooth'});}
+function startLesson(id){const item=lessons.find(l=>l.id===id);if(!item)return;quiz={lesson:item,index:0,selected:null,checked:false,correct:0,finished:false,xpBefore:state.xp};render();}
+function chooseAnswer(i){if(!quiz||quiz.checked)return;quiz.selected=i;quiz.checked=true;const q=quiz.lesson.questions[quiz.index];state.answered++;if(i===q.a){quiz.correct++;state.correct++;addXp(5);}else saveState();render();}
+function nextQuestion(){if(!quiz)return;if(quiz.index<quiz.lesson.questions.length-1){quiz.index++;quiz.selected=null;quiz.checked=false;render();}else finishQuiz();}
+function finishQuiz(){const id=quiz.lesson.id;if(!state.completedLessons.includes(id))state.completedLessons.push(id);streakUpdate();state.repeatWords=Array.from(new Set([...state.repeatWords,...vocab.filter(v=>v.lesson===quiz.lesson.id&&!state.knownWords.includes(v.id)).map(v=>v.id)]));const result={id,correct:quiz.correct,total:quiz.lesson.questions.length};quiz={lesson:quiz.lesson,index:quiz.index,selected:quiz.selected,checked:true,correct:quiz.correct,finished:true,result,xpEarned:state.xp-(quiz.xpBefore||0)};saveState();render();}
+function closeQuiz(){quiz=null;saveState();render();}
+function percent(){return state.answered?Math.round(state.correct/state.answered*100):0;}
+function totalLessonQuestionsDone(){return state.completedLessons.length*5;}
+function dueWords(){return vocab.filter(v=>!state.knownWords.includes(v.id));}
+function lessonCard(l){const done=state.completedLessons.includes(l.id);const pct=done?100:0;return `<button class="lesson-card" data-action="lesson" data-id="${l.id}"><div class="lesson-icon" style="background:${l.color};color:${l.ink}">${l.emoji}</div><div class="lesson-meta"><h3>${l.title}</h3><p>${l.subtitle} · ${l.minutes} мин</p><div class="lesson-progress"><span style="width:${pct}%"></span></div></div><div class="lesson-state ${done?'done':''}">${done?icon('check',16):icon('arrow',15)}</div></button>`;}
+function renderHome(){const done=state.completedLessons.length;const pct=Math.min(100,Math.round(todayXp()/state.goal*100));const daily=Math.min(state.goal,todayXp());const dayLabels=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];const jsDay=(new Date().getDay()+6)%7;return `<div class="greeting"><div><div class="eyebrow">ТВОЙ ПЕРСОНАЛЬНЫЙ ТРЕНЕР</div><h1>Привет! 👋<br>Продолжим английский?</h1><p class="subtext">Понемногу каждый день — и ты заговоришь увереннее.</p></div><div class="level-chip">Уровень B1 · Средний</div></div>
+  <div class="hero-grid"><section class="hero-card"><div class="hero-label">${icon('target',14)} ТВОЯ СЛЕДУЮЩАЯ ЦЕЛЬ</div><h2>${done===lessons.length?'Ты прошёл все уроки!':'Ещё один урок — и ты на шаг ближе.'}</h2><p>${done===lessons.length?'Повтори любимую тему или закрепи слова.':'Короткие задания, полезные фразы и объяснения на русском.'}</p><div class="hero-bottom"><button class="btn btn-white" data-action="lesson" data-id="${(lessons.find(l=>!state.completedLessons.includes(l.id))||lessons[0]).id}">${done===lessons.length?'Повторить урок':'Начать урок'} ${icon('arrow',16)}</button><span class="hero-progress">${done} из ${lessons.length} тем</span></div></section>
+  <section class="goal-card"><div class="card-heading"><div><div style="font-size:12px;color:var(--muted);font-weight:700">ЕЖЕДНЕВНАЯ ЦЕЛЬ</div><div class="goal-number">${daily}<span> / ${state.goal} XP</span></div></div><div class="icon-box">${icon('target',20)}</div></div><div><div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div><div class="goal-foot"><span>${pct>=100?'Цель выполнена — супер!':'Осталось '+(state.goal-daily)+' XP'}</span><span>${pct}%</span></div></div></section></div>
+  <div class="section-head"><h2>Быстрая практика</h2><button class="text-button" data-action="tab" data-tab="lessons">Все уроки ${icon('arrow',13)}</button></div>
+  <div class="quick-grid"><button class="quick-card" data-action="tab" data-tab="words"><div class="icon-box" style="background:var(--mint);color:var(--mint-ink)">${icon('cards',20)}</div><div><div class="quick-title">Карточки слов</div><p>${dueWords().length} слов ждут повторения</p></div></button><button class="quick-card" data-action="lesson" data-id="conversation"><div class="icon-box" style="background:var(--yellow);color:var(--yellow-ink)">${icon('message',20)}</div><div><div class="quick-title">Живой английский</div><p>Фразы для реальных разговоров</p></div></button><button class="quick-card" data-action="lesson" data-id="media"><div class="icon-box" style="background:var(--pink);color:var(--pink-ink)">${icon('headphones',20)}</div><div><div class="quick-title">Слушай и понимай</div><p>Слова из видео и интернета</p></div></button></div>
+  <section class="streak-card"><div class="streak-left"><div class="streak-emoji">🔥</div><div><h3>${state.streak} ${state.streak===1?'день подряд':'дн. подряд'}</h3><p class="subtext" style="font-size:12px;margin-top:4px">${state.lastStudyDate===TODAY()?'Ты уже занимался сегодня. Так держать!':'Заглядывай каждый день, чтобы сохранить серию.'}</p></div></div><div class="streak-days">${dayLabels.map((d,i)=>`<div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div class="day-dot ${(i===jsDay&&state.lastStudyDate===TODAY())?'active':(state.dailyXp[dateOffset(i-jsDay)]>0?'active':'')} ${(i===jsDay)?'today':''}">${(i===jsDay&&state.lastStudyDate===TODAY())?icon('check',12):d[0]}</div><span style="font-size:10px;color:var(--muted)">${d}</span></div>`).join('')}</div></section>
+  <div class="section-head"><h2>Твой план обучения</h2><button class="text-button" data-action="tab" data-tab="progress">Прогресс</button></div><div class="lesson-list">${lessons.slice(0,4).map(lessonCard).join('')}</div>
+  <section class="chart-card" style="margin-top:16px"><div class="card-heading"><div><h3>Фраза на сегодня</h3><p class="subtext" style="margin-top:5px">Запомни её целиком — так звучит естественный английский.</p></div><button class="icon-button" data-action="speak" data-text="${esc(phraseOfDay.en)}" aria-label="Прослушать">${icon('speaker')}</button></div><div style="font-size:19px;font-weight:750;line-height:1.4;margin-top:18px">${phraseOfDay.en}</div><div style="color:var(--muted);font-size:13px;margin-top:8px">${phraseOfDay.ru}</div><div style="background:#f6f6fc;border-radius:12px;padding:11px 12px;color:#65697c;font-size:12px;margin-top:13px">💡 ${phraseOfDay.tip}</div></section>`;}
+function dateOffset(offset){const d=new Date();d.setDate(d.getDate()+offset);return d.toLocaleDateString('en-CA');}
+function renderLessons(){return `<div class="page-title-row"><div><div class="eyebrow">ОБУЧЕНИЕ</div><h1>Выбирай тему</h1><p>Все уроки доступны сразу. Проходи в своём темпе.</p></div><div class="level-chip">${state.completedLessons.length}/${lessons.length} пройдено</div></div><div class="lesson-list">${lessons.map(lessonCard).join('')}</div><section class="chart-card"><div class="card-heading"><div><h3>Как лучше заниматься?</h3><p class="subtext" style="margin-top:5px">15 минут в день — хороший старт.</p></div><div class="icon-box" style="background:var(--mint);color:var(--mint-ink)">${icon('clock')}</div></div><p style="font-size:13px;color:var(--muted);margin:16px 0 0">1. Пройди один короткий урок. 2. Повтори 5–10 слов. 3. Произнеси вслух пару примеров. Возвращайся к сложным фразам на следующий день.</p></section>`;}
+function selectedWords(){let list=[...vocab];if(state.wordFilter==='repeat')list=list.filter(v=>state.repeatWords.includes(v.id)||!state.knownWords.includes(v.id));if(state.wordFilter==='known')list=list.filter(v=>state.knownWords.includes(v.id));if(state.wordSearch.trim()){const q=state.wordSearch.toLowerCase();list=list.filter(v=>(v.en+' '+v.ru+' '+v.ex+' '+v.topic).toLowerCase().includes(q));}return list;}
+function renderWords(){const list=selectedWords();if(state.currentWord>=list.length)state.currentWord=0;const item=list[state.currentWord];return `<div class="page-title-row"><div><div class="eyebrow">СЛОВАРЬ</div><h1>Слова в копилку</h1><p>Лучше запоминать слова в контексте, а не по одному.</p></div><div class="level-chip">${state.knownWords.length}/${vocab.length} знаю</div></div>
+  <div class="search-wrap">${icon('search')}<input id="wordSearch" type="search" placeholder="Найти слово или перевод…" value="${esc(state.wordSearch)}" autocomplete="off"></div><div class="filter-row"><button class="filter-chip ${state.wordFilter==='all'?'active':''}" data-action="word-filter" data-filter="all">Все слова · ${vocab.length}</button><button class="filter-chip ${state.wordFilter==='repeat'?'active':''}" data-action="word-filter" data-filter="repeat">Повторить · ${dueWords().length}</button><button class="filter-chip ${state.wordFilter==='known'?'active':''}" data-action="word-filter" data-filter="known">Знаю · ${state.knownWords.length}</button></div>
+  ${item?`<div class="word-study"><section class="flashcard"><div class="flash-top"><span>КАРТОЧКА ${state.currentWord+1} / ${list.length}</span><span class="word-badge">${item.topic}</span></div><div class="flash-word">${item.en}</div><div class="flash-pron">${item.pron}</div>${state.wordFlipped?`<div class="flash-translation">${item.ru}</div><p class="flash-example">“${item.ex}”</p><button class="icon-button" style="margin-top:13px" data-action="speak" data-text="${esc(item.ex)}" aria-label="Прослушать пример">${icon('speaker')}</button>`:`<button class="btn btn-ghost" style="margin-top:24px" data-action="flip-word">Показать перевод</button><p class="flash-example">Вспомни значение, прежде чем перевернуть карточку.</p>`}<div class="flash-actions"><button class="btn btn-outline" data-action="word-repeat" data-id="${item.id}">↻ Повторить</button><button class="btn btn-primary" data-action="word-known" data-id="${item.id}">${icon('check',15)} Знаю</button></div><button class="text-button" style="margin-top:11px" data-action="next-word">Следующее слово ${icon('arrow',13)}</button></section><div class="word-side"><section class="mini-info"><div class="icon-box" style="background:var(--mint);color:var(--mint-ink)">${icon('check')}</div><div class="mini-stat">${state.knownWords.length}</div><h3>Уже знаю</h3><p>Отмечай знакомые слова, чтобы видеть свой прогресс.</p></section><section class="mini-info"><div class="icon-box" style="background:var(--yellow);color:var(--yellow-ink)">${icon('cards')}</div><div class="mini-stat">${dueWords().length}</div><h3>На повторение</h3><p>Сложные слова можно повторять столько раз, сколько нужно.</p></section></div></div>`:`<div class="empty-state"><div class="big">🎉</div><h3>${state.wordFilter==='known'?'Ты пока не отметил знакомые слова':'Ничего не найдено'}</h3><p>${state.wordFilter==='known'?'Открой карточку и нажми «Знаю».':'Попробуй другой запрос или выбери другой фильтр.'}</p><button class="btn btn-primary" data-action="word-filter" data-filter="all">Показать все слова</button></div>`}
+  <div class="section-head"><h2>Список слов</h2><span style="font-size:12px;color:var(--muted)">${list.length} шт.</span></div><div class="word-list">${list.map(v=>`<button class="word-row" data-action="select-word" data-id="${v.id}"><div class="known-dot ${state.knownWords.includes(v.id)?'yes':''}"></div><div class="word-row-main"><strong>${v.en}</strong><span>${v.ru}</span></div>${icon('arrow',14)}</button>`).join('')}</div>`;}
+function renderProgress(){const n=state.completedLessons.length;const earned=state.xp;const accuracy=percent();const week=Array.from({length:7},(_,i)=>{const off=i-6;return {date:dateOffset(off),label:['Вс','Пн','Вт','Ср','Чт','Пт','Сб'][new Date(dateOffset(off)+'T12:00:00').getDay()],xp:state.dailyXp[dateOffset(off)]||0};});const max=Math.max(10,...week.map(d=>d.xp));const badges=[{emoji:'🌱',name:'Первый шаг',desc:'Заработай первые 5 XP',ok:earned>=5},{emoji:'🔥',name:'Серия 3 дня',desc:'Занимайся 3 дня подряд',ok:state.streak>=3},{emoji:'📚',name:'Любознательный',desc:'Пройди 3 урока',ok:n>=3},{emoji:'🧠',name:'Словарик',desc:'Отметь 10 слов как знакомые',ok:state.knownWords.length>=10},{emoji:'🎯',name:'Точность',desc:'Ответь верно на 20 вопросов',ok:state.correct>=20},{emoji:'🏆',name:'Всё пройдено',desc:'Заверши все уроки',ok:n===lessons.length}];return `<div class="page-title-row"><div><div class="eyebrow">ТВОИ РЕЗУЛЬТАТЫ</div><h1>Ты растёшь 🌱</h1><p>Каждое занятие — маленькая победа.</p></div><div class="level-chip">Уровень B1</div></div><div class="stats-grid"><section class="stat-card"><div class="icon-box">${icon('flame')}</div><div class="stat-value">${state.streak}</div><div class="stat-label">Дней подряд</div></section><section class="stat-card"><div class="icon-box" style="background:var(--yellow);color:var(--yellow-ink)">${icon('trophy')}</div><div class="stat-value">${earned}</div><div class="stat-label">Всего XP</div></section><section class="stat-card"><div class="icon-box" style="background:var(--mint);color:var(--mint-ink)">${icon('book')}</div><div class="stat-value">${n}<span style="font-size:14px;color:var(--muted)">/${lessons.length}</span></div><div class="stat-label">Уроков пройдено</div></section><section class="stat-card"><div class="icon-box" style="background:var(--pink);color:var(--pink-ink)">${icon('target')}</div><div class="stat-value">${accuracy}%</div><div class="stat-label">Точность ответов</div></section></div>
+  <section class="chart-card"><div class="card-heading"><div><h3>Активность за 7 дней</h3><p class="subtext" style="margin-top:5px">XP, заработанные в каждом дне</p></div><div style="font-weight:800;font-size:14px">${week.reduce((s,d)=>s+d.xp,0)} XP</div></div><div class="week-chart">${week.map(d=>`<div class="chart-column"><div class="chart-bar-wrap"><div class="chart-bar ${d.xp?'has-value':''}" style="height:${Math.max(5,Math.round(d.xp/max*100))}%"></div></div><div class="chart-day">${d.label}</div></div>`).join('')}</div></section>
+  <section class="achievement-card"><div class="card-heading"><div><h3>Достижения</h3><p class="subtext" style="margin-top:5px">${badges.filter(b=>b.ok).length} из ${badges.length} открыто</p></div><div class="icon-box" style="background:var(--yellow);color:var(--yellow-ink)">${icon('trophy')}</div></div><div class="achievement-grid">${badges.map(b=>`<div class="achievement ${b.ok?'':'locked'}"><div class="medal">${b.emoji}</div><strong>${b.name}</strong><span>${b.desc}</span></div>`).join('')}</div></section>
+  <section class="chart-card"><div class="card-heading"><div><h3>Цель на каждый день</h3><p class="subtext" style="margin-top:5px">Выбери комфортный темп занятий.</p></div><div class="icon-box">${icon('target')}</div></div><div class="settings-row"><span>Ежедневная цель</span><select id="goalSelect" class="small-select"><option value="10" ${state.goal===10?'selected':''}>10 XP · Легко</option><option value="20" ${state.goal===20?'selected':''}>20 XP · Обычно</option><option value="30" ${state.goal===30?'selected':''}>30 XP · Интенсивно</option><option value="50" ${state.goal===50?'selected':''}>50 XP · Марафон</option></select></div><div class="settings-row"><span>Уровень английского</span><strong style="font-size:13px">B1 · Средний</strong></div><button class="btn btn-outline btn-full" style="margin-top:14px" data-action="reset">Сбросить весь прогресс</button><p class="footer-note">Прогресс хранится в памяти этого браузера на этом устройстве. Если очистить данные Safari, статистика может сброситься.</p></section>`;}
+function renderQuiz(){const l=quiz.lesson;if(quiz.finished){const r=quiz.result;const total=r.total;const perfect=r.correct===total;return `<div class="quiz-shell"><div class="quiz-top"><button class="icon-button" data-action="close-quiz" aria-label="Закрыть">${icon('close')}</button><div style="font-weight:800;font-size:14px">Урок завершён</div></div><div class="result-content"><div class="result-emoji">${perfect?'🏆':r.correct>=3?'🎉':'💪'}</div><h1>${perfect?'Идеально!':r.correct>=3?'Отличная работа!':'Хорошая практика!'}</h1><p class="result-score">${l.title} · ты ответил правильно на ${r.correct} из ${total} вопросов.</p><div class="result-points"><div><strong>+${quiz.xpEarned}</strong><span>XP получено</span></div><div><strong>${Math.round(r.correct/total*100)}%</strong><span>Точность</span></div></div><p style="color:var(--muted);font-size:14px;max-width:340px;margin:0 auto 26px">${perfect?'Все ответы верные — так держать!':`Повтори ошибки и попробуй ещё раз. Ошибки — это часть обучения.`} Твой прогресс сохранён на устройстве.</p><button class="btn btn-primary btn-full" data-action="close-quiz">Продолжить ${icon('arrow',16)}</button><button class="btn btn-ghost btn-full" style="margin-top:9px" data-action="lesson" data-id="${l.id}">Пройти ещё раз</button></div></div>`;}
+const q=l.questions[quiz.index],letters=['A','B','C','D'];return `<div class="quiz-shell"><div class="quiz-top"><button class="icon-button" data-action="close-quiz" aria-label="Выйти из урока">${icon('close')}</button><div class="quiz-bar"><span style="width:${Math.round((quiz.index+(quiz.checked?1:0))/l.questions.length*100)}%"></span></div><div class="quiz-counter">${quiz.index+1}/${l.questions.length}</div></div><div class="quiz-content"><div class="quiz-tag">${l.emoji} ${l.tag} · ${l.title}</div><h1 class="quiz-question">${q.q}</h1><p class="quiz-hint">Выбери лучший вариант ответа.</p><div class="question-en">${q.en}<button class="icon-button" data-action="speak" data-text="${esc(q.en)}" aria-label="Прослушать фразу" style="float:right;margin-left:8px;width:34px;height:34px">${icon('speaker',16)}</button></div><div class="answer-list">${q.options.map((o,i)=>{let cls='';if(quiz.checked&&i===q.a)cls='correct';else if(quiz.checked&&i===quiz.selected)cls='wrong';else if(!quiz.checked&&i===quiz.selected)cls='selected';return `<button class="answer-option ${cls}" data-action="answer" data-index="${i}" ${quiz.checked?'disabled':''}><span class="answer-letter">${letters[i]}</span><span>${o}</span>${quiz.checked&&i===q.a?`<span style="margin-left:auto;color:#18815b">${icon('check',17)}</span>`:''}</button>`;}).join('')}</div>${quiz.checked?`<div class="feedback ${quiz.selected===q.a?'good':'bad'}"><strong>${quiz.selected===q.a?'Верно! Отлично 👏':'Почти! Запомни этот вариант.'}</strong><div style="margin-top:5px">${q.why}</div></div>`:''}<div style="margin-top:18px;background:#f7f7fc;padding:14px;border-radius:14px;font-size:12px;color:var(--muted)"><strong style="color:var(--text)">Подсказка</strong><br>${l.tip}</div></div><div class="quiz-footer">${quiz.checked?`<button class="btn btn-primary btn-full" data-action="next-question">${quiz.index===l.questions.length-1?'Завершить урок':'Дальше'} ${icon('arrow',16)}</button>`:`<button class="btn btn-primary btn-full" disabled style="opacity:.42;cursor:not-allowed">Выбери ответ</button>`}</div></div>`;}
+function render(){const root=document.getElementById('app');if(quiz){root.innerHTML=renderQuiz();return;}const title=state.tab==='home'?'Сегодня':state.tab==='lessons'?'Уроки':state.tab==='words'?'Слова':'Прогресс';const tabContent=state.tab==='home'?renderHome():state.tab==='lessons'?renderLessons():state.tab==='words'?renderWords():renderProgress();root.innerHTML=`<div class="app-shell"><header class="topbar"><div class="brand"><div class="brand-mark">${icon('logo',23)}</div><div><div class="brand-name">englishly<span style="color:var(--accent)">.</span></div><div class="brand-tag">Английский в твоём ритме</div></div></div><div class="top-stats"><div class="pill"><span class="fire">🔥</span> ${state.streak}</div><div class="pill">${icon('trophy',14)} ${state.xp} XP</div></div></header><main>${tabContent}</main><nav class="bottom-nav" aria-label="Главная навигация"><div class="nav-inner"><button class="nav-item ${state.tab==='home'?'active':''}" data-action="tab" data-tab="home">${icon('home',21)}<span>Сегодня</span></button><button class="nav-item ${state.tab==='lessons'?'active':''}" data-action="tab" data-tab="lessons">${icon('book',21)}<span>Уроки</span></button><button class="nav-item ${state.tab==='words'?'active':''}" data-action="tab" data-tab="words">${icon('cards',21)}<span>Слова</span></button><button class="nav-item ${state.tab==='progress'?'active':''}" data-action="tab" data-tab="progress">${icon('chart',21)}<span>Прогресс</span></button></div></nav></div>`;wireInputs();}
+function wireInputs(){const search=document.getElementById('wordSearch');if(search){search.addEventListener('input',e=>{const pos=e.target.selectionStart;state.wordSearch=e.target.value;state.currentWord=0;state.wordFlipped=false;const keepFocus=true;const root=document.getElementById('app');const main=root.querySelector('main');main.innerHTML=renderWords();const next=document.getElementById('wordSearch');next.focus();next.setSelectionRange(pos,pos);wireInputs();saveState();});}const goal=document.getElementById('goalSelect');if(goal)goal.addEventListener('change',e=>{state.goal=Number(e.target.value);saveState();render();showToast('Ежедневная цель обновлена');});}
+document.addEventListener('click',e=>{const btn=e.target.closest('[data-action]');if(!btn)return;const act=btn.dataset.action;switch(act){case'tab':navTab(btn.dataset.tab);break;case'lesson':startLesson(btn.dataset.id);break;case'answer':chooseAnswer(Number(btn.dataset.index));break;case'next-question':nextQuestion();break;case'close-quiz':closeQuiz();break;case'speak':speak(btn.dataset.text||'');break;case'word-filter':state.wordFilter=btn.dataset.filter;state.currentWord=0;state.wordFlipped=false;saveState();render();break;case'flip-word':state.wordFlipped=true;render();break;case'next-word':{const list=selectedWords();if(list.length){state.currentWord=(state.currentWord+1)%list.length;state.wordFlipped=false;render();}break;}case'select-word':{const list=selectedWords();const ix=list.findIndex(v=>v.id===btn.dataset.id);if(ix>=0){state.currentWord=ix;state.wordFlipped=true;render();window.scrollTo({top:0,behavior:'smooth'});}break;}case'word-known':{const id=btn.dataset.id;if(!state.knownWords.includes(id)){state.knownWords.push(id);state.repeatWords=state.repeatWords.filter(x=>x!==id);addXp(2);showToast('Слово добавлено в «Знаю» · +2 XP');}else showToast('Это слово уже отмечено');state.wordFlipped=false;saveState();render();break;}case'word-repeat':{const id=btn.dataset.id;state.repeatWords=Array.from(new Set([...state.repeatWords,id]));state.knownWords=state.knownWords.filter(x=>x!==id);state.wordFlipped=false;saveState();showToast('Добавлено на повторение');render();break;}case'reset':if(confirm('Точно сбросить весь прогресс? Это действие нельзя отменить.')){state=defaultState();quiz=null;saveState();render();showToast('Прогресс сброшен');}break;}});
+if('serviceWorker'in navigator && location.protocol!=='file:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
+render();
+</script>
+</body>
+</html>
