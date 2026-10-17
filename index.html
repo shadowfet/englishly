@@ -306,6 +306,90 @@
     @media (max-width:660px) { .mode-shortcuts { grid-template-columns:1fr; } }
     @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms !important;animation-iteration-count:1 !important;scroll-behavior:auto !important;transition-duration:.01ms !important; } }
 
+
+    .pill,.streak-card,.lesson-card,.search-wrap,.mini-info,.stat-card,.word-row,.chart-card,.achievement-card,.mode-card,.mode-shortcut,.result-points,.settings-row {
+      background-color:var(--card) !important;color:var(--text);border-color:var(--line);
+    }
+    .pill { background:#171a24 !important; }
+    .streak-card p,.lesson-meta p,.word-row span,.compact-stat-foot { color:var(--muted); }
+    .filter-chip:not(.active) { background:var(--card);color:var(--muted);border-color:var(--line); }
+    .quick-card:hover,.lesson-card:hover,.word-row:hover { box-shadow:0 10px 26px rgba(0,0,0,.18); }
+    button { transition:transform .24s cubic-bezier(.2,.7,.2,1),background-color .24s ease,border-color .24s ease,filter .24s ease,box-shadow .24s ease,color .24s ease; }
+    button:active { transform:scale(.988); }
+    .btn:active,.quick-card:active,.lesson-card:active,.word-row:active,.answer-option:active { transform:scale(.99); }
+    .quiz-shell { animation:pageIn .34s cubic-bezier(.22,.8,.25,1) both; }
+    .app-shell main { animation:pageIn .34s cubic-bezier(.22,.8,.25,1) both; }
+    .flashcard.swipe-next { animation:slideInRight .34s cubic-bezier(.22,.8,.25,1) both; }
+    .flashcard.swipe-prev { animation:slideInLeft .34s cubic-bezier(.22,.8,.25,1) both; }
+    .flashcard .flash-word { animation:popIn .28s cubic-bezier(.22,.8,.25,1) both; }
+    .quiz-content { animation:questionIn .32s cubic-bezier(.22,.8,.25,1) both; }
+    .answer-list .answer-option { animation:optionIn .28s cubic-bezier(.22,.8,.25,1) both; }
+    .answer-list .answer-option:nth-child(2) { animation-delay:.015s; }
+    .answer-list .answer-option:nth-child(3) { animation-delay:.03s; }
+    .answer-list .answer-option:nth-child(4) { animation-delay:.045s; }
+    @keyframes pageIn { from { opacity:0;transform:translateY(9px); } to { opacity:1;transform:translateY(0); } }
+    @keyframes questionIn { from { opacity:0;transform:translateX(8px); } to { opacity:1;transform:translateX(0); } }
+    @keyframes optionIn { from { opacity:0;transform:translateY(4px); } to { opacity:1;transform:translateY(0); } }
+    @keyframes popIn { from { opacity:0;transform:translateY(4px) scale(.99); } to { opacity:1;transform:translateY(0) scale(1); } }
+    @keyframes slideInRight { from { opacity:.25;transform:translateX(14px); } to { opacity:1;transform:translateX(0); } }
+    @keyframes slideInLeft { from { opacity:.25;transform:translateX(-14px); } to { opacity:1;transform:translateX(0); } }
+    .mixed-hero { border:1px solid #35384c;border-radius:25px;padding:clamp(20px,4vw,29px);background:linear-gradient(135deg,#202337 0%,#191c29 62%,#22213a 100%);box-shadow:0 14px 34px rgba(0,0,0,.16);margin-top:4px; }
+    .mixed-hero-kicker { display:flex;align-items:center;gap:8px;color:#b5b3ff;font-size:10px;font-weight:800;letter-spacing:1.1px; }
+    .mixed-hero-dot { width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(150,148,255,.12); }
+    .mixed-hero h2 { font-size:clamp(23px,5vw,30px);letter-spacing:-.8px;margin:17px 0 9px; }
+    .mixed-hero p { color:var(--muted);font-size:14px;line-height:1.55;max-width:520px;margin:0; }
+    .mixed-hero-footer { display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:24px; }
+    .mixed-hero-meta { display:flex;flex-wrap:wrap;gap:7px; }
+    .mixed-hero-meta span { display:inline-flex;padding:7px 9px;border:1px solid #35394c;border-radius:10px;background:rgba(255,255,255,.025);font-size:11px;color:#c4c8da; }
+    .home-stats-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px; }
+    .compact-stat { min-width:0;background:var(--card);border:1px solid var(--line);border-radius:19px;padding:16px; }
+    .compact-stat-label { font-size:12px;color:var(--muted);font-weight:650; }
+    .compact-stat-value { font-size:25px;font-weight:800;letter-spacing:-.7px;margin-top:9px; }
+    .compact-stat-value span { font-size:12px;color:var(--muted);font-weight:600;letter-spacing:0; }
+    .compact-stat .progress-track { height:5px;margin-top:13px; }
+    .compact-stat-foot { font-size:11px;margin-top:8px;line-height:1.4; }
+    .mixed-session .quiz-content { max-width:650px;width:100%;margin:0 auto; }
+    .mixed-session .quiz-question { margin-top:10px; }
+    .mixed-word-card { margin:20px 0 4px;background:#1a1d2a;border:1px solid var(--line);border-radius:23px;padding:clamp(20px,5vw,30px);text-align:center; }
+    .mixed-word { font-size:clamp(32px,8vw,44px);font-weight:820;letter-spacing:-1.4px;overflow-wrap:anywhere; }
+    .mixed-pron { color:var(--muted);font-size:13px;margin-top:8px; }
+    .mixed-translation { color:#c1bfff;font-size:21px;font-weight:750;line-height:1.35;margin-top:21px;overflow-wrap:anywhere; }
+    .mixed-topic { color:var(--muted);font-size:11px;margin:7px 0 0; }
+    .mixed-example { display:flex;align-items:center;gap:12px;text-align:left;border-top:1px solid var(--line);padding-top:16px;margin-top:20px; }
+    .mixed-example > span { color:var(--muted);font-size:11px;white-space:nowrap; }
+    .mixed-example strong { flex:1;font-size:13px;line-height:1.5;font-weight:600;overflow-wrap:anywhere; }
+    .mixed-example .icon-button { flex:none; }
+    .mixed-prompt { border:1px solid var(--line);background:#1b1e2d;border-radius:21px;padding:22px 18px;margin:22px 0;font-size:clamp(22px,6vw,30px);font-weight:800;line-height:1.35;text-align:center;overflow-wrap:anywhere; }
+    .mixed-label { display:block;font-size:13px;font-weight:750;margin:0 0 8px; }
+    .mixed-input,.mixed-textarea { display:block;width:100%;min-width:0;background:#11141d;border:1px solid #363b50;border-radius:15px;padding:14px 15px;color:var(--text);font:inherit;font-size:16px;line-height:1.5;outline:none;transition:border-color .24s ease,box-shadow .24s ease; }
+    .mixed-input { min-height:54px; }
+    .mixed-textarea { min-height:112px;resize:vertical; }
+    .mixed-input:focus,.mixed-textarea:focus { border-color:var(--accent);box-shadow:0 0 0 3px rgba(150,148,255,.12); }
+    .mixed-input::placeholder,.mixed-textarea::placeholder { color:#858ba2; }
+    .mixed-target { display:flex;flex-direction:column;align-items:flex-start;gap:5px;background:#1b1e2d;border:1px solid var(--line);border-radius:17px;padding:14px 16px;margin:16px 0 20px; }
+    .mixed-target-word { font-size:20px;font-weight:800; }
+    .mixed-target-translation { font-size:13px;color:var(--muted); }
+    .mixed-feedback-note { font-size:12px;line-height:1.5;margin-top:7px;color:inherit;opacity:.9; }
+    .mixed-example-after { display:flex;align-items:center;gap:10px;border-top:1px solid rgba(255,255,255,.1);padding-top:12px;margin-top:13px; }
+    .mixed-example-after span { font-size:11px;opacity:.8;white-space:nowrap; }
+    .mixed-example-after strong { flex:1;font-size:13px;line-height:1.45;overflow-wrap:anywhere; }
+    .mixed-skip { display:block;margin:7px auto 0;font-size:12px; }
+    .quiz-footer .mixed-skip { padding:7px 10px; }
+    @media (max-width:660px) {
+      .mixed-hero-footer { align-items:flex-start;flex-direction:column; }
+      .mixed-hero-footer .btn { width:100%; }
+      .mixed-hero-meta { gap:6px; }
+      .home-stats-grid { gap:8px; }
+      .compact-stat { padding:13px; }
+      .compact-stat-value { font-size:22px; }
+      .mixed-example { align-items:flex-start; }
+      .mixed-example > span { padding-top:4px; }
+      .mixed-example-after { align-items:flex-start; }
+    }
+    @media (prefers-reduced-motion:reduce) {
+      .mixed-hero,.compact-stat,.mixed-word-card,.mixed-prompt,.mixed-target { transition:none !important; }
+    }
+
   </style>
 </head>
 <body>
@@ -549,19 +633,20 @@ function percent(){return state.answered?Math.round(state.correct/state.answered
 function totalLessonQuestionsDone(){return state.completedLessons.length*5;}
 function dueWords(){return vocab.filter(v=>!state.knownWords.includes(v.id));}
 function lessonCard(l){const done=state.completedLessons.includes(l.id);const pct=done?100:0;return `<button class="lesson-card" data-action="lesson" data-id="${l.id}"><div class="lesson-icon" style="background:${l.color};color:${l.ink}">${l.emoji}</div><div class="lesson-meta"><h3>${l.title}</h3><p>${l.subtitle} · ${l.minutes} мин</p><div class="lesson-progress"><span style="width:${pct}%"></span></div></div><div class="lesson-state ${done?'done':''}">${done?icon('check',16):icon('arrow',15)}</div></button>`;}
-function renderHome(){const done=state.completedLessons.length;const pct=Math.min(100,Math.round(todayXp()/state.goal*100));const daily=Math.min(state.goal,todayXp());const dayLabels=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];const jsDay=(new Date().getDay()+6)%7;return `<div class="greeting"><div><div class="eyebrow">ТВОЙ ПЕРСОНАЛЬНЫЙ ТРЕНЕР</div><h1>Привет! 👋<br>Продолжим английский?</h1><p class="subtext">Понемногу каждый день — и ты заговоришь увереннее.</p></div><div class="level-chip">Уровень B1 · Средний</div></div>
-  <div class="hero-grid"><section class="hero-card"><div class="hero-label">${icon('target',14)} ТВОЯ СЛЕДУЮЩАЯ ЦЕЛЬ</div><h2>${done===lessons.length?'Ты прошёл все уроки!':'Ещё один урок — и ты на шаг ближе.'}</h2><p>${done===lessons.length?'Повтори любимую тему или закрепи слова.':'Короткие задания, полезные фразы и объяснения на русском.'}</p><div class="hero-bottom"><button class="btn btn-white" data-action="lesson" data-id="${(lessons.find(l=>!state.completedLessons.includes(l.id))||lessons[0]).id}">${done===lessons.length?'Повторить урок':'Начать урок'} ${icon('arrow',16)}</button><span class="hero-progress">${done} из ${lessons.length} тем</span></div></section>
-  <section class="goal-card"><div class="card-heading"><div><div style="font-size:12px;color:var(--muted);font-weight:700">ЕЖЕДНЕВНАЯ ЦЕЛЬ</div><div class="goal-number">${daily}<span> / ${state.goal} XP</span></div></div><div class="icon-box">${icon('target',20)}</div></div><div><div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div><div class="goal-foot"><span>${pct>=100?'Цель выполнена — супер!':'Осталось '+(state.goal-daily)+' XP'}</span><span>${pct}%</span></div></div></section></div>
-  <div class="section-head"><h2>Быстрая практика</h2><button class="text-button" data-action="tab" data-tab="lessons">Все уроки ${icon('arrow',13)}</button></div>
-  <div class="quick-grid"><button class="quick-card" data-action="tab" data-tab="words"><div class="icon-box" style="background:var(--mint);color:var(--mint-ink)">${icon('cards',20)}</div><div><div class="quick-title">Карточки слов</div><p>${dueWords().length} слов ждут повторения</p></div></button><button class="quick-card" data-action="lesson" data-id="conversation"><div class="icon-box" style="background:var(--yellow);color:var(--yellow-ink)">${icon('message',20)}</div><div><div class="quick-title">Живой английский</div><p>Фразы для реальных разговоров</p></div></button><button class="quick-card" data-action="lesson" data-id="media"><div class="icon-box" style="background:var(--pink);color:var(--pink-ink)">${icon('headphones',20)}</div><div><div class="quick-title">Слушай и понимай</div><p>Слова из видео и интернета</p></div></button><button class="quick-card" data-action="start-practice" data-mode="ru-en"><div class="icon-box">${icon('arrow',20)}</div><div><div class="quick-title">Русский → English</div><p>Вспоминай слова без подсказки перевода</p></div></button><button class="quick-card" data-action="start-practice" data-mode="sentence"><div class="icon-box">${icon('message',20)}</div><div><div class="quick-title">Составить предложение</div><p>Тренируйся формулировать мысли самому</p></div></button></div>
-  <section class="streak-card"><div class="streak-left"><div class="streak-emoji">🔥</div><div><h3>${state.streak} ${state.streak===1?'день подряд':'дн. подряд'}</h3><p class="subtext" style="font-size:12px;margin-top:4px">${state.lastStudyDate===TODAY()?'Ты уже занимался сегодня. Так держать!':'Заглядывай каждый день, чтобы сохранить серию.'}</p></div></div><div class="streak-days">${dayLabels.map((d,i)=>`<div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div class="day-dot ${(i===jsDay&&state.lastStudyDate===TODAY())?'active':(state.dailyXp[dateOffset(i-jsDay)]>0?'active':'')} ${(i===jsDay)?'today':''}">${(i===jsDay&&state.lastStudyDate===TODAY())?icon('check',12):d[0]}</div><span style="font-size:10px;color:var(--muted)">${d}</span></div>`).join('')}</div></section>
-  <div class="section-head"><h2>Твой план обучения</h2><button class="text-button" data-action="tab" data-tab="progress">Прогресс</button></div><div class="lesson-list">${lessons.slice(0,4).map(lessonCard).join('')}</div>
-  <section class="chart-card" style="margin-top:16px"><div class="card-heading"><div><h3>Фраза на сегодня</h3><p class="subtext" style="margin-top:5px">Запомни её целиком — так звучит естественный английский.</p></div><button class="icon-button" data-action="speak" data-text="${esc(phraseOfDay.en)}" aria-label="Прослушать">${icon('speaker')}</button></div><div style="font-size:19px;font-weight:750;line-height:1.4;margin-top:18px">${phraseOfDay.en}</div><div style="color:var(--muted);font-size:13px;margin-top:8px">${phraseOfDay.ru}</div><div style="background:#f6f6fc;border-radius:12px;padding:11px 12px;color:#65697c;font-size:12px;margin-top:13px">💡 ${phraseOfDay.tip}</div></section>`;}
+function renderHome(){
+  const pct=Math.min(100,Math.round(todayXp()/state.goal*100));
+  const daily=Math.min(state.goal,todayXp());
+  return `<div class="greeting"><div><div class="eyebrow">ТВОЙ РИТМ</div><h1>Продолжим английский?</h1><p class="subtext">Немного практики — и слова начнут вспоминаться быстрее.</p></div><div class="level-chip">B1 · Средний</div></div>
+  <section class="mixed-hero"><div class="mixed-hero-kicker"><span class="mixed-hero-dot"></span> ТРЕНИРОВКА НА СЕГОДНЯ</div><h2>Смешанный режим</h2><p>Узнай слово, вспомни его без подсказки и используй в своём предложении.</p><div class="mixed-hero-footer"><div class="mixed-hero-meta"><span>5 слов</span><span>3 этапа</span><span>≈ 5–8 минут</span></div><button class="btn btn-primary" data-action="start-practice" data-mode="mixed">Начать тренировку ${icon('arrow',16)}</button></div></section>
+  <div class="home-stats-grid"><section class="compact-stat"><div class="compact-stat-label">Сегодня</div><div class="compact-stat-value">${daily} <span> / ${state.goal} XP</span></div><div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div><div class="compact-stat-foot">${pct>=100?'Цель выполнена':'Осталось '+(state.goal-daily)+' XP'}</div></section><section class="compact-stat"><div class="compact-stat-label">Серия занятий</div><div class="compact-stat-value">🔥 ${state.streak} <span>${state.streak===1?'день':'дн.'}</span></div><div class="compact-stat-foot">${state.lastStudyDate===TODAY()?'Сегодня уже занимался':'Начни новую тренировку сегодня'}</div></section></div>
+  <div class="section-head"><h2>Другие способы практики</h2><button class="text-button" data-action="tab" data-tab="words">Все слова ${icon('arrow',13)}</button></div>
+  <div class="mode-shortcuts"><button class="mode-shortcut" data-action="tab" data-tab="words"><div class="icon-box">${icon('cards',20)}</div><div><strong>Карточки слов</strong><span>Спокойно повторяй в своём темпе</span></div></button><button class="mode-shortcut" data-action="tab" data-tab="lessons"><div class="icon-box">${icon('book',20)}</div><div><strong>Тематические уроки</strong><span>Грамматика и живые ситуации</span></div></button></div>`;
+}
 function dateOffset(offset){const d=new Date();d.setDate(d.getDate()+offset);return d.toLocaleDateString('en-CA');}
 function renderLessons(){return `<div class="page-title-row"><div><div class="eyebrow">ОБУЧЕНИЕ</div><h1>Выбирай тему</h1><p>Все уроки доступны сразу. Проходи в своём темпе.</p></div><div class="level-chip">${state.completedLessons.length}/${lessons.length} пройдено</div></div><div class="lesson-list">${lessons.map(lessonCard).join('')}</div><section class="chart-card"><div class="card-heading"><div><h3>Как лучше заниматься?</h3><p class="subtext" style="margin-top:5px">15 минут в день — хороший старт.</p></div><div class="icon-box" style="background:var(--mint);color:var(--mint-ink)">${icon('clock')}</div></div><p style="font-size:13px;color:var(--muted);margin:16px 0 0">1. Пройди один короткий урок. 2. Повтори 5–10 слов. 3. Произнеси вслух пару примеров. Возвращайся к сложным фразам на следующий день.</p></section>`;}
 function selectedWords(){let list=[...vocab];if(state.wordFilter==='repeat')list=list.filter(v=>state.repeatWords.includes(v.id)||!state.knownWords.includes(v.id));if(state.wordFilter==='known')list=list.filter(v=>state.knownWords.includes(v.id));if(state.wordSearch.trim()){const q=state.wordSearch.toLowerCase();list=list.filter(v=>(v.en+' '+v.ru+' '+v.ex+' '+v.topic).toLowerCase().includes(q));}return list;}
 function renderWords(){const list=selectedWords();if(state.currentWord>=list.length)state.currentWord=0;const item=list[state.currentWord];return `<div class="page-title-row"><div><div class="eyebrow">СЛОВАРЬ</div><h1>Слова в копилку</h1><p>Лучше запоминать слова в контексте, а не по одному.</p></div><div class="level-chip">${state.knownWords.length}/${vocab.length} знаю</div></div>
-  <div class="mode-shortcuts"><button class="mode-shortcut" data-action="start-practice" data-mode="ru-en"><div class="icon-box">${icon('arrow',20)}</div><div><strong>Перевод слов</strong><span>Русский → английский · 10 вопросов</span></div></button><button class="mode-shortcut" data-action="start-practice" data-mode="sentence"><div class="icon-box">${icon('message',20)}</div><div><strong>Составление предложений</strong><span>Пиши сам, при необходимости включай подсказки</span></div></button></div><div class="search-wrap" style="margin-top:15px">${icon('search')}<input id="wordSearch" type="search" placeholder="Найти слово или перевод…" value="${esc(state.wordSearch)}" autocomplete="off"></div><div class="filter-row"><button class="filter-chip ${state.wordFilter==='all'?'active':''}" data-action="word-filter" data-filter="all">Все слова · ${vocab.length}</button><button class="filter-chip ${state.wordFilter==='repeat'?'active':''}" data-action="word-filter" data-filter="repeat">Повторить · ${dueWords().length}</button><button class="filter-chip ${state.wordFilter==='known'?'active':''}" data-action="word-filter" data-filter="known">Знаю · ${state.knownWords.length}</button></div>
+  <div class="mode-shortcuts"><button class="mode-shortcut" data-action="start-practice" data-mode="mixed"><div class="icon-box">${icon('cards',20)}</div><div><strong>Смешанная тренировка</strong><span>Слово → вспоминание → своё предложение</span></div></button><button class="mode-shortcut" data-action="start-practice" data-mode="ru-en"><div class="icon-box">${icon('arrow',20)}</div><div><strong>Перевод слов</strong><span>Русский → английский · 10 вопросов</span></div></button><button class="mode-shortcut" data-action="start-practice" data-mode="sentence"><div class="icon-box">${icon('message',20)}</div><div><strong>Составление предложений</strong><span>Пиши сам, при необходимости включай подсказки</span></div></button></div><div class="search-wrap" style="margin-top:15px">${icon('search')}<input id="wordSearch" type="search" placeholder="Найти слово или перевод…" value="${esc(state.wordSearch)}" autocomplete="off"></div><div class="filter-row"><button class="filter-chip ${state.wordFilter==='all'?'active':''}" data-action="word-filter" data-filter="all">Все слова · ${vocab.length}</button><button class="filter-chip ${state.wordFilter==='repeat'?'active':''}" data-action="word-filter" data-filter="repeat">Повторить · ${dueWords().length}</button><button class="filter-chip ${state.wordFilter==='known'?'active':''}" data-action="word-filter" data-filter="known">Знаю · ${state.knownWords.length}</button></div>
   ${item?`<div class="word-study"><section class="flashcard ${wordDirection<0?'swipe-prev':'swipe-next'}"><div class="flash-top"><span>КАРТОЧКА ${state.currentWord+1} / ${list.length}</span><span class="word-badge">${item.topic}</span></div><div class="flash-word">${item.en}</div><div class="flash-pron">${item.pron}</div>${state.wordFlipped?`<div class="flash-translation">${item.ru}</div><p class="flash-example">“${item.ex}”</p><button class="icon-button" style="margin-top:13px" data-action="speak" data-text="${esc(item.ex)}" aria-label="Прослушать пример">${icon('speaker')}</button>`:`<button class="btn btn-ghost" style="margin-top:24px" data-action="flip-word">Показать перевод</button><p class="flash-example">Вспомни значение, прежде чем перевернуть карточку.</p>`}<div class="flash-actions"><button class="btn btn-outline" data-action="word-repeat" data-id="${item.id}">↻ Повторить</button><button class="btn btn-primary" data-action="word-known" data-id="${item.id}">${icon('check',15)} Знаю</button></div><div class="word-nav-controls"><button class="btn btn-ghost" data-action="prev-word">${icon('arrow',14)} Назад</button><button class="btn btn-outline" data-action="next-word">Дальше ${icon('arrow',14)}</button></div><p class="gesture-note">💡 Можно свайпнуть карточку влево или вправо</p></section><div class="word-side"><section class="mini-info"><div class="icon-box" style="background:var(--mint);color:var(--mint-ink)">${icon('check')}</div><div class="mini-stat">${state.knownWords.length}</div><h3>Уже знаю</h3><p>Отмечай знакомые слова, чтобы видеть свой прогресс.</p></section><section class="mini-info"><div class="icon-box" style="background:var(--yellow);color:var(--yellow-ink)">${icon('cards')}</div><div class="mini-stat">${dueWords().length}</div><h3>На повторение</h3><p>Сложные слова можно повторять столько раз, сколько нужно.</p></section></div></div>`:`<div class="empty-state"><div class="big">🎉</div><h3>${state.wordFilter==='known'?'Ты пока не отметил знакомые слова':'Ничего не найдено'}</h3><p>${state.wordFilter==='known'?'Открой карточку и нажми «Знаю».':'Попробуй другой запрос или выбери другой фильтр.'}</p><button class="btn btn-primary" data-action="word-filter" data-filter="all">Показать все слова</button></div>`}
   <div class="section-head"><h2>Список слов</h2><span style="font-size:12px;color:var(--muted)">${list.length} шт.</span></div><div class="word-list">${list.map(v=>`<button class="word-row" data-action="select-word" data-id="${v.id}"><div class="known-dot ${state.knownWords.includes(v.id)?'yes':''}"></div><div class="word-row-main"><strong>${v.en}</strong><span>${v.ru}</span></div>${icon('arrow',14)}</button>`).join('')}</div>`;}
 function renderProgress(){const n=state.completedLessons.length;const earned=state.xp;const accuracy=percent();const week=Array.from({length:7},(_,i)=>{const off=i-6;return {date:dateOffset(off),label:['Вс','Пн','Вт','Ср','Чт','Пт','Сб'][new Date(dateOffset(off)+'T12:00:00').getDay()],xp:state.dailyXp[dateOffset(off)]||0};});const max=Math.max(10,...week.map(d=>d.xp));const badges=[{emoji:'🌱',name:'Первый шаг',desc:'Заработай первые 5 XP',ok:earned>=5},{emoji:'🔥',name:'Серия 3 дня',desc:'Занимайся 3 дня подряд',ok:state.streak>=3},{emoji:'📚',name:'Любознательный',desc:'Пройди 3 урока',ok:n>=3},{emoji:'🧠',name:'Словарик',desc:'Отметь 10 слов как знакомые',ok:state.knownWords.length>=10},{emoji:'🎯',name:'Точность',desc:'Ответь верно на 20 вопросов',ok:state.correct>=20},{emoji:'🏆',name:'Всё пройдено',desc:'Заверши все уроки',ok:n===lessons.length}];return `<div class="page-title-row"><div><div class="eyebrow">ТВОИ РЕЗУЛЬТАТЫ</div><h1>Ты растёшь 🌱</h1><p>Каждое занятие — маленькая победа.</p></div><div class="level-chip">Уровень B1</div></div><div class="stats-grid"><section class="stat-card"><div class="icon-box">${icon('flame')}</div><div class="stat-value">${state.streak}</div><div class="stat-label">Дней подряд</div></section><section class="stat-card"><div class="icon-box" style="background:var(--yellow);color:var(--yellow-ink)">${icon('trophy')}</div><div class="stat-value">${earned}</div><div class="stat-label">Всего XP</div></section><section class="stat-card"><div class="icon-box" style="background:var(--mint);color:var(--mint-ink)">${icon('book')}</div><div class="stat-value">${n}<span style="font-size:14px;color:var(--muted)">/${lessons.length}</span></div><div class="stat-label">Уроков пройдено</div></section><section class="stat-card"><div class="icon-box" style="background:var(--pink);color:var(--pink-ink)">${icon('target')}</div><div class="stat-value">${accuracy}%</div><div class="stat-label">Точность ответов</div></section></div>
@@ -571,7 +656,13 @@ function renderProgress(){const n=state.completedLessons.length;const earned=sta
 
 function shuffleArray(items){const a=[...items];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function startPractice(mode){
-  if(mode==='ru-en'){
+  if(mode==='mixed'){
+    const repeats=shuffleArray(vocab.filter(v=>state.repeatWords.includes(v.id)));
+    const newWords=shuffleArray(vocab.filter(v=>!state.knownWords.includes(v.id)&&!state.repeatWords.includes(v.id)));
+    const known=shuffleArray(vocab.filter(v=>state.knownWords.includes(v.id)));
+    const chosen=[...repeats,...newWords,...known].slice(0,5);
+    practice={type:'mixed',questions:chosen,index:0,stage:'learn',recallDraft:'',recallChecked:false,recallCorrect:false,recallError:false,sentenceDraft:'',sentenceChecked:false,correct:0,xpBefore:state.xp,finished:false};
+  } else if(mode==='ru-en'){
     const chosen=shuffleArray(vocab).slice(0,10);
     const questions=chosen.map(word=>{const wrong=shuffleArray(vocab.filter(v=>v.id!==word.id)).slice(0,3);const options=shuffleArray([word,...wrong]);return {word,options,correctIndex:options.findIndex(v=>v.id===word.id)};});
     practice={type:mode,questions,index:0,selected:null,checked:false,correct:0,xpBefore:state.xp,finished:false};
@@ -581,15 +672,74 @@ function startPractice(mode){
   }
   quiz=null;saveState();render();window.scrollTo({top:0,behavior:'smooth'});
 }
+function normalizeMixedAnswer(value){return String(value||'').toLowerCase().replace(/[’‘]/g,"'").replace(/-/g,' ').replace(/[^a-z0-9' ]/g,' ').replace(/\s+/g,' ').trim();}
+function containsTargetPhrase(sentence,target){const full=' '+normalizeMixedAnswer(sentence)+' ';const wanted=' '+normalizeMixedAnswer(target)+' ';return wanted.trim().length>0&&full.includes(wanted);}
+function checkMixedRecall(){
+  if(!practice||practice.type!=='mixed'||practice.stage!=='recall'||practice.recallChecked)return;
+  const answer=normalizeMixedAnswer(practice.recallDraft);
+  if(!answer){showToast('Сначала введи английское слово');return;}
+  const word=practice.questions[practice.index];
+  practice.recallChecked=true;practice.recallCorrect=answer===normalizeMixedAnswer(word.en);state.answered++;
+  if(practice.recallCorrect){state.correct++;addXp(5);showToast('Верно! +5 XP');}
+  else{practice.recallError=true;state.repeatWords=Array.from(new Set([...state.repeatWords,word.id]));state.knownWords=state.knownWords.filter(id=>id!==word.id);saveState();showToast('Ничего страшного — слово вернётся на повторение');}
+  render();
+}
+function checkMixedSentence(){
+  if(!practice||practice.type!=='mixed'||practice.stage!=='compose'||practice.sentenceChecked)return;
+  const word=practice.questions[practice.index];
+  if(!String(practice.sentenceDraft||'').trim()){showToast('Сначала напиши своё предложение');return;}
+  if(!containsTargetPhrase(practice.sentenceDraft,word.en)){showToast('Добавь в предложение выражение: '+word.en);return;}
+  practice.sentenceChecked=true;addXp(8);showToast('Выражение найдено! +8 XP');render();
+}
+function moveToNextMixedWord(mastered){
+  if(!practice||practice.type!=='mixed')return;
+  const p=practice;const word=p.questions[p.index];
+  if(mastered&&!p.recallError){p.correct++;state.repeatWords=state.repeatWords.filter(id=>id!==word.id);}
+  else{state.repeatWords=Array.from(new Set([...state.repeatWords,word.id]));state.knownWords=state.knownWords.filter(id=>id!==word.id);}
+  if(p.index<p.questions.length-1){
+    p.index++;p.stage='learn';p.recallDraft='';p.recallChecked=false;p.recallCorrect=false;p.recallError=false;p.sentenceDraft='';p.sentenceChecked=false;
+  }else{p.finished=true;streakUpdate();}
+  saveState();render();
+}
+function advanceMixed(){
+  if(!practice||practice.type!=='mixed'||practice.finished)return;
+  if(practice.stage==='learn'){practice.stage='recall';render();return;}
+  if(practice.stage==='recall'){
+    if(!practice.recallChecked){showToast('Сначала проверь свой ответ');return;}
+    practice.stage='compose';practice.sentenceDraft='';practice.sentenceChecked=false;render();return;
+  }
+  if(!practice.sentenceChecked){showToast('Сначала составь предложение со словом');return;}
+  moveToNextMixedWord(!practice.recallError);
+}
+function skipMixedWord(){
+  if(!practice||practice.type!=='mixed'||practice.finished)return;
+  moveToNextMixedWord(false);
+}
 function answerPractice(i){if(!practice||practice.checked||practice.finished)return;practice.selected=i;practice.checked=true;state.answered++;if(i===practice.questions[practice.index].correctIndex){practice.correct++;state.correct++;addXp(5);}else saveState();render();}
 function checkSentence(){if(!practice||practice.checked||practice.finished)return;const q=practice.questions[practice.index];const normal=x=>String(x||'').toLowerCase().trim().replace(/[’‘]/g,"'").replace(/[^a-z0-9' ]/g,'').replace(/\s+/g,' ');const accepted=[q.en,...(q.alts||[])].map(normal);practice.isCorrect=accepted.includes(normal(practice.draft));practice.checked=true;state.answered++;if(practice.isCorrect){practice.correct++;state.correct++;addXp(8);showToast('Отлично! +8 XP');}else saveState();render();}
 function addSentenceToken(token){if(!practice||practice.type!=='sentence'||practice.checked)return;const area=document.getElementById('sentenceDraft');const start=area?area.selectionStart:practice.draft.length;const end=area?area.selectionEnd:start;const before=practice.draft.slice(0,start),after=practice.draft.slice(end);const needsSpace=before.length>0&&!/\s$/.test(before);practice.draft=before+(needsSpace?' ':'')+token+after;practice.usedHint=true;render();const next=document.getElementById('sentenceDraft');if(next){next.focus();const pos=practice.draft.length;next.setSelectionRange(pos,pos);}}
 function nextPractice(){if(!practice)return;if(practice.index<practice.questions.length-1){practice.index++;practice.selected=null;practice.checked=false;practice.draft='';practice.hintVisible=false;practice.usedHint=false;practice.isCorrect=false;render();window.scrollTo({top:0,behavior:'smooth'});}else{practice.finished=true;streakUpdate();saveState();render();}}
 function closePractice(){practice=null;saveState();render();}
+function renderMixedPractice(p,total){
+  const word=p.questions[p.index];
+  const stageNo=p.stage==='learn'?1:p.stage==='recall'?2:3;
+  const pct=Math.round(((p.index*3+stageNo-1)/(total*3))*100);
+  const header=`<div class="quiz-top"><button class="icon-button" data-action="close-practice" aria-label="Выйти из тренировки">${icon('close')}</button><div class="quiz-bar"><span style="width:${pct}%"></span></div><div class="quiz-counter">${p.index+1}/${total}</div></div>`;
+  const skip=`<button class="text-button mixed-skip" data-action="mixed-skip">Пропустить слово — повторю позже</button>`;
+  if(p.stage==='learn'){
+    return `<div class="quiz-shell mixed-session">${header}<div class="quiz-content mixed-content"><div class="quiz-tag">СМЕШАННЫЙ РЕЖИМ · ЭТАП 1 ИЗ 3</div><h1 class="quiz-question">Познакомься со словом</h1><p class="quiz-hint">Прочитай значение и пример. Через мгновение попробуешь вспомнить его без подсказки.</p><section class="mixed-word-card"><div class="mixed-word">${esc(word.en)}</div><div class="mixed-pron">${esc(word.pron)}</div><div class="mixed-translation">${esc(word.ru)}</div><div class="mixed-topic">${esc(word.topic)}</div><div class="mixed-example"><span>Пример</span><strong>${esc(word.ex)}</strong><button class="icon-button" data-action="speak" data-text="${esc(word.ex)}" aria-label="Прослушать пример">${icon('speaker',17)}</button></div></section></div><div class="quiz-footer"><button class="btn btn-primary btn-full" data-action="mixed-advance">Запомнил, дальше ${icon('arrow',16)}</button>${skip}</div></div>`;
+  }
+  if(p.stage==='recall'){
+    return `<div class="quiz-shell mixed-session">${header}<div class="quiz-content mixed-content"><div class="quiz-tag">СМЕШАННЫЙ РЕЖИМ · ЭТАП 2 ИЗ 3</div><h1 class="quiz-question">Вспомни слово сам</h1><p class="quiz-hint">Вспомни английское слово по русскому переводу — без вариантов ответа.</p><div class="mixed-prompt">${esc(word.ru)}</div><label class="mixed-label" for="mixedRecallDraft">Как это будет по-английски?</label><input id="mixedRecallDraft" class="mixed-input" type="text" value="${esc(p.recallDraft)}" placeholder="Введи английское слово…" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" ${p.recallChecked?'readonly':''}> ${p.recallChecked?`<div class="feedback ${p.recallCorrect?'good':'bad'}"><strong>${p.recallCorrect?'Правильно! Хорошо вспомнил.':'Почти — правильный ответ:'}</strong><div style="margin-top:6px"><strong>${esc(word.en)}</strong> — ${esc(word.ru)}</div><div class="mixed-feedback-note">На следующем этапе попробуешь использовать это выражение сам.</div></div>`:''}</div><div class="quiz-footer">${p.recallChecked?`<button class="btn btn-primary btn-full" data-action="mixed-advance">Теперь составим предложение ${icon('arrow',16)}</button>`:`<button class="btn btn-primary btn-full" data-action="mixed-check-recall">Проверить ответ</button>`}${skip}</div></div>`;
+  }
+  return `<div class="quiz-shell mixed-session">${header}<div class="quiz-content mixed-content"><div class="quiz-tag">СМЕШАННЫЙ РЕЖИМ · ЭТАП 3 ИЗ 3</div><h1 class="quiz-question">Используй слово сам</h1><p class="quiz-hint">Составь своё английское предложение с выражением ниже. Не нужно переводить пример — придумай собственную фразу.</p><div class="mixed-target"><div class="mixed-target-word">${esc(word.en)}</div><div class="mixed-target-translation">${esc(word.ru)}</div></div><label class="mixed-label" for="mixedSentenceDraft">Твоё предложение на английском</label><textarea id="mixedSentenceDraft" class="mixed-textarea" rows="3" placeholder="Напиши предложение со словом…"${p.sentenceChecked?' readonly':''}>${esc(p.sentenceDraft)}</textarea>${p.sentenceChecked?`<div class="feedback good"><strong>Выражение найдено — отлично!</strong><div class="mixed-feedback-note">Я проверил наличие целевого выражения, а не грамматику. Сравни свою фразу с примером и оцени, насколько естественно она звучит.</div><div class="mixed-example-after"><span>Пример для сравнения</span><strong>${esc(word.ex)}</strong><button class="icon-button" data-action="speak" data-text="${esc(word.ex)}" aria-label="Прослушать пример">${icon('speaker',17)}</button></div></div>`:''}</div><div class="quiz-footer">${p.sentenceChecked?`<button class="btn btn-primary btn-full" data-action="mixed-advance">${p.index===total-1?'Завершить тренировку':'Следующее слово'} ${icon('arrow',16)}</button>`:`<button class="btn btn-primary btn-full" data-action="mixed-check-sentence">Проверить слово в предложении</button>`}${skip}</div></div>`;
+}
+
 function renderPractice(){
   const p=practice;const total=p.questions.length;const earned=state.xp-(p.xpBefore||0);
-  if(p.finished){const pct=Math.round(p.correct/total*100);return `<div class="quiz-shell"><div class="quiz-top"><button class="icon-button" data-action="close-practice" aria-label="Закрыть">${icon('close')}</button><div style="font-weight:800;font-size:14px">Практика завершена</div></div><div class="result-content"><div class="result-emoji">${pct>=90?'🏆':pct>=60?'🎉':'💪'}</div><h1>${pct>=90?'Супер результат!':pct>=60?'Хорошая работа!':'Продолжай тренироваться!'}</h1><p class="result-score">${p.type==='ru-en'?'Перевод слов с русского на английский':'Составление предложений'} · ${p.correct} из ${total} правильно</p><div class="result-points"><div><strong>+${earned}</strong><span>XP получено</span></div><div><strong>${pct}%</strong><span>Точность</span></div></div><p style="color:var(--muted);font-size:14px;max-width:340px;margin:0 auto 26px">${p.type==='sentence'?'Главная цель — вспоминать фразу самому. Подсказки можно использовать, пока не станет легче.':'Пробуй переводить с русского на английский каждый день — так слова начнут быстрее вспоминаться.'}</p><button class="btn btn-primary btn-full" data-action="close-practice">Продолжить ${icon('arrow',16)}</button><button class="btn btn-ghost btn-full" style="margin-top:9px" data-action="start-practice" data-mode="${p.type}">Повторить ещё раз</button></div></div>`;}
+  if(p.finished){const pct=Math.round(p.correct/total*100);return `<div class="quiz-shell"><div class="quiz-top"><button class="icon-button" data-action="close-practice" aria-label="Закрыть">${icon('close')}</button><div style="font-weight:800;font-size:14px">Практика завершена</div></div><div class="result-content"><div class="result-emoji">${pct>=90?'🏆':pct>=60?'🎉':'💪'}</div><h1>${pct>=90?'Супер результат!':pct>=60?'Хорошая работа!':'Продолжай тренироваться!'}</h1><p class="result-score">${p.type==='mixed'?'Смешанная тренировка':p.type==='ru-en'?'Перевод слов с русского на английский':'Составление предложений'} · ${p.type==='mixed'?`${p.correct} из ${total} слов без ошибок`:`${p.correct} из ${total} правильно`}</p><div class="result-points"><div><strong>+${earned}</strong><span>XP получено</span></div><div><strong>${pct}%</strong><span>Точность</span></div></div><p style="color:var(--muted);font-size:14px;max-width:340px;margin:0 auto 26px">${p.type==='mixed'?'Ты прошёл три этапа для каждого слова. Слова, которые вызвали трудности, добавлены на повторение.':p.type==='sentence'?'Главная цель — вспоминать фразу самому. Подсказки можно использовать, пока не станет легче.':'Пробуй переводить с русского на английский каждый день — так слова начнут быстрее вспоминаться.'}</p><button class="btn btn-primary btn-full" data-action="close-practice">Продолжить ${icon('arrow',16)}</button><button class="btn btn-ghost btn-full" style="margin-top:9px" data-action="start-practice" data-mode="${p.type}">Повторить ещё раз</button></div></div>`;}
   const q=p.questions[p.index];
+  if(p.type==='mixed')return renderMixedPractice(p,total);
   if(p.type==='ru-en'){
     return `<div class="quiz-shell"><div class="quiz-top"><button class="icon-button" data-action="close-practice" aria-label="Выйти из практики">${icon('close')}</button><div class="quiz-bar"><span style="width:${Math.round((p.index+(p.checked?1:0))/total*100)}%"></span></div><div class="quiz-counter">${p.index+1}/${total}</div></div><div class="quiz-content"><div class="quiz-tag">🧠 АКТИВНОЕ ВСПОМИНАНИЕ</div><h1 class="quiz-question">Как будет по-английски?</h1><p class="quiz-hint">Сначала вспомни слово сам, затем выбери ответ.</p><div class="practice-prompt">${esc(q.word.ru)}<div style="font-size:12px;color:var(--muted);font-weight:550;margin-top:8px">${q.word.topic}</div></div><div class="answer-list">${q.options.map((v,i)=>{let cls='';if(p.checked&&i===q.correctIndex)cls='correct';else if(p.checked&&i===p.selected)cls='wrong';return `<button class="answer-option ${cls}" data-action="practice-answer" data-index="${i}" ${p.checked?'disabled':''}><span class="answer-letter">${String.fromCharCode(65+i)}</span><span>${esc(v.en)}</span>${p.checked&&i===q.correctIndex?`<span style="margin-left:auto;color:#57d6a8">${icon('check',17)}</span>`:''}</button>`;}).join('')}</div>${p.checked?`<div class="feedback ${p.selected===q.correctIndex?'good':'bad'}"><strong>${p.selected===q.correctIndex?'Верно! Отлично 👏':'Правильный ответ:'}</strong><div style="margin-top:5px">${esc(q.word.en)} — ${esc(q.word.ru)}<br><span style="opacity:.86">${esc(q.word.ex)}</span></div><button class="text-button" data-action="speak" data-text="${esc(q.word.ex)}">${icon('speaker',13)} Послушать пример</button></div>`:''}</div><div class="quiz-footer">${p.checked?`<button class="btn btn-primary btn-full" data-action="practice-next">${p.index===total-1?'Завершить':'Следующее слово'} ${icon('arrow',16)}</button>`:`<p class="gesture-note">За правильный ответ — 5 XP.</p>`}</div></div>`;
   }
@@ -603,7 +753,9 @@ function wireInputs(){
   const search=document.getElementById('wordSearch');
   if(search){search.addEventListener('input',e=>{const pos=e.target.selectionStart;state.wordSearch=e.target.value;state.currentWord=0;state.wordFlipped=false;const root=document.getElementById('app');const main=root.querySelector('main');main.innerHTML=renderWords();const next=document.getElementById('wordSearch');if(next){next.focus();next.setSelectionRange(pos,pos);}wireInputs();saveState();});}
   const goal=document.getElementById('goalSelect');if(goal)goal.addEventListener('change',e=>{state.goal=Number(e.target.value);saveState();render();showToast('Ежедневная цель обновлена');});
-  const draft=document.getElementById('sentenceDraft');if(draft)draft.addEventListener('input',e=>{if(practice&&!practice.checked)practice.draft=e.target.value;});
+  const draft=document.getElementById('sentenceDraft');if(draft)draft.addEventListener('input',e=>{if(practice&&practice.type==='sentence'&&!practice.checked)practice.draft=e.target.value;});
+  const mixedRecall=document.getElementById('mixedRecallDraft');if(mixedRecall)mixedRecall.addEventListener('input',e=>{if(practice&&practice.type==='mixed'&&practice.stage==='recall'&&!practice.recallChecked)practice.recallDraft=e.target.value;});
+  const mixedSentence=document.getElementById('mixedSentenceDraft');if(mixedSentence)mixedSentence.addEventListener('input',e=>{if(practice&&practice.type==='mixed'&&practice.stage==='compose'&&!practice.sentenceChecked)practice.sentenceDraft=e.target.value;});
   const card=document.querySelector('.flashcard');if(card){let sx=0,sy=0;card.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY;});card.addEventListener('pointerup',e=>{const dx=e.clientX-sx,dy=e.clientY-sy;if(Math.abs(dx)>58&&Math.abs(dx)>Math.abs(dy)*1.25){changeWord(dx<0?1:-1);}});}
 }
 function changeWord(dir){const list=selectedWords();if(!list.length)return;state.currentWord=(state.currentWord+dir+list.length)%list.length;state.wordFlipped=false;wordDirection=dir;saveState();render();}
@@ -624,6 +776,10 @@ case'word-repeat':{const id=btn.dataset.id;state.repeatWords=Array.from(new Set(
 case'start-practice':startPractice(btn.dataset.mode);break;
 case'practice-answer':answerPractice(Number(btn.dataset.index));break;
 case'practice-next':nextPractice();break;
+case'mixed-advance':advanceMixed();break;
+case'mixed-check-recall':checkMixedRecall();break;
+case'mixed-check-sentence':checkMixedSentence();break;
+case'mixed-skip':skipMixedWord();break;
 case'close-practice':closePractice();break;
 case'check-sentence':checkSentence();break;
 case'toggle-hint':if(practice&&!practice.checked){practice.hintVisible=!practice.hintVisible;render();}break;
@@ -631,7 +787,7 @@ case'clear-draft':if(practice&&!practice.checked){practice.draft='';render();doc
 case'sentence-token':addSentenceToken(btn.dataset.token);break;
 case'reset':if(confirm('Точно сбросить весь прогресс? Это действие нельзя отменить.')){state=defaultState();quiz=null;practice=null;saveState();render();showToast('Прогресс сброшен');}break;
 }});
-if('serviceWorker'in navigator && location.protocol!=='file:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
+if('serviceWorker'in navigator && location.protocol!=='file:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=3',{updateViaCache:'none'}).catch(()=>{}));}
 render();
 </script>
 </body>
