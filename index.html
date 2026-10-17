@@ -595,9 +595,10 @@ function checkMixedSentence(){
   if(!draft){showToast('Сначала напиши своё предложение');return;}
   if(!containsTargetPhrase(draft,word.en)){showToast('Добавь в предложение выражение: '+word.en);return;}
   const answerWords=normEn(draft).split(' ').filter(Boolean);
-  const targetWordCount=normEn(word.en).split(' ').filter(Boolean).length;
-  const minWords=Math.max(3,targetWordCount+2);
-  if(answerWords.length<minWords){showToast('Это пока только выражение. Напиши минимум '+minWords+' слов.');return;}
+  const targetWords=normEn(word.en).split(' ').filter(Boolean);
+  const minWords=Math.max(3,targetWords.length+2);
+  const supportingWords=answerWords.filter(token=>!targetWords.includes(token));
+  if(answerWords.length<minWords||supportingWords.length<2){showToast('Напиши полное предложение, а не только выражение.');return;}
   practice.sentenceChecked=true;const hx=[8,5,2][practice.hintMax||0];addXp(hx);showToast('Выражение найдено! +'+hx+' XP');render();
 }
 function moveToNextMixedWord(mastered){
