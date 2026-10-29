@@ -326,6 +326,21 @@ button:disabled{cursor:default}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
 
 .focused-study{grid-template-columns:1fr;max-width:620px;margin:0 auto}.focused-study .word-side{display:none}
+.sentence-composer{margin:24px 0 10px;background:linear-gradient(145deg,#1c2232,#171c29);border:1px solid #384058;border-radius:24px;padding:22px;box-shadow:0 12px 36px #0002}
+.compose-heading,.compose-toolbar,.compose-bank-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.compose-heading{margin-bottom:14px;font-size:13px;font-weight:750}.compose-heading>span{color:#aeb7d0;font-size:11px;font-weight:500}
+.answer-tray{display:flex;align-content:flex-start;align-items:flex-start;flex-wrap:wrap;gap:9px;min-height:136px;padding:17px;border:1px solid #444662;border-radius:18px;background:repeating-linear-gradient(transparent,transparent 55px,#30374c66 56px,transparent 57px),#121722;transition:border-color .25s,box-shadow .25s}
+.answer-tray.has-answer{border-color:#8276bd;box-shadow:inset 0 0 24px #b8b0ff05}.tray-placeholder{color:#a4aec5;font-size:15px;padding:8px 0;line-height:1.6}.tray-placeholder>span{display:block;font-size:12px;color:#8390aa;margin-top:3px}
+.sentence-composer .word-token{margin:0;min-height:46px;padding:10px 15px;border-radius:13px;border:1px solid #625b89;background:linear-gradient(#35324e,#2a2940);box-shadow:0 3px 0 #151827;font-size:15px;font-weight:650;color:#eeeaff;touch-action:manipulation;overflow-wrap:anywhere;max-width:100%}
+.sentence-composer .answer-token{background:linear-gradient(#bcb2ff,#a69aea);color:#171628;border-color:#d3caff;box-shadow:0 3px 0 #655a99}
+.sentence-composer .word-token.is-used{color:transparent!important;background:#111621!important;border-color:#2b3143!important;box-shadow:none;pointer-events:none}
+.compose-toolbar{margin-top:8px}.compose-toolbar .text-button{min-height:44px;padding:8px 2px}.compose-clear{color:#acb5cc}.compose-clear:disabled{opacity:.35}
+.compose-divider{height:1px;background:linear-gradient(90deg,transparent,#3b435b,transparent);margin:10px 0 18px}.compose-bank-heading>span{font-size:13px;font-weight:700}.compose-note{font-size:11px;color:#a4aec5;margin:2px 0 15px;line-height:1.5}
+.tile-bank{margin:0;gap:10px;min-height:48px}.answer-prefix{font-size:16px;line-height:46px;overflow-wrap:anywhere;max-width:100%}.compose-example{margin-top:20px;padding:15px;border:1px solid #45415e;border-radius:14px;background:#28263c}.compose-example>span{color:#b5abed;font-size:11px}.compose-example p{margin:6px 0 0;font-size:14px}
+.flying-token{position:fixed;z-index:1000;display:flex;align-items:center;justify-content:center;pointer-events:none;transform-origin:top left;margin:0;border-radius:13px;padding:10px 15px;border:1px solid #d3caff;background:#bcb2ff;color:#171628;font-size:15px;font-weight:650;box-shadow:0 8px 24px #0004;will-change:transform}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:660px){.sentence-composer{padding:16px;border-radius:21px;margin-top:18px}.answer-tray{padding:12px;min-height:148px;gap:8px}.sentence-composer .word-token{padding:10px 12px}.compose-heading>span{font-size:10px}.tile-bank{gap:9px}.compose-note{max-width:260px}}
+
 </style>
 </head>
 <body>
@@ -696,6 +711,74 @@ function moveToNextMixedWord(mastered){
   }else{p.finished=true;streakUpdate();}
   saveState();render();
 }
+function composerState(p){
+ const mixed=p.type==='mixed',key=p.type+':'+p.index;
+ if(p.composerKey!==key){p.composerKey=key;p.tokenSelection=[];p.tokenPrefix=String(mixed?p.sentenceDraft||'':p.draft||'');p.manualEntry=false;}
+ return {mixed,locked:mixed?p.sentenceChecked:p.checked,bank:mixed?(p.hintBank||[]):p.questions[p.index].bank,field:mixed?'sentenceDraft':'draft'};
+}
+function renderComposer(p){
+ const c=composerState(p),visible=c.mixed?p.hintLevel>=1:p.hintVisible;
+ const selected=p.tokenSelection||[],draft=String(p[c.field]||'');
+ return `<section id="sentenceComposer" class="sentence-composer" aria-label="Твой перевод">
+ <div class="compose-heading"><label for="${c.mixed?'mixedSentenceDraft':'sentenceDraft'}">Твой перевод</label><span>${c.locked?'Ответ сохранён':p.manualEntry?'Ручной ввод':'Собери из слов'}</span></div>
+ ${p.manualEntry?`<textarea id="${c.mixed?'mixedSentenceDraft':'sentenceDraft'}" class="mixed-textarea" rows="3" placeholder="Напиши перевод…" ${c.locked?'readonly':''}>${esc(draft)}</textarea>`:`<div class="answer-tray ${draft?'has-answer':''}" role="group" aria-label="Собранное предложение">${p.tokenPrefix?`<span class="answer-prefix">${esc(p.tokenPrefix)}</span>`:''}${selected.map(i=>`<button class="word-token answer-token" data-action="compose-remove" data-index="${i}" data-tile="answer-${i}" aria-label="Убрать ${esc(c.bank[i])}" ${c.locked?'disabled':''}>${esc(c.bank[i])}</button>`).join('')}${!draft?'<span class="tray-placeholder">Твои слова появятся здесь<span>Выбирай слова внизу или включи ручной ввод</span></span>':''}</div>`}
+ <div class="compose-toolbar"><button class="text-button" data-action="compose-mode" ${c.locked?'disabled':''}>${p.manualEntry?'▦ Собрать из слов':'⌨ Написать самому'}</button><button class="text-button compose-clear" data-action="compose-clear" ${c.locked||!draft?'disabled':''}>Очистить</button></div>
+ ${!c.locked?`<div class="compose-divider"></div><div class="compose-bank-heading"><span>${visible?'Слова-подсказки':'Нужна подсказка?'}</span><button class="text-button" data-action="compose-hint">${c.mixed?(p.hintLevel===0?'Показать слова':p.hintLevel===1?'Показать пример':'Скрыть подсказки'):(visible?'Скрыть':'Показать слова')}</button></div>
+ ${visible?`<p class="compose-note">Нажми на слово, чтобы добавить. Нажми в ответе, чтобы вернуть.</p><div class="word-bank tile-bank">${c.bank.map((t,i)=>`<button class="word-token bank-token ${selected.includes(i)?'is-used':''}" data-action="compose-add" data-index="${i}" data-tile="bank-${i}" ${selected.includes(i)?'disabled aria-hidden="true"':''}>${esc(t)}</button>`).join('')}</div>`:''}
+ ${c.mixed&&p.hintLevel>=2?`<div class="compose-example"><span>Один из вариантов</span><p>${esc(p.questions[p.index].ex)}</p></div>`:''}`:''}
+ <span class="sr-only" aria-live="polite" aria-atomic="true">${esc(draft)}</span></section>`;
+}
+function refreshComposer(){
+ const el=document.getElementById('sentenceComposer');if(!el||!practice)return;
+ el.outerHTML=renderComposer(practice);wireComposerInput();persistPractice();
+}
+function wireComposerInput(){
+ const area=document.querySelector('#sentenceComposer textarea');
+ if(area)area.oninput=()=>{if(!practice)return;const c=composerState(practice);practice[c.field]=area.value;practice.tokenPrefix=area.value;practice.tokenSelection=[];persistPractice();};
+}
+function composerAction(btn){
+ const p=practice;if(!p)return;const c=composerState(p);if(c.locked)return;
+ const act=btn.dataset.action;
+ if(act==='compose-mode'){
+  if(p.manualEntry){p.tokenPrefix=p[c.field]||'';p.tokenSelection=[];}
+  p.manualEntry=!p.manualEntry;refreshComposer();
+  // Focus is synchronous and exclusive to the explicit keyboard button.
+  if(p.manualEntry)document.querySelector('#sentenceComposer textarea')?.focus({preventScroll:true});
+  return;
+ }
+ if(act==='compose-clear'){p[c.field]='';p.tokenPrefix='';p.tokenSelection=[];document.activeElement?.blur();refreshComposer();return;}
+ if(act==='compose-hint'){
+  if(c.mixed){p.hintLevel=((p.hintLevel||0)+1)%3;p.hintMax=Math.max(p.hintMax||0,p.hintLevel);if(!p.hintBank)p.hintBank=shuffleArray(p.questions[p.index].ex.replace(/[.!?]/g,'').split(/\s+/));}
+  else{p.hintVisible=!p.hintVisible;p.usedHint=true;}
+  document.activeElement?.blur();refreshComposer();return;
+ }
+ const i=Number(btn.dataset.index);if(!Number.isInteger(i)||i<0||i>=c.bank.length)return;
+ const adding=act==='compose-add';if(!adding&&act!=='compose-remove')return;
+ if(adding&&p.tokenSelection.includes(i))return;
+ const from=btn.getBoundingClientRect(),label=c.bank[i];
+ const previous=new Map([...document.querySelectorAll('.answer-token')].map(el=>[el.dataset.tile,el.getBoundingClientRect()]));
+ // A tile tap closes any existing keyboard and never focuses an input.
+ document.activeElement?.blur();
+ if(p.manualEntry){p.tokenPrefix=p[c.field]||'';p.tokenSelection=[];p.manualEntry=false;}
+ if(adding)p.tokenSelection.push(i);else p.tokenSelection=p.tokenSelection.filter(v=>v!==i);
+ p[c.field]=[p.tokenPrefix,...p.tokenSelection.map(v=>c.bank[v])].filter(Boolean).join(' ');
+ if(!c.mixed)p.usedHint=true;
+ refreshComposer();
+ const target=document.querySelector(`[data-tile="${adding?'answer':'bank'}-${i}"]`);
+ if(!target)return;
+ if(matchMedia('(prefers-reduced-motion: reduce)').matches||!target.animate){target.focus({preventScroll:true});return;}
+ const to=target.getBoundingClientRect(),ghost=document.createElement('span');
+ ghost.className='word-token flying-token';ghost.textContent=label;ghost.setAttribute('aria-hidden','true');
+ Object.assign(ghost.style,{left:from.left+'px',top:from.top+'px',width:from.width+'px',height:from.height+'px'});
+ document.body.append(ghost);
+ const hide=target.animate([{opacity:0},{opacity:0}],{duration:380});
+ const flight=ghost.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:`translate(${(to.left-from.left)*.5}px,${(to.top-from.top)*.5-18}px) scale(1.04)`,opacity:1,offset:.5},{transform:`translate(${to.left-from.left}px,${to.top-from.top}px) scale(${to.width/from.width},${to.height/from.height})`,opacity:1}],{duration:380,easing:'cubic-bezier(.22,.75,.22,1)'});
+ const cleanup=()=>{ghost.remove();hide.cancel();};flight.onfinish=cleanup;flight.oncancel=cleanup;
+ for(const el of document.querySelectorAll('.answer-token')){const old=previous.get(el.dataset.tile);if(!old)continue;const now=el.getBoundingClientRect();el.animate([{transform:`translate(${old.left-now.left}px,${old.top-now.top}px)`},{transform:'translate(0,0)'}],{duration:300,easing:'cubic-bezier(.22,.75,.22,1)'});}
+ target.focus({preventScroll:true});
+}
+document.addEventListener('pointerdown',e=>{if(e.target.closest('[data-action^="compose-"]:not([data-action="compose-mode"])')){if(e.pointerType!=='mouse')e.preventDefault();}}, {passive:false});
+
 function mixedHintBlock(p,word){if(p.sentenceChecked)return '';const lv=p.hintLevel||0;const label=lv===0?'Показать слова':lv===1?'Показать пример':'Скрыть';let h=`<div class="card-heading" style="margin-top:13px"><button class="btn btn-ghost" data-action="mixed-hint">💡 ${label}</button><button class="btn btn-outline" data-action="mixed-clear">Очистить</button></div>`;if(lv>=1)h+=`<p class="gesture-note" style="margin:10px 0 3px">Нажми на слово, чтобы вставить:</p><div class="word-bank">${(p.hintBank||[]).map(t=>`<button class="word-token" data-action="mixed-token" data-token="${esc(t)}">${esc(t)}</button>`).join('')}</div>`;if(lv>=2)h+=`<div class="feedback good"><strong>Пример</strong><div style="margin-top:6px">${esc(word.ex)}</div></div>`;return h;}
 function mixedHint(){const p=practice;if(!p||p.type!=='mixed'||p.stage!=='compose'||p.sentenceChecked)return;const w=p.questions[p.index];p.hintLevel=((p.hintLevel||0)+1)%3;p.hintMax=Math.max(p.hintMax||0,p.hintLevel);if(p.hintLevel>=1&&!p.hintBank)p.hintBank=shuffleArray(w.ex.replace(/[.!?]/g,'').split(/\s+/));p.skipEntrance=true;render();}
 function addMixedToken(token){const p=practice;if(!p||p.type!=='mixed'||p.stage!=='compose'||p.sentenceChecked)return;const cur=String(p.sentenceDraft||'');p.sentenceDraft=cur+(cur&&!/\s$/.test(cur)?' ':'')+token;p.skipEntrance=true;render();const area=document.getElementById('mixedSentenceDraft');if(area){area.focus();const end=area.value.length;area.setSelectionRange(end,end);}}
@@ -734,7 +817,7 @@ function renderMixedPractice(p,total){
   if(p.stage==='recall'){
     return `<div class="${shellClass}">${header}<div class="quiz-content mixed-content"><div class="quiz-tag">СМЕШАННЫЙ РЕЖИМ · ЭТАП 2 ИЗ 3</div><h1 class="quiz-question">Вспомни слово сам</h1><p class="quiz-hint">Вспомни английское слово по русскому переводу — без вариантов ответа.</p><div class="mixed-prompt">${esc(word.ru)}</div><label class="mixed-label" for="mixedRecallDraft">Как это будет по-английски?</label><input id="mixedRecallDraft" class="mixed-input" type="text" value="${esc(p.recallDraft)}" placeholder="Введи английское слово…" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" ${p.recallChecked?'readonly':''}> ${p.recallChecked?`<div class="feedback ${p.recallCorrect?'good':'bad'}"><strong>${p.recallCorrect?'Правильно! Хорошо вспомнил.':'Почти — правильный ответ:'}</strong><div style="margin-top:6px"><strong>${esc(word.en)}</strong> — ${esc(word.ru)}</div><div class="mixed-feedback-note">На следующем этапе попробуешь использовать это выражение сам.</div></div>`:''}</div><div class="quiz-footer">${p.recallChecked?`<button class="btn btn-primary btn-full" data-action="mixed-advance">Теперь составим предложение ${icon('arrow',16)}</button>`:`<button class="btn btn-primary btn-full" data-action="mixed-check-recall">Проверить ответ</button>`}${skip}</div></div>`;
   }
-  return `<div class="${shellClass}">${header}<div class="quiz-content mixed-content"><div class="quiz-tag">СМЕШАННЫЙ РЕЖИМ · ЭТАП 3 ИЗ 3</div><h1 class="quiz-question">Переведи на английский</h1><div class="mixed-target"><div class="mixed-target-word">${esc(mixedRussianPrompts[word.id]||'Для этого слова пока нет предложения.')}</div><div class="mixed-target-translation">Используй: ${esc(word.en)}</div></div><label class="mixed-label" for="mixedSentenceDraft">Твой перевод</label><textarea id="mixedSentenceDraft" class="mixed-textarea" rows="3" placeholder="Напиши перевод…"${p.sentenceChecked?' readonly':''}>${esc(p.sentenceDraft)}</textarea>${mixedHintBlock(p,word)}${p.sentenceChecked?`<div class="feedback good"><strong>Ты использовал нужное выражение</strong><div class="mixed-feedback-note">Автопроверка ищет нужное выражение, но не оценивает грамматику. Сравни с примером ниже.</div><div class="mixed-example-after"><span>Возможный перевод</span><strong>${esc(word.ex)}</strong><button class="icon-button" data-action="speak" data-text="${esc(word.ex)}" aria-label="Прослушать пример">${icon('speaker',17)}</button></div></div>`:''}</div><div class="quiz-footer">${p.sentenceChecked?`<button class="btn btn-primary btn-full" data-action="mixed-advance">${p.index===total-1?'Завершить тренировку':'Следующее слово'} ${icon('arrow',16)}</button>`:`<button class="btn btn-primary btn-full" data-action="mixed-check-sentence">Проверить и показать пример</button>`}${skip}</div></div>`;
+  return `<div class="${shellClass}">${header}<div class="quiz-content mixed-content"><div class="quiz-tag">СМЕШАННЫЙ РЕЖИМ · ЭТАП 3 ИЗ 3</div><h1 class="quiz-question">Переведи на английский</h1><div class="mixed-target"><div class="mixed-target-word">${esc(mixedRussianPrompts[word.id]||'Для этого слова пока нет предложения.')}</div><div class="mixed-target-translation">Используй: ${esc(word.en)}</div></div>${renderComposer(p)}${p.sentenceChecked?`<div class="feedback good"><strong>Ты использовал нужное выражение</strong><div class="mixed-feedback-note">Автопроверка ищет нужное выражение, но не оценивает грамматику. Сравни с примером ниже.</div><div class="mixed-example-after"><span>Возможный перевод</span><strong>${esc(word.ex)}</strong><button class="icon-button" data-action="speak" data-text="${esc(word.ex)}" aria-label="Прослушать пример">${icon('speaker',17)}</button></div></div>`:''}</div><div class="quiz-footer">${p.sentenceChecked?`<button class="btn btn-primary btn-full" data-action="mixed-advance">${p.index===total-1?'Завершить тренировку':'Следующее слово'} ${icon('arrow',16)}</button>`:`<button class="btn btn-primary btn-full" data-action="mixed-check-sentence">Проверить и показать пример</button>`}${skip}</div></div>`;
 }
 
 function renderPractice(){
@@ -745,7 +828,7 @@ function renderPractice(){
   if(p.type==='ru-en'){
     return `<div class="quiz-shell"><div class="quiz-top"><button class="icon-button" data-action="close-practice" aria-label="Выйти из практики">${icon('close')}</button><div class="quiz-bar"><span style="width:${Math.round((p.index+(p.checked?1:0))/total*100)}%"></span></div><div class="quiz-counter">${p.index+1}/${total}</div></div><div class="quiz-content"><div class="quiz-tag">🧠 АКТИВНОЕ ВСПОМИНАНИЕ</div><h1 class="quiz-question">Как будет по-английски?</h1><p class="quiz-hint">Сначала вспомни слово сам, затем выбери ответ.</p><div class="practice-prompt">${esc(q.word.ru)}<div style="font-size:12px;color:var(--muted);font-weight:550;margin-top:8px">${q.word.topic}</div></div><div class="answer-list">${q.options.map((v,i)=>{let cls='';if(p.checked&&i===q.correctIndex)cls='correct';else if(p.checked&&i===p.selected)cls='wrong';return `<button class="answer-option ${cls}" data-action="practice-answer" data-index="${i}" ${p.checked?'disabled':''}><span class="answer-letter">${String.fromCharCode(65+i)}</span><span>${esc(v.en)}</span>${p.checked&&i===q.correctIndex?`<span style="margin-left:auto;color:#57d6a8">${icon('check',17)}</span>`:''}</button>`;}).join('')}</div>${p.checked?`<div class="feedback ${p.selected===q.correctIndex?'good':'bad'}"><strong>${p.selected===q.correctIndex?'Верно! Отлично 👏':'Правильный ответ:'}</strong><div style="margin-top:5px">${esc(q.word.en)} — ${esc(q.word.ru)}<br><span style="opacity:.86">${esc(q.word.ex)}</span></div><button class="text-button" data-action="speak" data-text="${esc(q.word.ex)}">${icon('speaker',13)} Послушать пример</button></div>`:''}</div><div class="quiz-footer">${p.checked?`<button class="btn btn-primary btn-full" data-action="practice-next">${p.index===total-1?'Завершить':'Следующее слово'} ${icon('arrow',16)}</button>`:`<p class="gesture-note">За правильный ответ — 5 XP.</p>`}</div></div>`;
   }
-  return `<div class="quiz-shell"><div class="quiz-top"><button class="icon-button" data-action="close-practice" aria-label="Выйти из практики">${icon('close')}</button><div class="quiz-bar"><span style="width:${Math.round((p.index+(p.checked?1:0))/total*100)}%"></span></div><div class="quiz-counter">${p.index+1}/${total}</div></div><div class="quiz-content"><div class="quiz-tag">✍️ СОСТАВЛЕНИЕ ПРЕДЛОЖЕНИЙ</div><h1 class="quiz-question">Скажи это по-английски</h1><p class="quiz-hint">Постарайся написать всё сам. Если застрянешь — открой подсказку со словами.</p><div class="practice-prompt">${esc(q.ru)}</div><label for="sentenceDraft" style="display:block;font-weight:750;font-size:13px;margin:0 0 8px">Твой вариант на английском</label><textarea id="sentenceDraft" class="practice-field" placeholder="Начни писать предложение здесь…" ${p.checked?'readonly':''}>${esc(p.draft)}</textarea><div class="card-heading" style="margin-top:13px"><button class="btn btn-ghost" data-action="toggle-hint" ${p.checked?'disabled':''}>${p.hintVisible?'Скрыть подсказку':'Подсказка: показать слова'}</button><button class="btn btn-outline" data-action="clear-draft" ${p.checked?'disabled':''}>Очистить</button></div>${p.hintVisible&&!p.checked?`<p class="subtext" style="margin:13px 0 4px">Слова в случайном порядке — нажимай, чтобы вставить в текст:</p><div class="word-bank">${q.bank.map((token,i)=>`<button class="word-token" data-action="sentence-token" data-token="${esc(token)}">${esc(token)}</button>`).join('')}</div><p class="gesture-note">${esc(q.hint||'Используй слова как подсказку и собери фразу самостоятельно.')}</p>`:''}${p.checked?`<div class="feedback ${p.isCorrect?'good':'bad'}"><strong>${p.isCorrect?'Правильно! Отличная работа 🎉':'Хорошая попытка — сравни с естественным вариантом.'}</strong><div style="margin-top:6px"><strong>Вариант:</strong> ${esc(q.en)}</div>${q.hint?`<div style="margin-top:5px;opacity:.9">💡 ${esc(q.hint)}</div>`:''}</div>`:''}</div><div class="quiz-footer">${p.checked?`<button class="btn btn-primary btn-full" data-action="practice-next">${p.index===total-1?'Завершить практику':'Следующее предложение'} ${icon('arrow',16)}</button>`:`<button class="btn btn-primary btn-full" data-action="check-sentence">Проверить мой вариант ${icon('arrow',16)}</button><p class="gesture-note">Правильный ответ приносит 8 XP. Варианты с тем же смыслом могут отличаться.</p>`}</div></div>`;
+  return `<div class="quiz-shell"><div class="quiz-top"><button class="icon-button" data-action="close-practice" aria-label="Выйти из практики">${icon('close')}</button><div class="quiz-bar"><span style="width:${Math.round((p.index+(p.checked?1:0))/total*100)}%"></span></div><div class="quiz-counter">${p.index+1}/${total}</div></div><div class="quiz-content"><div class="quiz-tag">✍️ СОСТАВЛЕНИЕ ПРЕДЛОЖЕНИЙ</div><h1 class="quiz-question">Скажи это по-английски</h1><p class="quiz-hint">Постарайся написать всё сам. Если застрянешь — открой подсказку со словами.</p><div class="practice-prompt">${esc(q.ru)}</div>${renderComposer(p)}${p.checked?`<div class="feedback ${p.isCorrect?'good':'bad'}"><strong>${p.isCorrect?'Правильно! Отличная работа 🎉':'Хорошая попытка — сравни с естественным вариантом.'}</strong><div style="margin-top:6px"><strong>Вариант:</strong> ${esc(q.en)}</div>${q.hint?`<div style="margin-top:5px;opacity:.9">💡 ${esc(q.hint)}</div>`:''}</div>`:''}</div><div class="quiz-footer">${p.checked?`<button class="btn btn-primary btn-full" data-action="practice-next">${p.index===total-1?'Завершить практику':'Следующее предложение'} ${icon('arrow',16)}</button>`:`<button class="btn btn-primary btn-full" data-action="check-sentence">Проверить мой вариант ${icon('arrow',16)}</button><p class="gesture-note">Правильный ответ приносит 8 XP. Варианты с тем же смыслом могут отличаться.</p>`}</div></div>`;
 }
 
 function renderQuiz(){const l=quiz.lesson;if(quiz.finished){const r=quiz.result;const total=r.total;const perfect=r.correct===total;return `<div class="quiz-shell"><div class="quiz-top"><button class="icon-button" data-action="close-quiz" aria-label="Закрыть">${icon('close')}</button><div style="font-weight:800;font-size:14px">Урок завершён</div></div><div class="result-content"><div class="result-emoji">${perfect?'🏆':r.correct>=3?'🎉':'💪'}</div><h1>${perfect?'Идеально!':r.correct>=3?'Отличная работа!':'Хорошая практика!'}</h1><p class="result-score">${l.title} · ты ответил правильно на ${r.correct} из ${total} вопросов.</p><div class="result-points"><div><strong>+${quiz.xpEarned}</strong><span>XP получено</span></div><div><strong>${Math.round(r.correct/total*100)}%</strong><span>Точность</span></div></div><p style="color:var(--muted);font-size:14px;max-width:340px;margin:0 auto 26px">${perfect?'Все ответы верные — так держать!':`Повтори ошибки и попробуй ещё раз. Ошибки — это часть обучения.`} Твой прогресс сохранён на устройстве.</p><button class="btn btn-primary btn-full" data-action="close-quiz">Продолжить ${icon('arrow',16)}</button><button class="btn btn-ghost btn-full" style="margin-top:9px" data-action="lesson" data-id="${l.id}">Пройти ещё раз</button></div></div>`;}
@@ -762,7 +845,7 @@ function wireInputs(){
 }
 function changeWord(dir,animate=false){const list=selectedWords();if(!list.length)return;const go=()=>{state.currentWord=(state.currentWord+dir+list.length)%list.length;state.wordFlipped=false;wordDirection=dir;saveState();render();};if(animate){const card=document.querySelector('.flashcard');if(card){card.classList.add(dir<0?'card-exit-left':'card-exit-right');window.setTimeout(go,190);return;}}go();}
 function markWordAndAdvance(id,known){const list=selectedWords();if(known){if(!state.knownWords.includes(id)){state.knownWords.push(id);state.repeatWords=state.repeatWords.filter(x=>x!==id);addXp(2);showToast('Слово добавлено в «Знаю» · +2 XP');}else showToast('Уже отмечено как знакомое');}else{state.repeatWords=Array.from(new Set([...state.repeatWords,id]));state.knownWords=state.knownWords.filter(x=>x!==id);showToast('Добавлено на повторение');}saveState();if(list.length>1)changeWord(1,true);else{state.wordFlipped=false;render();}}
-document.addEventListener('click',e=>{const btn=e.target.closest('[data-action]');if(!btn)return;const act=btn.dataset.resume?'resume-practice':btn.dataset.action;switch(act){
+document.addEventListener('click',e=>{const btn=e.target.closest('[data-action]');if(!btn)return;const act=btn.dataset.resume?'resume-practice':btn.dataset.action;if(act.startsWith('compose-')){composerAction(btn);return;}switch(act){
 case'open-cards':wordStudyOpen=true;render();break;
 case'close-cards':wordStudyOpen=false;render();break;
 case'resume-practice':if(pausedPractice){practice=pausedPractice;pausedPractice=null;render();}break;
@@ -796,7 +879,7 @@ case'clear-draft':if(practice&&!practice.checked){practice.draft='';render();doc
 case'sentence-token':addSentenceToken(btn.dataset.token);break;
 case'reset':if(confirm('Точно сбросить весь прогресс? Это действие нельзя отменить.')){state=defaultState();quiz=null;practice=null;pausedPractice=null;persistPractice();saveState();render();showToast('Прогресс сброшен');}break;
 }});
-if('serviceWorker'in navigator && location.protocol!=='file:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=9',{updateViaCache:'none'}).catch(()=>{}));}
+if('serviceWorker'in navigator && location.protocol!=='file:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=10',{updateViaCache:'none'}).catch(()=>{}));}
 render();
 </script>
 </body>
