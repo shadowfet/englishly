@@ -658,18 +658,19 @@ function showToast(msg){const el=document.getElementById('toast');if(!el)return;
 // Original miniature game cues, synthesized locally. No downloads or background music.
 let gameAudio=null,gameVoices=[],soundEpoch=0,lastSoundAt=0;
 const soundScores={
- tile:[[0,880,.09,'sine',.045],[.025,1320,.12,'triangle',.018]],
- back:[[0,660,.08,'sine',.04],[.025,440,.12,'triangle',.018]],
- correct:[[0,523.25,.18,'triangle',.035],[.075,659.25,.2,'sine',.04],[.15,783.99,.28,'sine',.035]],
- mistake:[[0,293.66,.14,'triangle',.035],[.1,261.63,.2,'sine',.03]],
- complete:[[0,523.25,.22,'triangle',.035],[.12,659.25,.24,'sine',.04],[.24,783.99,.25,'triangle',.025],[.4,1046.5,.48,'sine',.035],[.4,659.25,.4,'sine',.018]]
+ tile:[[0,680,.085,'sine',.055,390],[.003,1360,.045,'sine',.009,780]],
+ back:[[0,480,.09,'sine',.045,290]],
+ correct:[[0,659.25,.24,'sine',.038],[.095,987.77,.32,'sine',.033],[.1,1975.54,.12,'sine',.005]],
+ mistake:[[0,220,.18,'sine',.038,185],[.075,185,.16,'sine',.016,165]],
+ complete:[[0,523.25,.24,'sine',.03],[.1,659.25,.26,'sine',.032],[.2,783.99,.3,'sine',.028],[.34,1046.5,.44,'sine',.03],[.34,659.25,.36,'sine',.013]]
 };
 function synthGameCue(ctx,destination,kind){
  const voices=[],base=ctx.currentTime+.008;
- for(const [delay,freq,duration,type,volume] of soundScores[kind]||[]){
+ for(const [delay,freq,duration,type,volume,endFreq] of soundScores[kind]||[]){
   const osc=ctx.createOscillator(),gain=ctx.createGain(),t=base+delay;
   osc.type=type;osc.frequency.setValueAtTime(freq,t);
-  gain.gain.setValueAtTime(0,t);gain.gain.linearRampToValueAtTime(volume,t+.012);
+  if(endFreq)osc.frequency.exponentialRampToValueAtTime(endFreq,t+duration);
+  gain.gain.setValueAtTime(0,t);gain.gain.linearRampToValueAtTime(volume,t+.004);
   gain.gain.exponentialRampToValueAtTime(.0001,t+duration);
   osc.connect(gain);gain.connect(destination);osc.start(t);osc.stop(t+duration+.015);
   osc.onended=()=>{osc.disconnect();gain.disconnect();gameVoices=gameVoices.filter(v=>v!==osc);};voices.push(osc);
@@ -965,7 +966,7 @@ case'clear-draft':if(practice&&!practice.checked){practice.draft='';render();doc
 case'sentence-token':addSentenceToken(btn.dataset.token);break;
 case'reset':if(confirm('Точно сбросить весь прогресс? Это действие нельзя отменить.')){state=defaultState();quiz=null;practice=null;pausedPractice=null;persistPractice();saveState();render();showToast('Прогресс сброшен');}break;
 }});
-if('serviceWorker'in navigator && location.protocol!=='file:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=12',{updateViaCache:'none'}).catch(()=>{}));}
+if('serviceWorker'in navigator && location.protocol!=='file:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=13',{updateViaCache:'none'}).catch(()=>{}));}
 render();
 </script>
 </body>
