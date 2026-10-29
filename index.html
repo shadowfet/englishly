@@ -655,39 +655,42 @@ function todayXp(){return state.dailyXp[TODAY()]||0;}
 function streakUpdate(){const today=TODAY();if(state.lastStudyDate===today)return;const y=new Date();y.setDate(y.getDate()-1);const yesterday=y.toLocaleDateString('en-CA');state.streak=state.lastStudyDate===yesterday?state.streak+1:1;state.lastStudyDate=today;}
 function addXp(n){state.xp+=n;state.dailyXp[TODAY()]=(state.dailyXp[TODAY()]||0)+n;saveState();}
 function showToast(msg){const el=document.getElementById('toast');if(!el)return;el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2200);}
-// Original miniature game cues, synthesized locally. No downloads or background music.
+// User-selected excerpts from IMG_3735.MP4. No synthesized fallback sounds.
 let gameAudio=null,gameVoices=[],soundEpoch=0,lastSoundAt=0;
-const soundScores={
- tile:[[0,680,.085,'sine',.055,390],[.003,1360,.045,'sine',.009,780]],
- back:[[0,480,.09,'sine',.045,290]],
- correct:[[0,659.25,.24,'sine',.038],[.095,987.77,.32,'sine',.033],[.1,1975.54,.12,'sine',.005]],
- mistake:[[0,220,.18,'sine',.038,185],[.075,185,.16,'sine',.016,165]],
- complete:[[0,523.25,.24,'sine',.03],[.1,659.25,.26,'sine',.032],[.2,783.99,.3,'sine',.028],[.34,1046.5,.44,'sine',.03],[.34,659.25,.36,'sine',.013]]
-};
-function synthGameCue(ctx,destination,kind){
- const voices=[],base=ctx.currentTime+.008;
- for(const [delay,freq,duration,type,volume,endFreq] of soundScores[kind]||[]){
-  const osc=ctx.createOscillator(),gain=ctx.createGain(),t=base+delay;
-  osc.type=type;osc.frequency.setValueAtTime(freq,t);
-  if(endFreq)osc.frequency.exponentialRampToValueAtTime(endFreq,t+duration);
-  gain.gain.setValueAtTime(0,t);gain.gain.linearRampToValueAtTime(volume,t+.004);
-  gain.gain.exponentialRampToValueAtTime(.0001,t+duration);
-  osc.connect(gain);gain.connect(destination);osc.start(t);osc.stop(t+duration+.015);
-  osc.onended=()=>{osc.disconnect();gain.disconnect();gameVoices=gameVoices.filter(v=>v!==osc);};voices.push(osc);
- }
- return voices;
+const songSoundFiles={tile:'audio/word.wav',back:'audio/word.wav',correct:'audio/answer.wav',complete:'audio/finish.wav'};
+const songSoundBytes=new Map(),songSoundBuffers=new Map();
+function fetchSongSound(path){
+ if(!songSoundBytes.has(path))songSoundBytes.set(path,fetch(path).then(r=>{if(!r.ok)throw Error('Audio unavailable');return r.arrayBuffer();}).catch(()=>{songSoundBytes.delete(path);return null;}));
+ return songSoundBytes.get(path);
 }
-function stopGameSounds(){soundEpoch++;for(const osc of gameVoices){try{osc.stop();}catch{}}gameVoices=[];}
+// Fetch only local assets; playback and AudioContext creation require an interaction.
+for(const path of new Set(Object.values(songSoundFiles)))fetchSongSound(path);
+async function songSoundBuffer(path,ctx){
+ if(songSoundBuffers.has(path))return songSoundBuffers.get(path);
+ const bytes=await fetchSongSound(path);if(!bytes)return null;
+ const buffer=await ctx.decodeAudioData(bytes.slice(0));songSoundBuffers.set(path,buffer);return buffer;
+}
+function stopGameSounds(){
+ soundEpoch++;
+ for(const source of gameVoices){try{const t=gameAudio.currentTime;source.effectGain.gain.cancelScheduledValues(t);source.effectGain.gain.setValueAtTime(source.effectGain.gain.value,t);source.effectGain.gain.linearRampToValueAtTime(0,t+.008);source.stop(t+.009);}catch{}}
+ gameVoices=[];
+}
 function playGameSound(kind){
- if(!state.soundEnabled||document.hidden||window.speechSynthesis?.speaking)return;
+ const path=songSoundFiles[kind];
+ if(!path||!state.soundEnabled||document.hidden||window.speechSynthesis?.speaking)return;
  const now=Date.now();if((kind==='tile'||kind==='back')&&now-lastSoundAt<45)return;lastSoundAt=now;
  try{
   const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)return;
-  if(!gameAudio||gameAudio.state==='closed')gameAudio=new Audio();
-  stopGameSounds();const epoch=soundEpoch,requested=Date.now();
-  const play=()=>{if(epoch!==soundEpoch||!state.soundEnabled||document.hidden||window.speechSynthesis?.speaking||Date.now()-requested>1000||gameAudio.state!=='running')return;gameVoices=synthGameCue(gameAudio,gameAudio.destination,kind);};
-  if(gameAudio.state==='running')play();else gameAudio.resume().then(play).catch(()=>{});
- }catch{} // Unsupported or blocked audio must never interrupt practice.
+  if(!gameAudio||gameAudio.state==='closed'){gameAudio=new Audio();songSoundBuffers.clear();}
+  const ctx=gameAudio;stopGameSounds();const epoch=soundEpoch,requested=Date.now();
+  const ready=ctx.state==='running'?Promise.resolve():ctx.resume();
+  Promise.all([ready,songSoundBuffer(path,ctx)]).then(([,buffer])=>{
+   if(!buffer||epoch!==soundEpoch||!state.soundEnabled||document.hidden||window.speechSynthesis?.speaking||Date.now()-requested>1000||ctx.state!=='running')return;
+   const source=ctx.createBufferSource(),gain=ctx.createGain();source.buffer=buffer;source.effectGain=gain;gain.gain.value=1;
+   source.connect(gain);gain.connect(ctx.destination);gameVoices.push(source);
+   source.onended=()=>{source.disconnect();gain.disconnect();gameVoices=gameVoices.filter(v=>v!==source);};source.start();
+  }).catch(()=>{});
+ }catch{} // Missing assets or unsupported audio must never interrupt practice.
 }
 function soundToggleButton(){return `<button class="icon-button sound-toggle" data-action="toggle-sound" aria-label="Звуки игры" aria-pressed="${!!state.soundEnabled}" title="${state.soundEnabled?'Выключить':'Включить'} звуки игры">${state.soundEnabled?'♫':'♩'}<span class="sr-only">${state.soundEnabled?'Включены':'Выключены'}</span></button>`;}
 function toggleGameSound(){state.soundEnabled=!state.soundEnabled;stopGameSounds();saveState();render();if(state.soundEnabled)playGameSound('tile');showToast(state.soundEnabled?'Звуки включены':'Звуки выключены');}
@@ -966,7 +969,7 @@ case'clear-draft':if(practice&&!practice.checked){practice.draft='';render();doc
 case'sentence-token':addSentenceToken(btn.dataset.token);break;
 case'reset':if(confirm('Точно сбросить весь прогресс? Это действие нельзя отменить.')){state=defaultState();quiz=null;practice=null;pausedPractice=null;persistPractice();saveState();render();showToast('Прогресс сброшен');}break;
 }});
-if('serviceWorker'in navigator && location.protocol!=='file:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=13',{updateViaCache:'none'}).catch(()=>{}));}
+if('serviceWorker'in navigator && location.protocol!=='file:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=14',{updateViaCache:'none'}).catch(()=>{}));}
 render();
 </script>
 </body>
