@@ -387,9 +387,12 @@ body{background:radial-gradient(ellipse at 15% 0,rgba(103,100,127,.1),transparen
 
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .sound-toggle{font-size:21px;min-width:39px}.sound-toggle[aria-pressed="false"]{opacity:.55}.quiz-top .sound-toggle{order:4}.sound-toggle:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+
+#starfield{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;contain:strict}#starfield[hidden]{display:none}#app{position:relative;z-index:1}
 </style>
 </head>
 <body>
+  <canvas id="starfield" aria-hidden="true"></canvas>
   <div id="app"></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <script>
@@ -617,7 +620,7 @@ function tokMatch(w,t){if(!t)return false;if(t===w)return true;if(IRR[w]&&IRR[w]
 function containsTargetPhrase(sentence,target){const s=normEn(sentence).split(' ');let p=normEn(target).split(' ').filter(Boolean);if(p.length>1&&p[0]==='to')p=p.slice(1);if(!p.length||!s[0])return false;for(let i=0;i+p.length<=s.length;i++){if(p.every((w,k)=>tokMatch(w,s[i+k])))return true;}return false;}
 
 const TODAY = () => new Date().toLocaleDateString('en-CA');
-const defaultState = () => ({tab:'home',xp:0,streak:0,lastStudyDate:null,completedLessons:[],knownWords:[],repeatWords:[],dailyXp:{},correct:0,answered:0,goal:20,wordFilter:'all',wordSearch:'',currentWord:0,wordFlipped:false,settingsOpen:false,soundEnabled:true});
+const defaultState = () => ({tab:'home',xp:0,streak:0,lastStudyDate:null,completedLessons:[],knownWords:[],repeatWords:[],dailyXp:{},correct:0,answered:0,goal:20,wordFilter:'all',wordSearch:'',currentWord:0,wordFlipped:false,settingsOpen:false,soundEnabled:true,starsEnabled:true});
 let state = loadState();
 let quiz = null;
 let practice = null;
@@ -757,7 +760,7 @@ function renderWordStudy(){const list=selectedWords();if(state.currentWord>=list
 function renderProgress(){const n=state.completedLessons.length;const earned=state.xp;const accuracy=percent();const week=Array.from({length:7},(_,i)=>{const off=i-6;return {date:dateOffset(off),label:['Вс','Пн','Вт','Ср','Чт','Пт','Сб'][new Date(dateOffset(off)+'T12:00:00').getDay()],xp:state.dailyXp[dateOffset(off)]||0};});const max=Math.max(10,...week.map(d=>d.xp));const badges=[{emoji:'🌱',name:'Первый шаг',desc:'Заработай первые 5 XP',ok:earned>=5},{emoji:'🔥',name:'Серия 3 дня',desc:'Занимайся 3 дня подряд',ok:state.streak>=3},{emoji:'📚',name:'Любознательный',desc:'Пройди 3 урока',ok:n>=3},{emoji:'🧠',name:'Словарик',desc:'Отметь 10 слов как знакомые',ok:state.knownWords.length>=10},{emoji:'🎯',name:'Точность',desc:'Ответь верно на 20 вопросов',ok:state.correct>=20},{emoji:'🏆',name:'Всё пройдено',desc:'Заверши все уроки',ok:n===lessons.length}];return `<div class="page-title-row"><div><div class="eyebrow">ТВОИ РЕЗУЛЬТАТЫ</div><h1>Ты растёшь 🌱</h1><p>Каждое занятие — маленькая победа.</p></div><div class="level-chip">Уровень B1</div></div><div class="stats-grid"><section class="stat-card"><div class="icon-box">${icon('flame')}</div><div class="stat-value">${state.streak}</div><div class="stat-label">Дней подряд</div></section><section class="stat-card"><div class="icon-box" style="background:var(--yellow);color:var(--yellow-ink)">${icon('trophy')}</div><div class="stat-value">${earned}</div><div class="stat-label">Всего XP</div></section><section class="stat-card"><div class="icon-box" style="background:var(--mint);color:var(--mint-ink)">${icon('book')}</div><div class="stat-value">${n}<span style="font-size:14px;color:var(--muted)">/${lessons.length}</span></div><div class="stat-label">Уроков пройдено</div></section><section class="stat-card"><div class="icon-box" style="background:var(--pink);color:var(--pink-ink)">${icon('target')}</div><div class="stat-value">${accuracy}%</div><div class="stat-label">Точность ответов</div></section></div>
   <section class="chart-card"><div class="card-heading"><div><h3>Активность за 7 дней</h3><p class="subtext" style="margin-top:5px">XP, заработанные в каждом дне</p></div><div style="font-weight:800;font-size:14px">${week.reduce((s,d)=>s+d.xp,0)} XP</div></div><div class="week-chart">${week.map(d=>`<div class="chart-column"><div class="chart-bar-wrap"><div class="chart-bar ${d.xp?'has-value':''}" style="height:${Math.max(5,Math.round(d.xp/max*100))}%"></div></div><div class="chart-day">${d.label}</div></div>`).join('')}</div></section>
   <section class="achievement-card"><div class="card-heading"><div><h3>Достижения</h3><p class="subtext" style="margin-top:5px">${badges.filter(b=>b.ok).length} из ${badges.length} открыто</p></div><div class="icon-box" style="background:var(--yellow);color:var(--yellow-ink)">${icon('trophy')}</div></div><div class="achievement-grid">${badges.map(b=>`<div class="achievement ${b.ok?'':'locked'}"><div class="medal">${b.emoji}</div><strong>${b.name}</strong><span>${b.desc}</span></div>`).join('')}</div></section>
-  <section class="chart-card"><div class="card-heading"><div><h3>Цель на каждый день</h3><p class="subtext" style="margin-top:5px">Выбери комфортный темп занятий.</p></div><div class="icon-box">${icon('target')}</div></div><div class="settings-row"><span>Ежедневная цель</span><select id="goalSelect" class="small-select"><option value="10" ${state.goal===10?'selected':''}>10 XP · Легко</option><option value="20" ${state.goal===20?'selected':''}>20 XP · Обычно</option><option value="30" ${state.goal===30?'selected':''}>30 XP · Интенсивно</option><option value="50" ${state.goal===50?'selected':''}>50 XP · Марафон</option></select></div><div class="settings-row"><span>Звуки игры</span>${soundToggleButton()}</div><div class="settings-row"><span>Уровень английского</span><strong style="font-size:13px">B1 · Средний</strong></div><button class="btn btn-outline btn-full" style="margin-top:14px" data-action="reset">Сбросить весь прогресс</button><p class="footer-note">Прогресс хранится в памяти этого браузера на этом устройстве. Если очистить данные Safari, статистика может сброситься.</p></section>`;}
+  <section class="chart-card"><div class="card-heading"><div><h3>Цель на каждый день</h3><p class="subtext" style="margin-top:5px">Выбери комфортный темп занятий.</p></div><div class="icon-box">${icon('target')}</div></div><div class="settings-row"><span>Ежедневная цель</span><select id="goalSelect" class="small-select"><option value="10" ${state.goal===10?'selected':''}>10 XP · Легко</option><option value="20" ${state.goal===20?'selected':''}>20 XP · Обычно</option><option value="30" ${state.goal===30?'selected':''}>30 XP · Интенсивно</option><option value="50" ${state.goal===50?'selected':''}>50 XP · Марафон</option></select></div><div class="settings-row"><span>Звёздный фон</span><button class="btn btn-outline" data-action="toggle-stars" aria-pressed="${state.starsEnabled!==false}">${state.starsEnabled!==false?'Включён':'Выключен'}</button></div><div class="settings-row"><span>Звуки игры</span>${soundToggleButton()}</div><div class="settings-row"><span>Уровень английского</span><strong style="font-size:13px">B1 · Средний</strong></div><button class="btn btn-outline btn-full" style="margin-top:14px" data-action="reset">Сбросить весь прогресс</button><p class="footer-note">Прогресс хранится в памяти этого браузера на этом устройстве. Если очистить данные Safari, статистика может сброситься.</p></section>`;}
 
 function shuffleArray(items){const a=[...items];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function startPractice(mode){
@@ -936,7 +939,51 @@ function renderPractice(){
 
 function renderQuiz(){const l=quiz.lesson;if(quiz.finished){const r=quiz.result;const total=r.total;const perfect=r.correct===total;return `<div class="quiz-shell"><div class="quiz-top">${soundToggleButton()}<button class="icon-button" data-action="close-quiz" aria-label="Закрыть">${icon('close')}</button><div style="font-weight:800;font-size:14px">Урок завершён</div></div><div class="result-content"><div class="result-emoji">${perfect?'🏆':r.correct>=3?'🎉':'💪'}</div><h1>${perfect?'Идеально!':r.correct>=3?'Отличная работа!':'Хорошая практика!'}</h1><p class="result-score">${l.title} · ты ответил правильно на ${r.correct} из ${total} вопросов.</p><div class="result-points"><div><strong>+${quiz.xpEarned}</strong><span>XP получено</span></div><div><strong>${Math.round(r.correct/total*100)}%</strong><span>Точность</span></div></div><p style="color:var(--muted);font-size:14px;max-width:340px;margin:0 auto 26px">${perfect?'Все ответы верные — так держать!':`Повтори ошибки и попробуй ещё раз. Ошибки — это часть обучения.`} Твой прогресс сохранён на устройстве.</p><button class="btn btn-primary btn-full" data-action="close-quiz">Продолжить ${icon('arrow',16)}</button><button class="btn btn-ghost btn-full" style="margin-top:9px" data-action="lesson" data-id="${l.id}">Пройти ещё раз</button></div></div>`;}
 const q=l.questions[quiz.index],letters=['A','B','C','D'];return `<div class="quiz-shell"><div class="quiz-top">${soundToggleButton()}<button class="icon-button" data-action="close-quiz" aria-label="Выйти из урока">${icon('close')}</button><div class="quiz-bar"><span style="width:${Math.round((quiz.index+(quiz.checked?1:0))/l.questions.length*100)}%"></span></div><div class="quiz-counter">${quiz.index+1}/${l.questions.length}</div></div><div class="quiz-content"><div class="quiz-tag">${l.emoji} ${l.tag} · ${l.title}</div><h1 class="quiz-question">${q.q}</h1><p class="quiz-hint">Выбери лучший вариант ответа.</p><div class="question-en">${q.en}<button class="icon-button" data-action="speak" data-text="${esc(q.en)}" aria-label="Прослушать фразу" style="float:right;margin-left:8px;width:34px;height:34px">${icon('speaker',16)}</button></div><div class="answer-list">${q.options.map((o,i)=>{let cls='';if(quiz.checked&&i===q.a)cls='correct';else if(quiz.checked&&i===quiz.selected)cls='wrong';else if(!quiz.checked&&i===quiz.selected)cls='selected';return `<button class="answer-option ${cls}" data-action="answer" data-index="${i}" ${quiz.checked?'disabled':''}><span class="answer-letter">${letters[i]}</span><span>${o}</span>${quiz.checked&&i===q.a?`<span style="margin-left:auto;color:#18815b">${icon('check',17)}</span>`:''}</button>`;}).join('')}</div>${quiz.checked?`<div class="feedback ${quiz.selected===q.a?'good':'bad'}"><strong>${quiz.selected===q.a?'Верно! Отлично 👏':'Почти! Запомни этот вариант.'}</strong><div style="margin-top:5px">${q.why}</div></div>`:''}<div style="margin-top:18px;background:#f7f7fc;padding:14px;border-radius:14px;font-size:12px;color:var(--muted)"><strong style="color:var(--text)">Подсказка</strong><br>${l.tip}</div></div><div class="quiz-footer">${quiz.checked?`<button class="btn btn-primary btn-full" data-action="next-question">${quiz.index===l.questions.length-1?'Завершить урок':'Дальше'} ${icon('arrow',16)}</button>`:`<button class="btn btn-primary btn-full" disabled style="opacity:.42;cursor:not-allowed">Выбери ответ</button>`}</div></div>`;}
-function render(){persistPractice();const root=document.getElementById('app');if(quiz){root.innerHTML=renderQuiz();return;}if(practice){root.innerHTML=renderPractice();wireInputs();return;}const tabContent=state.tab==='home'?renderHome():state.tab==='lessons'?renderTraining():state.tab==='words'?renderWords():renderProgress();root.innerHTML=`<div class="app-shell"><header class="topbar"><div class="brand"><div class="brand-mark">${icon('logo',23)}</div><div><div class="brand-name">englishly<span style="color:var(--accent)">.</span></div><div class="brand-tag">Английский в твоём ритме</div></div></div><div class="top-stats">${soundToggleButton()}<div class="pill"><span class="fire">🔥</span> ${state.streak}</div><div class="pill">${icon('trophy',14)} ${state.xp} XP</div></div></header><main class="${state.tab==='words'?'words-main':''}">${tabContent}</main><nav class="bottom-nav" aria-label="Главная навигация"><div class="nav-inner"><button class="nav-item ${state.tab==='home'?'active':''}" data-action="tab" data-tab="home">${icon('home',21)}<span>Сегодня</span></button><button class="nav-item ${state.tab==='lessons'?'active':''}" data-action="tab" data-tab="lessons">${icon('book',21)}<span>Практика</span></button><button class="nav-item ${state.tab==='words'?'active':''}" data-action="tab" data-tab="words">${icon('cards',21)}<span>Слова</span></button><button class="nav-item ${state.tab==='progress'?'active':''}" data-action="tab" data-tab="progress">${icon('chart',21)}<span>Прогресс</span></button></div></nav></div>`;wireInputs();wordDirection=0;}
+// Decorative starfield: one canvas, no network, no pointer interception.
+let ambientStars=null;
+function initStarfield(){
+ const canvas=document.getElementById('starfield');if(!canvas)return;
+ const ctx=canvas.getContext('2d');if(!ctx)return;
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+ let stars=[],width=0,height=0,frame=0,last=0;
+ const enabled=()=>state.starsEnabled!==false;
+ function draw(time,dt=0){
+  ctx.clearRect(0,0,width,height);
+  for(const star of stars){
+   if(dt){star.y-=star.speed*dt;star.x+=star.drift*dt;if(star.y< -6){star.y=height+6;star.x=Math.random()*width;}if(star.x< -6)star.x=width+6;if(star.x>width+6)star.x=-6;}
+   const alpha=reduced.matches?star.alpha:star.alpha*(.85+.15*Math.sin(time*.0004+star.phase));
+   ctx.fillStyle=`rgba(205,201,227,${alpha})`;
+   ctx.beginPath();ctx.arc(star.x,star.y,star.radius,0,Math.PI*2);ctx.fill();
+   if(star.radius>1.15){ctx.fillStyle=`rgba(205,201,227,${alpha*.32})`;ctx.fillRect(star.x-2.8,star.y-.3,5.6,.6);ctx.fillRect(star.x-.3,star.y-2.8,.6,5.6);}
+  }
+ }
+ function tick(time){
+  frame=0;if(!enabled()||document.hidden||reduced.matches)return;
+  if(!last)last=time;
+  if(time-last>=1000/30){draw(time,Math.min((time-last)/1000,.1));last=time;}
+  frame=requestAnimationFrame(tick);
+ }
+ function sync(){
+  if(frame)cancelAnimationFrame(frame);frame=0;last=0;canvas.hidden=!enabled();
+  if(!enabled()||document.hidden)return;
+  draw(performance.now());if(!reduced.matches)frame=requestAnimationFrame(tick);
+ }
+ function resize(){
+  const oldW=width,oldH=height;width=innerWidth;height=innerHeight;
+  const dpr=Math.min(devicePixelRatio||1,1.5);canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);
+  const count=width<660?38:Math.min(90,Math.round(width*height/18000)+35);
+  if(oldW&&oldH)for(const star of stars){star.x=star.x/oldW*width;star.y=star.y/oldH*height;}
+  stars=stars.slice(0,count);
+  while(stars.length<count)stars.push({x:Math.random()*width,y:Math.random()*height,radius:.45+Math.random()*.85,alpha:.12+Math.random()*.3,speed:2+Math.random()*7,drift:-1.5+Math.random()*3,phase:Math.random()*Math.PI*2});
+  sync();
+ }
+ ambientStars={sync};window.addEventListener('resize',resize,{passive:true});document.addEventListener('visibilitychange',sync);
+ if(reduced.addEventListener)reduced.addEventListener('change',sync);else reduced.addListener(sync);
+ window.addEventListener('pagehide',()=>{if(frame)cancelAnimationFrame(frame);frame=0;});window.addEventListener('pageshow',sync);
+ resize();
+}
+
+function render(){ambientStars?.sync();persistPractice();const root=document.getElementById('app');if(quiz){root.innerHTML=renderQuiz();return;}if(practice){root.innerHTML=renderPractice();wireInputs();return;}const tabContent=state.tab==='home'?renderHome():state.tab==='lessons'?renderTraining():state.tab==='words'?renderWords():renderProgress();root.innerHTML=`<div class="app-shell"><header class="topbar"><div class="brand"><div class="brand-mark">${icon('logo',23)}</div><div><div class="brand-name">englishly<span style="color:var(--accent)">.</span></div><div class="brand-tag">Английский в твоём ритме</div></div></div><div class="top-stats">${soundToggleButton()}<div class="pill"><span class="fire">🔥</span> ${state.streak}</div><div class="pill">${icon('trophy',14)} ${state.xp} XP</div></div></header><main class="${state.tab==='words'?'words-main':''}">${tabContent}</main><nav class="bottom-nav" aria-label="Главная навигация"><div class="nav-inner"><button class="nav-item ${state.tab==='home'?'active':''}" data-action="tab" data-tab="home">${icon('home',21)}<span>Сегодня</span></button><button class="nav-item ${state.tab==='lessons'?'active':''}" data-action="tab" data-tab="lessons">${icon('book',21)}<span>Практика</span></button><button class="nav-item ${state.tab==='words'?'active':''}" data-action="tab" data-tab="words">${icon('cards',21)}<span>Слова</span></button><button class="nav-item ${state.tab==='progress'?'active':''}" data-action="tab" data-tab="progress">${icon('chart',21)}<span>Прогресс</span></button></div></nav></div>`;wireInputs();wordDirection=0;}
 function wireInputs(){
   const search=document.getElementById('wordSearch');
   if(search){search.addEventListener('input',e=>{const pos=e.target.selectionStart;state.wordSearch=e.target.value;state.currentWord=0;state.wordFlipped=false;const root=document.getElementById('app');const main=root.querySelector('main');main.innerHTML=renderWords();const next=document.getElementById('wordSearch');if(next){next.focus();next.setSelectionRange(pos,pos);}wireInputs();saveState();});}
@@ -957,6 +1004,7 @@ case'lesson':practice=null;startLesson(btn.dataset.id);break;
 case'answer':chooseAnswer(Number(btn.dataset.index));break;
 case'next-question':nextQuestion();break;
 case'close-quiz':closeQuiz();break;
+case'toggle-stars':state.starsEnabled=state.starsEnabled===false;saveState();render();break;
 case'toggle-sound':toggleGameSound();break;
 case'speak':speak(btn.dataset.text||'');break;
 case'word-filter':state.wordFilter=btn.dataset.filter;state.currentWord=0;state.wordFlipped=false;wordDirection=1;saveState();render();break;
@@ -983,8 +1031,9 @@ case'clear-draft':if(practice&&!practice.checked){practice.draft='';render();doc
 case'sentence-token':addSentenceToken(btn.dataset.token);break;
 case'reset':if(confirm('Точно сбросить весь прогресс? Это действие нельзя отменить.')){state=defaultState();quiz=null;practice=null;pausedPractice=null;persistPractice();saveState();render();showToast('Прогресс сброшен');}break;
 }});
-if('serviceWorker'in navigator && location.protocol!=='file:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=15',{updateViaCache:'none'}).catch(()=>{}));}
+if('serviceWorker'in navigator && location.protocol!=='file:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=16',{updateViaCache:'none'}).catch(()=>{}));}
 render();
+initStarfield();
 </script>
 </body>
 </html>
