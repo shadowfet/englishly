@@ -1,5 +1,5 @@
-const CACHE_NAME = 'englishly-v8';
-const APP_FILES = ['./', './index.html', './manifest.webmanifest', './icon.svg', './apple-touch-icon.png', './icon-192.png', './icon-512.png'];
+const CACHE_NAME = 'englishly-v14';
+const APP_FILES = ['./', './index.html', './audio/word.wav', './audio/answer.wav', './audio/finish.wav', './manifest.webmanifest', './icon.svg', './apple-touch-icon.png', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_FILES)).then(() => self.skipWaiting()));
 });
