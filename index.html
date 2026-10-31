@@ -409,6 +409,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 @media(max-width:660px){.pairs-board{gap:12px;margin-top:20px}.pair-column{gap:10px}.pair-choice{min-height:88px;padding:12px 8px;font-size:14px;border-radius:15px}.game-session .game-content{padding-top:24px}.chat-bubble{max-width:94%;padding:13px 15px}.chat-bubble p{font-size:15px}}
 @media(prefers-reduced-motion:reduce){.pair-choice.just-matched{animation:none!important;opacity:0}.pair-connection{display:none}.dialogue-current,.pair-choice.is-error{animation:none!important}}
 
+
+.today-panel{padding:26px;border:1px solid var(--line);border-radius:23px;background:#22283bdd}.today-panel h2{font-size:28px}.today-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}.today-actions .btn{flex:1;min-height:52px}.resume-simple{margin-bottom:18px}.simple-practice{width:100%;margin-top:20px}.rating-label{text-align:center;font-size:13px;color:var(--muted);margin:22px 0 12px}.review-ratings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.review-ratings .btn{flex-direction:column;gap:6px;padding:13px 8px;min-height:70px}.review-ratings span{font-size:11px;font-weight:500;opacity:.8}.exclude-word{display:block;margin:16px auto;text-align:center}.focused-study .flashcard{min-height:300px}.focused-study .word-nav-controls{margin-top:15px}.today-actions .btn:disabled{opacity:.45}@media(max-width:660px){.today-panel{padding:22px}.today-actions{flex-direction:column}.review-ratings{gap:7px}}
 </style>
 </head>
 <body>
@@ -679,7 +681,36 @@ const dialogueScenes=[
  ["Colleague","I'll gather the documents before we discuss our response.",["Thanks. Let me know when they are ready.","I responded to a dinner invitation.","There are no documents in any dispute."],"Реплика подтверждает следующий шаг и просит сообщить о готовности документов." ]]}
 ]
 ;
-const defaultState = () => ({tab:'home',xp:0,streak:0,lastStudyDate:null,completedLessons:[],knownWords:[],repeatWords:[],dailyXp:{},correct:0,answered:0,goal:20,wordFilter:'all',wordSearch:'',currentWord:0,wordFlipped:false,settingsOpen:false,soundEnabled:true,starsEnabled:true});
+const REVIEW_DAY=86400000,REVIEW_INTERVALS=[1,3,7,14,30,60];
+let cardSessionIds=null;
+function reviewData(id){const r=state.reviews?.[id];return r&&Number.isFinite(r.due)&&Number.isInteger(r.step)&&r.step>=-1&&r.step<REVIEW_INTERVALS.length&&r.due>=0?r:null;}
+function isDueWord(v,now=Date.now()){if(state.knownWords.includes(v.id))return false;const r=reviewData(v.id);return r?r.due<=now:state.repeatWords.includes(v.id);}
+function isNewWord(v){return !state.knownWords.includes(v.id)&&!reviewData(v.id)&&!state.repeatWords.includes(v.id);}
+function reviewPool(pool){return [...shuffleArray(pool.filter(v=>isDueWord(v))).sort((a,b)=>(reviewData(a.id)?.due||0)-(reviewData(b.id)?.due||0)),...shuffleArray(pool.filter(isNewWord))];}
+function reviewWord(id,grade){
+ if(![0,1,2].includes(grade)||state.knownWords.includes(id)||!vocab.some(v=>v.id===id))return;
+ if(!state.reviews||typeof state.reviews!=='object'||Array.isArray(state.reviews))state.reviews={};
+ const old=reviewData(id),now=Date.now();let step=old?.step??-1,due;
+ if(grade===0){step=-1;due=now+10*60000;state.repeatWords=[...new Set([...state.repeatWords,id])];}
+ else{step=grade===1?Math.max(0,Math.min(2,step-1)):Math.min(REVIEW_INTERVALS.length-1,step+1);due=now+(grade===1?1:REVIEW_INTERVALS[step])*REVIEW_DAY;state.repeatWords=state.repeatWords.filter(v=>v!==id);}
+ state.reviews[id]={step,due,lastReviewed:now,lapses:(old?.lapses||0)+(grade===0?1:0),grade};saveState();
+}
+function nextReviewLabel(){const dates=vocab.filter(v=>!state.knownWords.includes(v.id)).map(v=>reviewData(v.id)?.due).filter(d=>d>Date.now());return dates.length?'Следующее повторение: '+new Intl.DateTimeFormat('ru',{dateStyle:'short',timeStyle:'short'}).format(Math.min(...dates)):'Можно добавить новые слова.';}
+function beginStudy(kind='ready',previewId=null){
+ if(kind==='due'||kind==='new'){state.tab='words';state.wordFilter='all';state.wordSearch='';}
+ wordStudyOpen=false;let list=selectedWords();
+ if(previewId){const word=vocab.find(v=>v.id===previewId);if(!word)return;if(state.knownWords.includes(previewId))state.wordFilter='known';list=[word];}
+ else if(state.wordFilter!=='known')list=kind==='due'?list.filter(v=>isDueWord(v)):kind==='new'?shuffleArray(list.filter(isNewWord)).slice(0,5):reviewPool(list);
+ cardSessionIds=list.map(v=>v.id);state.wordDeck=[...cardSessionIds,...vocab.map(v=>v.id).filter(id=>!cardSessionIds.includes(id))];
+ state.currentWord=0;state.wordFlipped=false;wordStudyOpen=true;playGameSound('enter');saveState();render();window.scrollTo({top:0,behavior:'smooth'});
+}
+function rateStudy(id,grade){
+ if(!wordStudyOpen||!state.wordFlipped||!selectedWords().some(v=>v.id===id))return;
+ reviewWord(id,grade);if(cardSessionIds)cardSessionIds=cardSessionIds.filter(x=>x!==id);
+ state.currentWord=Math.min(state.currentWord,Math.max(0,selectedWords().length-1));state.wordFlipped=false;playGameSound(grade===0?'back':'correct');saveState();render();
+}
+
+const defaultState = () => ({tab:'home',xp:0,streak:0,lastStudyDate:null,completedLessons:[],knownWords:[],repeatWords:[],dailyXp:{},correct:0,answered:0,goal:20,wordFilter:'all',wordSearch:'',currentWord:0,wordFlipped:false,settingsOpen:false,soundEnabled:true,starsEnabled:true,reviews:{}});
 let state = loadState();
 let quiz = null;
 let practice = null;
@@ -724,10 +755,10 @@ function streakUpdate(){const today=TODAY();if(state.lastStudyDate===today)retur
 function addXp(){saveState();}
 
 function showToast(msg){const el=document.getElementById('toast');if(!el)return;el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2200);}
-// User-selected excerpts from IMG_3735.MP4. No synthesized fallback sounds.
-let gameAudio=null,gameVoices=[],soundEpoch=0,lastSoundAt=0,songCursor=0;
-const songSoundFiles={tile:'audio/new-song.wav',back:'audio/new-word.wav',enter:'audio/new-word.wav',correct:'audio/new-answer.wav',mistake:'audio/new-answer.wav',complete:'audio/new-finish.wav'};
-const songSoundBytes=new Map(),songSoundBuffers=new Map(),songCursors=new Map(),songDecoding=new Map();
+// Fixed short feedback clips. No sequential music playback.
+let gameAudio=null,gameVoices=[],soundEpoch=0,lastSoundAt=0;
+const songSoundFiles={tile:'audio/new-word.wav',back:'audio/new-word.wav',enter:'audio/new-word.wav',correct:'audio/new-answer.wav',mistake:'audio/new-answer.wav',complete:'audio/new-finish.wav'};
+const songSoundBytes=new Map(),songSoundBuffers=new Map(),songDecoding=new Map();
 function fetchSongSound(path){
  if(!songSoundBytes.has(path))songSoundBytes.set(path,fetch(path).then(r=>{if(!r.ok)throw Error('Audio unavailable');return r.arrayBuffer();}).catch(()=>{songSoundBytes.delete(path);return null;}));
  return songSoundBytes.get(path);
@@ -740,20 +771,14 @@ async function songSoundBuffer(path,ctx){
  return songDecoding.get(path);
 }
 
-function advanceSongCursor(source){
- if(!source.songSegment||source.cursorCommitted)return;
- source.cursorCommitted=true;
- const heard=Math.max(0,Math.min(source.segmentDuration,source.context.currentTime-source.segmentStarted));
- songCursor=(source.segmentOffset+heard)%source.buffer.duration;
- if(source.buffer.duration-songCursor<.015)songCursor=0;songCursors.set(source.segmentPath,songCursor);
-}
+
 function stopGameSounds(){
  soundEpoch++;
- for(const source of gameVoices){advanceSongCursor(source);try{const t=gameAudio.currentTime;source.effectGain.gain.cancelScheduledValues(t);source.effectGain.gain.setValueAtTime(source.effectGain.gain.value,t);source.effectGain.gain.linearRampToValueAtTime(0,t+.008);source.stop(t+.009);}catch{}}
+ for(const source of gameVoices){try{const t=gameAudio.currentTime;source.effectGain.gain.cancelScheduledValues(t);source.effectGain.gain.setValueAtTime(source.effectGain.gain.value,t);source.effectGain.gain.linearRampToValueAtTime(0,t+.008);source.stop(t+.009);}catch{}}
  gameVoices=[];
 }
 function playGameSound(kind){
- const path=kind==='tile'&&practice?.type==='sentence'?'audio/song-short.wav':songSoundFiles[kind];
+ const path=songSoundFiles[kind];
  if(!path||!state.soundEnabled||document.hidden||window.speechSynthesis?.speaking)return;
  const now=Date.now();if((kind==='tile'||kind==='back')&&now-lastSoundAt<45)return;lastSoundAt=now;
  try{
@@ -765,17 +790,8 @@ function playGameSound(kind){
    if(!buffer||epoch!==soundEpoch||!state.soundEnabled||document.hidden||window.speechSynthesis?.speaking||Date.now()-requested>3000||ctx.state!=='running')return;
    const source=ctx.createBufferSource(),gain=ctx.createGain();source.buffer=buffer;source.effectGain=gain;gain.gain.value=1;
    source.connect(gain);gain.connect(ctx.destination);gameVoices.push(source);
-   if(kind==='tile'){
-    const offset=(songCursors.get(path)||0)%buffer.duration,duration=Math.min(.5,buffer.duration-offset),t=ctx.currentTime;
-    let peak=0,energy=0,count=0;const samples=buffer.getChannelData(0),first=Math.floor(offset*buffer.sampleRate),last=Math.min(samples.length,Math.ceil((offset+duration)*buffer.sampleRate));
-    for(let i=first;i<last;i+=4){peak=Math.max(peak,Math.abs(samples[i]));energy+=samples[i]*samples[i];count++;}
-    const level=peak>.0001?Math.min(4,.16/peak,.045/Math.max(.0001,Math.sqrt(energy/Math.max(1,count)))):1;
-    source.songSegment=true;source.segmentPath=path;source.segmentOffset=offset;source.segmentDuration=duration;source.segmentStarted=t;
-    gain.gain.setValueAtTime(0,t);gain.gain.linearRampToValueAtTime(level,t+Math.min(.006,duration/3));
-    gain.gain.setValueAtTime(level,t+Math.max(duration-.012,duration/2));gain.gain.linearRampToValueAtTime(0,t+duration);
-    source.start(t,offset,duration);
-   }else source.start();
-   source.onended=()=>{advanceSongCursor(source);source.disconnect();gain.disconnect();gameVoices=gameVoices.filter(v=>v!==source);};
+   source.start();
+   source.onended=()=>{source.disconnect();gain.disconnect();gameVoices=gameVoices.filter(v=>v!==source);};
   }).catch(()=>{});
  }catch{} // Missing assets or unsupported audio must never interrupt practice.
 }
@@ -793,21 +809,14 @@ function finishQuiz(){playGameSound('complete');const id=quiz.lesson.id;if(!stat
 function closeQuiz(){quiz=null;saveState();render();}
 function percent(){return state.answered?Math.round(state.correct/state.answered*100):0;}
 function totalLessonQuestionsDone(){return state.completedLessons.length*5;}
-function dueWords(){return vocab.filter(v=>!state.knownWords.includes(v.id));}
+function dueWords(){return vocab.filter(v=>isDueWord(v));}
+
 function lessonCard(l){const done=state.completedLessons.includes(l.id);const pct=done?100:0;return `<button class="lesson-card" data-action="lesson" data-id="${l.id}"><div class="lesson-icon" style="background:${l.color};color:${l.ink}">${l.emoji}</div><div class="lesson-meta"><h3>${l.title}</h3><p>${l.subtitle} · ${l.minutes} мин</p><div class="lesson-progress"><span style="width:${pct}%"></span></div></div><div class="lesson-state ${done?'done':''}">${done?icon('check',16):icon('arrow',15)}</div></button>`;}
-function renderHome(){
-  const pct=Math.min(100,Math.round(todayXp()/state.goal*100));
-  const daily=Math.min(state.goal,todayXp());
-  const repeatCount=Math.min(5,vocab.filter(v=>state.repeatWords.includes(v.id)&&Object.prototype.hasOwnProperty.call(mixedRussianPrompts,v.id)).length);
-  const paused=pausedPractice;
-  return `<div class="greeting"><div><div class="eyebrow">ТВОЙ РИТМ</div><h1>Продолжим английский?</h1><p class="subtext">Немного практики — и слова начнут вспоминаться быстрее.</p></div><div class="level-chip">В твоём темпе</div></div>
-  <section class="mixed-hero"><div class="mixed-hero-kicker"><span class="mixed-hero-dot"></span> ТРЕНИРОВКА НА СЕГОДНЯ</div><h2>${paused?"Продолжим с того же места?":"Пять слов ближе к свободной речи"}</h2><p>${paused?`Осталось заданий: ${paused.questions.length-paused.index}. Твои ответы и подсказки сохранены.`:`Сегодня: ${repeatCount} на повторение и ${5-repeatCount} других слов. Вспомни перевод и используй выражение в контексте.`}</p><div class="mixed-hero-footer"><div class="mixed-hero-meta"><span>${paused?.type==='pairs'?'До 15 пар':paused?.type==='dialogue'?'3 диалога':'5 слов'}</span><span>${paused?.type==='pairs'?'3 раунда':paused?.type==='dialogue'?'9 реплик':'3 этапа'}</span><span>≈ 5–8 минут</span></div><button class="btn btn-primary" data-action="start-practice" data-mode="mixed" ${paused?'data-resume="true"':''}>${paused?'Продолжить занятие':'Начать · 5 минут'} ${icon('arrow',16)}</button></div></section>
-  <div class="section-head"><h2>Другие способы практики</h2><button class="text-button" data-action="tab" data-tab="words">Все слова ${icon('arrow',13)}</button></div>
-  <div class="mode-shortcuts"><button class="mode-shortcut" data-action="tab" data-tab="words"><div class="icon-box">${icon('cards',20)}</div><div><strong>Карточки слов</strong><span>Спокойно повторяй в своём темпе</span></div></button><button class="mode-shortcut" data-action="tab" data-tab="lessons"><div class="icon-box">${icon('book',20)}</div><div><strong>Выбрать практику</strong><span>Вспоминай слова и составляй предложения</span></div></button></div>`;
-}
+function renderHome(){const due=dueWords().length,fresh=vocab.filter(isNewWord).length;return `<div class="page-title-row"><div><h1>Твой английский</h1><p>Немного практики в удобном темпе.</p></div></div>${pausedPractice?'<button class="btn btn-outline btn-full resume-simple" data-action="resume-practice" data-resume="true">Продолжить незавершённое занятие →</button>':''}<section class="today-panel"><div class="eyebrow">НА СЕГОДНЯ</div><h2>${due?'Пора освежить слова':'Всё повторено'}</h2><p class="subtext">${due?due+' слов готовы к повторению. Начни с них.':nextReviewLabel()}</p><div class="today-actions">${due?`<button class="btn btn-primary" data-action="study-due">Повторить · ${due}</button>`:''}${fresh?`<button class="btn ${due?'btn-outline':'btn-primary'}" data-action="study-new">Учить новые · ${Math.min(5,fresh)}</button>`:''}</div></section><button class="mode-shortcut simple-practice" data-action="tab" data-tab="lessons"><div class="icon-box">${icon('cards',20)}</div><div><strong>Другие упражнения</strong><span>Перевод, пары и короткие диалоги</span></div>${icon('arrow',18)}</button>`;}
+
 function dateOffset(offset){const d=new Date();d.setDate(d.getDate()+offset);return d.toLocaleDateString('en-CA');}
 function renderLessons(){return `<div class="page-title-row"><div><div class="eyebrow">ОБУЧЕНИЕ</div><h1>Выбирай тему</h1><p>Все уроки доступны сразу. Проходи в своём темпе.</p></div><div class="level-chip">${state.completedLessons.length}/${lessons.length} пройдено</div></div><div class="lesson-list">${lessons.map(lessonCard).join('')}</div><section class="chart-card"><div class="card-heading"><div><h3>Как лучше заниматься?</h3><p class="subtext" style="margin-top:5px">15 минут в день — хороший старт.</p></div><div class="icon-box" style="background:var(--mint);color:var(--mint-ink)">${icon('clock')}</div></div><p style="font-size:13px;color:var(--muted);margin:16px 0 0">1. Пройди один короткий урок. 2. Повтори 5–10 слов. 3. Произнеси вслух пару примеров. Возвращайся к сложным фразам на следующий день.</p></section>`;}
-function selectedWords(){let list=[...vocab];if(state.wordFilter==='repeat')list=list.filter(v=>state.repeatWords.includes(v.id)||!state.knownWords.includes(v.id));if(state.wordFilter==='known')list=list.filter(v=>state.knownWords.includes(v.id));if(state.wordFilter==='legal')list=list.filter(v=>v.topic==='Legal English');if(state.wordSearch.trim()){const q=state.wordSearch.toLowerCase();list=list.filter(v=>(v.en+' '+v.ru+' '+v.ex+' '+v.topic).toLowerCase().includes(q));}if(wordStudyOpen){if(state.wordFilter!=='known')list=list.filter(v=>!state.knownWords.includes(v.id));if(!Array.isArray(state.wordDeck)||state.wordDeck.length!==vocab.length)state.wordDeck=shuffleArray(vocab.map(v=>v.id));const rank=new Map(state.wordDeck.map((id,i)=>[id,i]));list.sort((a,b)=>rank.get(a.id)-rank.get(b.id));}return list;}
+function selectedWords(){let list=[...vocab];if(state.wordFilter==='repeat')list=list.filter(v=>isDueWord(v));if(state.wordFilter==='known')list=list.filter(v=>state.knownWords.includes(v.id));if(state.wordFilter==='legal')list=list.filter(v=>v.topic==='Legal English');if(state.wordSearch.trim()){const q=state.wordSearch.toLowerCase();list=list.filter(v=>(v.en+' '+v.ru+' '+v.ex+' '+v.topic).toLowerCase().includes(q));}if(wordStudyOpen){if(cardSessionIds)list=list.filter(v=>cardSessionIds.includes(v.id));if(state.wordFilter!=='known')list=list.filter(v=>!state.knownWords.includes(v.id));if(!Array.isArray(state.wordDeck)||state.wordDeck.length!==vocab.length)state.wordDeck=shuffleArray(vocab.map(v=>v.id));const rank=new Map(state.wordDeck.map((id,i)=>[id,i]));list.sort((a,b)=>rank.get(a.id)-rank.get(b.id));}return list;}
 let wordStudyOpen=false;
 let wordSelectionMode=false,selectedWordIds=new Set(),lastBulkChange=null;
 function bulkWordToolbar(list){
@@ -817,15 +826,15 @@ function bulkWordToolbar(list){
 }
 function applyBulkWords(known){
  const ids=[...selectedWordIds].filter(id=>vocab.some(v=>v.id===id));if(!ids.length)return;
- lastBulkChange=ids.map(id=>({id,known:state.knownWords.includes(id),repeat:state.repeatWords.includes(id)}));
+ lastBulkChange=ids.map(id=>({id,known:state.knownWords.includes(id),repeat:state.repeatWords.includes(id),review:reviewData(id)?{...reviewData(id)}:null}));
  const set=new Set(ids);state.knownWords=state.knownWords.filter(id=>!set.has(id));state.repeatWords=state.repeatWords.filter(id=>!set.has(id));
- if(known)state.knownWords=[...state.knownWords,...ids];else state.repeatWords=[...state.repeatWords,...ids];
+ if(known)state.knownWords=[...state.knownWords,...ids];else{state.repeatWords=[...state.repeatWords,...ids];if(!state.reviews)state.reviews={};ids.forEach(id=>state.reviews[id]={step:-1,due:Date.now(),lastReviewed:Date.now(),lapses:0,grade:0});}
  selectedWordIds.clear();wordSelectionMode=false;state.currentWord=0;saveState();render();
  showToast(known?`${ids.length} слов отмечены как знакомые. Они исключены из обычных карточек.`:`${ids.length} слов возвращены в повторение`);
 }
 function undoBulkWords(){
  if(!lastBulkChange)return;
- for(const item of lastBulkChange){state.knownWords=state.knownWords.filter(id=>id!==item.id);state.repeatWords=state.repeatWords.filter(id=>id!==item.id);if(item.known)state.knownWords.push(item.id);if(item.repeat)state.repeatWords.push(item.id);}
+ for(const item of lastBulkChange){state.knownWords=state.knownWords.filter(id=>id!==item.id);state.repeatWords=state.repeatWords.filter(id=>id!==item.id);if(item.known)state.knownWords.push(item.id);if(item.repeat)state.repeatWords.push(item.id);if(!state.reviews)state.reviews={};if(item.review)state.reviews[item.id]=item.review;else delete state.reviews[item.id];}
  lastBulkChange=null;saveState();render();showToast('Отметки восстановлены');
 }
 
@@ -833,8 +842,8 @@ function renderWords(){
  if(wordStudyOpen)return '<div class="section-head"><button class="text-button" data-action="close-cards">← К словарю</button><button class="text-button" data-action="shuffle-cards">⤨ Перемешать</button></div>'+renderWordStudy();
  const list=selectedWords();
  return `<div class="page-title-row"><div><div class="eyebrow">ТВОЯ КОЛЛЕКЦИЯ</div><h1>Словарь</h1><p>Найди выражение или выбери слова для повторения.</p></div><div class="level-chip">${state.knownWords.length} знаю</div></div>
- <div class="dictionary-tools"><div class="search-wrap">${icon('search')}<input id="wordSearch" type="search" placeholder="Слово, перевод или тема…" value="${esc(state.wordSearch)}" autocomplete="off"></div><button class="btn btn-primary" data-action="open-cards">Учить эти слова ${icon('cards',16)}</button></div>
- <div class="filter-row">${[['all','Все слова'],['repeat','Повторить'],['known','Знаю'],['legal','Legal English · 32']].map(([key,label])=>`<button class="filter-chip ${state.wordFilter===key?'active':''}" data-action="word-filter" data-filter="${key}">${label}</button>`).join('')}</div>
+ <div class="dictionary-tools"><div class="search-wrap">${icon('search')}<input id="wordSearch" type="search" placeholder="Слово, перевод или тема…" value="${esc(state.wordSearch)}" autocomplete="off"></div><button class="btn btn-primary" data-action="open-cards">Тренировать ${icon('cards',16)}</button></div>
+ <div class="filter-row">${[['all','Все слова'],['repeat','На сегодня'],['known','Знаю'],['legal','Legal English · 32']].map(([key,label])=>`<button class="filter-chip ${state.wordFilter===key?'active':''}" data-action="word-filter" data-filter="${key}">${label}</button>`).join('')}</div>
  ${bulkWordToolbar(list)}
  <div class="word-list">${list.map(v=>`<button class="word-row ${wordSelectionMode&&selectedWordIds.has(v.id)?'is-selected':''}" data-action="${wordSelectionMode?'toggle-word-selection':'select-word'}" data-id="${v.id}" ${wordSelectionMode?`aria-pressed="${selectedWordIds.has(v.id)}"`: ''}>${wordSelectionMode?`<span class="selection-box" aria-hidden="true">${selectedWordIds.has(v.id)?'✓':''}</span>`:`<div class="known-dot ${state.knownWords.includes(v.id)?'yes':''}"></div>`}<div class="word-row-main"><strong>${esc(v.en)}</strong><span>${esc(v.ru)}</span></div>${icon('arrow',16)}</button>`).join('')||'<div class="empty-state">Здесь пока пусто. Попробуй другой фильтр или запрос.</div>'}</div>`;
 }
@@ -842,34 +851,13 @@ function renderTraining(){
  return `<div class="page-title-row"><div><div class="eyebrow">ПРАКТИКА</div><h1>Как позанимаемся?</h1><p>Выбери формат под настроение.</p></div></div><div class="mode-shortcuts">
  ${[['mixed','cards','Слова в контексте','5 слов · вспоминание и предложения'],['ru-en','arrow','Быстрое повторение','10 вопросов · русский → английский'],['sentence','message','Собери мысль','10 предложений · письменная практика'],['pairs','cards','Соедини пары','Найди слова и переводы · до 3 раундов'],['dialogue','message','Короткие диалоги','Выбери реплику · бытовые и рабочие ситуации']].map(([mode,ic,title,sub])=>`<button class="mode-shortcut" data-action="start-practice" data-mode="${mode}"><div class="icon-box">${icon(ic,20)}</div><div><strong>${title}</strong><span>${sub}</span></div></button>`).join('')}</div>`;
 }
-function renderWordStudy(){const list=selectedWords();if(state.currentWord>=list.length)state.currentWord=0;const item=list[state.currentWord];return `<div class="page-title-row"><div><div class="eyebrow">СЛОВАРЬ</div><h1>Слова в копилку</h1><p>Лучше запоминать слова в контексте, а не по одному.</p></div><div class="level-chip">${state.knownWords.length}/${vocab.length} знаю</div></div>
-  ${item?`<div class="word-study focused-study"><section class="flashcard ${wordDirection<0?'swipe-prev':wordDirection>0?'swipe-next':''}"><div class="flash-top"><span>КАРТОЧКА ${state.currentWord+1} / ${list.length}</span><span class="word-badge">${item.topic}</span></div><div class="flash-word">${item.en}</div><div class="flash-pron">${item.pron}</div>${state.wordFlipped?`<div class="flash-translation">${item.ru}</div><p class="flash-example">“${item.ex}”</p><button class="icon-button" style="margin-top:13px" data-action="speak" data-text="${esc(item.ex)}" aria-label="Прослушать пример">${icon('speaker')}</button>`:`<button class="btn btn-ghost" style="margin-top:24px" data-action="flip-word">Показать перевод</button><p class="flash-example">Вспомни значение, прежде чем перевернуть карточку.</p>`}<div class="flash-actions"><button class="btn btn-outline" data-action="word-repeat" data-id="${item.id}">↻ Повторить</button><button class="btn btn-primary" data-action="word-known" data-id="${item.id}">${icon('check',15)} Знаю</button></div><div class="word-nav-controls"><button class="btn btn-ghost" data-action="prev-word">${icon('arrow',14)} Назад</button><button class="btn btn-outline" data-action="next-word">Дальше ${icon('arrow',14)}</button></div><p class="gesture-note">💡 Можно свайпнуть карточку влево или вправо</p></section><div class="word-side"><section class="mini-info"><div class="icon-box" style="background:var(--mint);color:var(--mint-ink)">${icon('check')}</div><div class="mini-stat">${state.knownWords.length}</div><h3>Уже знаю</h3><p>Отмечай знакомые слова, чтобы видеть свой прогресс.</p></section><section class="mini-info"><div class="icon-box" style="background:var(--yellow);color:var(--yellow-ink)">${icon('cards')}</div><div class="mini-stat">${dueWords().length}</div><h3>На повторение</h3><p>Сложные слова можно повторять столько раз, сколько нужно.</p></section></div></div>`:`<div class="empty-state"><div class="big">🎉</div><h3>${state.wordFilter==='known'?'Ты пока не отметил знакомые слова':wordStudyOpen?'Все эти слова уже знакомы':'Ничего не найдено'}</h3><p>${state.wordFilter==='known'?'Открой карточку и нажми «Знаю».':wordStudyOpen?'Знакомые слова не входят в обычную тренировку. Их можно открыть в разделе «Знаю».':'Попробуй другой запрос или выбери другой фильтр.'}</p><button class="btn btn-primary" data-action="close-cards">К словарю</button></div>`}
-`;}
+function renderWordStudy(){const list=selectedWords();if(state.currentWord>=list.length)state.currentWord=0;const item=list[state.currentWord];if(!item)return `<div class="empty-state"><div class="big">✓</div><h1>На сегодня всё</h1><p>${nextReviewLabel()}</p><button class="btn btn-primary" data-action="close-cards">К словарю</button></div>`;const known=state.knownWords.includes(item.id);return `<div class="word-study focused-study"><section class="flashcard"><div class="flash-top"><span>Осталось: ${list.length}</span><span class="word-badge">${esc(item.topic)}</span></div><div class="flash-word">${esc(item.en)}</div><div class="flash-pron">${esc(item.pron)}</div>${state.wordFlipped?`<div class="flash-translation">${esc(item.ru)}</div><p class="flash-example">${esc(item.ex)}</p><button class="icon-button" style="margin-top:14px" data-action="speak" data-text="${esc(item.ex)}" aria-label="Послушать пример">${icon('speaker')}</button>`:'<button class="btn btn-primary" style="margin-top:28px" data-action="flip-word">Показать ответ</button>'}</section>${state.wordFlipped?`<p class="rating-label">Насколько легко вспомнилось?</p><div class="review-ratings"><button class="btn btn-outline" data-action="rate-study" data-id="${item.id}" data-grade="0">Не помню<span>Через 10 минут</span></button><button class="btn btn-outline" data-action="rate-study" data-id="${item.id}" data-grade="1">Трудно<span>Завтра</span></button><button class="btn btn-primary" data-action="rate-study" data-id="${item.id}" data-grade="2">Легко<span>${REVIEW_INTERVALS[Math.min(5,(reviewData(item.id)?.step??-1)+1)]} дн.</span></button></div>${known?'':'<button class="text-button exclude-word" data-action="word-known" data-id="'+item.id+'">Уже знаю — больше не показывать</button>'}` :''}<div class="word-nav-controls"><button class="text-button" data-action="prev-word">← Назад</button><button class="text-button" data-action="next-word">Пропустить →</button></div></div>`;}
 
 function renderSettings(){return `<section class="chart-card preferences-panel" aria-label="Настройки"><div class="card-heading"><h2>Настройки</h2><button class="icon-button" data-action="settings" aria-label="Закрыть настройки">${icon('close')}</button></div><div class="settings-row"><span>Звуки</span>${soundToggleButton()}</div><div class="settings-row"><span>Звёздный фон</span><button class="btn btn-outline" data-action="toggle-stars" aria-pressed="${state.starsEnabled!==false}">${state.starsEnabled!==false?'Включён':'Выключен'}</button></div></section>`;}
 
 function shuffleArray(items){const a=[...items];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-function startPractice(mode){
-  if(mode==='pairs'||mode==='dialogue'){startPracticeGame(mode);return;}
-  const pool=state.tab==='words'&&state.wordFilter==='legal'?vocab.filter(v=>v.topic==='Legal English'):vocab;
-  pausedPractice=null;
-  if(mode==='mixed'){
-    const promptedVocab=pool.filter(v=>Object.prototype.hasOwnProperty.call(mixedRussianPrompts,v.id));
-    const repeats=shuffleArray(promptedVocab.filter(v=>state.repeatWords.includes(v.id)));
-    const newWords=shuffleArray(promptedVocab.filter(v=>!state.knownWords.includes(v.id)&&!state.repeatWords.includes(v.id)));
-    const known=shuffleArray(promptedVocab.filter(v=>state.knownWords.includes(v.id)));
-    const chosen=[...repeats,...newWords,...known].slice(0,5);
-    practice={type:'mixed',questions:chosen,index:0,stage:'learn',recallDraft:'',recallChecked:false,recallCorrect:false,recallError:false,sentenceDraft:'',sentenceChecked:false,hintLevel:0,hintMax:0,hintBank:null,correct:0,xpBefore:state.xp,finished:false};
-  } else if(mode==='ru-en'){
-    const chosen=shuffleArray(pool).slice(0,10);
-    const questions=chosen.map(word=>{const wrong=shuffleArray(vocab.filter(v=>v.id!==word.id)).slice(0,3);const options=shuffleArray([word,...wrong]);return {word,options,correctIndex:options.findIndex(v=>v.id===word.id)};});
-    practice={type:mode,questions,index:0,selected:null,checked:false,correct:0,xpBefore:state.xp,finished:false};
-  } else {
-    const questions=shuffleArray(sentenceBank).slice(0,10).map(q=>({...q,bank:shuffleArray(q.en.replace(/[.!?]/g,'').split(/\s+/))}));
-    practice={type:'sentence',questions,index:0,selected:null,checked:false,correct:0,xpBefore:state.xp,finished:false,draft:'',hintVisible:true,usedHint:false};
-  }
-  quiz=null;playGameSound('enter');saveState();render();window.scrollTo({top:0,behavior:'smooth'});
-}
+function startPractice(mode){if(mode==='pairs'||mode==='dialogue'){startPracticeGame(mode);return;}const pool=state.tab==='words'&&state.wordFilter==='legal'?vocab.filter(v=>v.topic==='Legal English'):vocab;let chosen;if(mode!=='sentence'){chosen=reviewPool(pool).filter(v=>mode!=='mixed'||Object.hasOwn(mixedRussianPrompts,v.id)).slice(0,mode==='mixed'?5:10);if(!chosen.length){showToast('На сегодня всё повторено. Добавь новые слова или выбери другой формат.');return;}}pausedPractice=null;if(mode==='mixed'){practice={type:'mixed',questions:chosen,index:0,stage:'learn',recallDraft:'',recallChecked:false,recallCorrect:false,recallError:false,sentenceDraft:'',sentenceChecked:false,hintLevel:0,hintMax:0,hintBank:null,correct:0,finished:false};}else if(mode==='ru-en'){const questions=chosen.map(word=>{const options=shuffleArray([word,...shuffleArray(vocab.filter(v=>v.id!==word.id)).slice(0,3)]);return {word,options,correctIndex:options.findIndex(v=>v.id===word.id)};});practice={type:mode,questions,index:0,selected:null,checked:false,correct:0,finished:false};}else{const questions=shuffleArray(sentenceBank).slice(0,10).map(q=>({...q,bank:shuffleArray(q.en.replace(/[.!?]/g,'').split(/\s+/))}));practice={type:'sentence',questions,index:0,selected:null,checked:false,correct:0,finished:false,draft:'',hintVisible:true,usedHint:false};}quiz=null;playGameSound('enter');saveState();render();window.scrollTo({top:0,behavior:'smooth'});}
+
 function normalizeMixedAnswer(value){return String(value||'').toLowerCase().replace(/[’‘]/g,"'").replace(/-/g,' ').replace(/[^a-z0-9' ]/g,' ').replace(/\s+/g,' ').trim();}
 function checkMixedRecall(){
   if(!practice||practice.type!=='mixed'||practice.stage!=='recall'||practice.recallChecked)return;
@@ -878,7 +866,7 @@ function checkMixedRecall(){
   const word=practice.questions[practice.index];
   practice.recallChecked=true;practice.recallCorrect=recallMatches(answer,word.en);state.answered++;playGameSound(practice.recallCorrect?'correct':'mistake');
   if(practice.recallCorrect){state.correct++;addXp(5);showToast('Верно!');}
-  else{practice.recallError=true;state.repeatWords=Array.from(new Set([...state.repeatWords,word.id]));state.knownWords=state.knownWords.filter(id=>id!==word.id);saveState();showToast('Ничего страшного — слово вернётся на повторение');}
+  else{reviewWord(word.id,0);practice.recallError=true;state.repeatWords=Array.from(new Set([...state.repeatWords,word.id]));saveState();showToast('Ничего страшного — слово вернётся на повторение');}
   render();
 }
 function checkMixedSentence(){
@@ -896,9 +884,9 @@ function checkMixedSentence(){
 }
 function moveToNextMixedWord(mastered){
   if(!practice||practice.type!=='mixed')return;
-  const p=practice;const word=p.questions[p.index];
+  const p=practice;const word=p.questions[p.index];if(!p.recallError)reviewWord(word.id,mastered?(p.hintMax?1:2):0);
   if(mastered&&!p.recallError){p.correct++;state.repeatWords=state.repeatWords.filter(id=>id!==word.id);}
-  else{state.repeatWords=Array.from(new Set([...state.repeatWords,word.id]));state.knownWords=state.knownWords.filter(id=>id!==word.id);}
+  else{state.repeatWords=Array.from(new Set([...state.repeatWords,word.id]));}
   if(p.index<p.questions.length-1){
     p.index++;p.stage='learn';p.recallDraft='';p.recallChecked=false;p.recallCorrect=false;p.recallError=false;p.sentenceDraft='';p.sentenceChecked=false;p.hintLevel=0;p.hintMax=0;p.hintBank=null;
   }else{p.finished=true;playGameSound('complete');streakUpdate();}
@@ -993,8 +981,8 @@ function skipMixedWord(){
   if(!practice||practice.type!=='mixed'||practice.finished)return;
   moveToNextMixedWord(false);
 }
-function answerPractice(i){if(!practice||practice.checked||practice.finished)return;practice.selected=i;practice.checked=true;state.answered++;playGameSound(i===practice.questions[practice.index].correctIndex?'correct':'mistake');if(i===practice.questions[practice.index].correctIndex){practice.correct++;state.correct++;addXp(5);}else saveState();render();}
-function checkSentence(){if(!practice||practice.checked||practice.finished)return;const q=practice.questions[practice.index];const normal=x=>String(x||'').toLowerCase().trim().replace(/[’‘]/g,"'").replace(/[^a-z0-9' ]/g,'').replace(/\s+/g,' ');practice.isCorrect=sentenceMatches(practice.draft,[q.en,...(q.alts||[])]);practice.checked=true;state.answered++;playGameSound(practice.isCorrect?'correct':'mistake');if(practice.isCorrect){practice.correct++;state.correct++;addXp(8);showToast('Отлично!');}else saveState();render();}
+function answerPractice(i){if(!practice||practice.checked||practice.finished)return;practice.selected=i;practice.checked=true;reviewWord(practice.questions[practice.index].word.id,i===practice.questions[practice.index].correctIndex?2:0);state.answered++;playGameSound(i===practice.questions[practice.index].correctIndex?'correct':'mistake');if(i===practice.questions[practice.index].correctIndex){practice.correct++;state.correct++;addXp(5);}else saveState();render();}
+function checkSentence(){if(!practice||practice.checked||practice.finished)return;const q=practice.questions[practice.index];const normal=x=>String(x||'').toLowerCase().trim().replace(/[’‘]/g,"'").replace(/[^a-z0-9' ]/g,'').replace(/\s+/g,' ');practice.isCorrect=sentenceMatches(practice.draft,[q.en,...(q.alts||[])]);practice.checked=true;const entry=vocab.find(v=>v.ex===q.en);if(entry)reviewWord(entry.id,practice.isCorrect?1:0);state.answered++;playGameSound(practice.isCorrect?'correct':'mistake');if(practice.isCorrect){practice.correct++;state.correct++;addXp(8);showToast('Отлично!');}else saveState();render();}
 function addSentenceToken(token){if(!practice||practice.type!=='sentence'||practice.checked)return;const area=document.getElementById('sentenceDraft');const start=area?area.selectionStart:practice.draft.length;const end=area?area.selectionEnd:start;const before=practice.draft.slice(0,start),after=practice.draft.slice(end);const needsSpace=before.length>0&&!/\s$/.test(before);practice.draft=before+(needsSpace?' ':'')+token+after;practice.usedHint=true;render();const next=document.getElementById('sentenceDraft');if(next){next.focus();const pos=practice.draft.length;next.setSelectionRange(pos,pos);}}
 function nextPractice(){if(!practice)return;playGameSound('tile');if(practice.index<practice.questions.length-1){practice.index++;practice.selected=null;practice.checked=false;practice.draft='';practice.hintVisible=true;practice.usedHint=false;practice.isCorrect=false;render();window.scrollTo({top:0,behavior:'smooth'});}else{practice.finished=true;playGameSound('complete');streakUpdate();saveState();render();}}
 function closePractice(){pausedPractice=practice&&!practice.finished?practice:null;practice=null;persistPractice();saveState();render();}
@@ -1021,8 +1009,8 @@ function startPracticeGame(type){
  const legalOnly=state.tab==='words'&&state.wordFilter==='legal';
  if(type==='pairs'){
   const seenEn=new Set(),seenRu=new Set();
-  const words=shuffleArray(vocab.filter(v=>(!legalOnly||v.topic==='Legal English')&&!state.knownWords.includes(v.id))).filter(v=>{const en=normEn(v.en),ru=v.ru.toLowerCase();if(seenEn.has(en)||seenRu.has(ru))return false;seenEn.add(en);seenRu.add(ru);return true;}).slice(0,15);
-  if(!words.length){showToast('Все слова уже знакомы. Верни нужные слова в повторение в словаре.');return;}
+  const words=reviewPool(vocab.filter(v=>(!legalOnly||v.topic==='Legal English')&&!state.knownWords.includes(v.id))).filter(v=>{const en=normEn(v.en),ru=v.ru.toLowerCase();if(seenEn.has(en)||seenRu.has(ru))return false;seenEn.add(en);seenRu.add(ru);return true;}).slice(0,15);
+  if(!words.length){showToast('На сегодня всё повторено. Следующие слова появятся в свой срок.');return;}
   const rounds=[];for(let i=0;i<words.length;i+=5)rounds.push(words.slice(i,i+5));
   practice={type,questions:rounds,index:0,correct:0,mistakes:0,finished:false};setupPairRound();
  }else{
@@ -1033,7 +1021,7 @@ function startPracticeGame(type){
  pausedPractice=null;quiz=null;playGameSound('enter');render();window.scrollTo({top:0,behavior:'smooth'});
 }
 function setupPairRound(){
- const p=practice,ids=p.questions[p.index].map(v=>v.id);p.leftOrder=shuffleArray(ids);p.rightOrder=shuffleArray(ids);p.matches=[];p.left=null;p.right=null;p.pairError=false;p.lastMatch=null;p.roundDone=false;
+ const p=practice,ids=p.questions[p.index].map(v=>v.id);p.leftOrder=shuffleArray(ids);p.rightOrder=shuffleArray(ids);p.matches=[];p.pairFailed=[];p.left=null;p.right=null;p.pairError=false;p.lastMatch=null;p.roundDone=false;
 }
 function pairPick(side,id){
  const p=practice;if(!p||p.type!=='pairs'||p.finished||p.roundDone||!['left','right'].includes(side)||p.matches.includes(id)||!p.questions[p.index].some(v=>v.id===id))return;
@@ -1044,8 +1032,8 @@ function pairPick(side,id){
   if(p.left===p.right){
    const boxes=['left','right'].map(s=>[...document.querySelectorAll('.pair-choice')].find(el=>el.dataset.side===s&&el.dataset.id===id)?.getBoundingClientRect());
    if(boxes.every(Boolean))points=boxes.map(r=>({x:r.left+r.width/2,y:r.top+r.height/2}));
-   p.matches.push(id);p.correct++;p.lastMatch=id;p.left=null;p.right=null;p.roundDone=p.matches.length===p.questions[p.index].length;playGameSound('correct');
-  }else{p.mistakes++;p.pairError=true;playGameSound('mistake');}
+   if(!p.pairFailed?.includes(id))reviewWord(id,1);p.matches.push(id);p.correct++;p.lastMatch=id;p.left=null;p.right=null;p.roundDone=p.matches.length===p.questions[p.index].length;playGameSound('correct');
+  }else{p.pairFailed=[...new Set([...(p.pairFailed||[]),p.left,p.right])];reviewWord(p.left,0);reviewWord(p.right,0);p.mistakes++;p.pairError=true;playGameSound('mistake');}
  }
  render();if(points)animatePairConnection(points);
 }
@@ -1158,7 +1146,10 @@ case'clear-selection':selectedWordIds.clear();render();break;
 case'bulk-known':applyBulkWords(true);break;
 case'bulk-repeat':applyBulkWords(false);break;
 case'undo-bulk':undoBulkWords();break;
-case'open-cards':state.wordDeck=shuffleArray(vocab.map(v=>v.id));state.currentWord=0;wordStudyOpen=true;playGameSound('tile');render();break;
+case'study-due':beginStudy('due');break;
+case'study-new':beginStudy('new');break;
+case'rate-study':rateStudy(btn.dataset.id,Number(btn.dataset.grade));break;
+case'open-cards':beginStudy();break;
 case'shuffle-cards':state.wordDeck=shuffleArray(vocab.map(v=>v.id));state.currentWord=0;state.wordFlipped=false;saveState();playGameSound('tile');render();break;
 case'close-cards':wordStudyOpen=false;render();break;
 case'resume-practice':if(pausedPractice){practice=pausedPractice;pausedPractice=null;render();}break;
@@ -1175,7 +1166,7 @@ case'word-filter':state.wordFilter=btn.dataset.filter;state.currentWord=0;state.
 case'flip-word':playGameSound('tile');state.wordFlipped=true;render();break;
 case'next-word':changeWord(1);break;
 case'prev-word':changeWord(-1);break;
-case'select-word':{if(state.knownWords.includes(btn.dataset.id))state.wordFilter='known';state.wordDeck=shuffleArray(vocab.map(v=>v.id));wordStudyOpen=true;playGameSound('tile');const list=selectedWords();const ix=list.findIndex(v=>v.id===btn.dataset.id);if(ix>=0){state.currentWord=ix;state.wordFlipped=true;wordDirection=1;render();window.scrollTo({top:0,behavior:'smooth'});}break;}
+case'select-word':beginStudy('preview',btn.dataset.id);break;
 case'word-known':{markWordAndAdvance(btn.dataset.id,true);break;}
 case'word-repeat':{markWordAndAdvance(btn.dataset.id,false);break;}
 case'pair-pick':pairPick(btn.dataset.side,btn.dataset.id);break;
@@ -1198,9 +1189,11 @@ case'clear-draft':if(practice&&!practice.checked){practice.draft='';render();doc
 case'sentence-token':addSentenceToken(btn.dataset.token);break;
 case'reset':if(confirm('Точно сбросить весь прогресс? Это действие нельзя отменить.')){state=defaultState();quiz=null;practice=null;pausedPractice=null;persistPractice();saveState();render();showToast('Прогресс сброшен');}break;
 }});
-if('serviceWorker'in navigator && location.protocol!=='file:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=20',{updateViaCache:'none'}).catch(()=>{}));}
+if('serviceWorker'in navigator && location.protocol!=='file:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=21',{updateViaCache:'none'}).catch(()=>{}));}
 render();
 initStarfield();
+setInterval(()=>{if(!document.hidden&&!practice&&!quiz&&!wordStudyOpen&&state.tab==='home')render();},60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!practice&&!quiz&&!wordStudyOpen)render();});
 </script>
 </body>
 </html>
